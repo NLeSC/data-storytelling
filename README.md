@@ -42,15 +42,15 @@ Below is the planned list of project deliverables, based on the proposal and cur
 
 ### 👥 Team
 
-Name	Role
-Kody Moodley - Research Software Engineer
-Pablo Rodriguez	- Research Software EngineerResearch Software Engineer
-Stefan Verhoeven - 	Research Software Engineer
-peter kalverla - Research Software Engineer
-Jesse Gonzalez - Project Lead - Research Software Engineer
+- Kody Moodley - Research Software Engineer
+- Pablo Rodriguez	- Research Software EngineerResearch Software Engineer
+- Stefan Verhoeven - 	Research Software Engineer
+- peter kalverla - Research Software Engineer
+- Jesse Gonzalez - Project Lead - Research Software Engineer  
 
-Adam Belloum	Tech Lead
-Junming Ye	Student Researcher
+
+- Adam Belloum- Tech Lead
+- Junming Ye - Student Researcher
 
 ⸻
 
