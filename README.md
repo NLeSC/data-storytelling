@@ -51,13 +51,13 @@ Below is the planned list of project deliverables, based on the proposal and cur
 ### 👥 Team
 
 - Kody Moodley - Research Software Engineer
-- Pablo Rodriguez	- Research Software EngineerResearch Software Engineer
-- Stefan Verhoeven - 	Research Software Engineer
-- peter kalverla - Research Software Engineer
-- Jesse Gonzalez - Project Lead - Research Software Engineer
+- [Pablo Rodríguez](https://github.com/PabRod)	- Research Software EngineerResearch Software Engineer
+- Stefan Verhoeven - Research Software Engineer
+- Peter Kalverla - Research Software Engineer
+- Jesse Gonzalez - Project Lead - Research Software Engineer  
 
 
-- Adam Belloum- Tech Lead
+- Adam Belloum - Tech Lead
 - Junming Ye - Student Researcher
 
 ⸻
@@ -69,3 +69,4 @@ This repository is for internal use at the eScience Center. However, if you’re
 ---
 
 🚀 Let’s make scientific data accessible, impactful, and memorable through better storytelling.
+`
