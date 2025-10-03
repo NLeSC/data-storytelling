@@ -8,6 +8,14 @@ This repository gathers all deliverables, research, tools, and demos created dur
 
 ---
 
+### Ideation board
+
+![./README.excalidraw.png](./README.excalidraw.png)
+
+(You can edit this board with the [Excalidraw plugin for VSCode](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor))
+
+---
+
 ## 🌟 Project Highlights (Deliverables & Milestones)
 
 Below is the planned list of project deliverables, based on the proposal and current progress. We aim to complete these by December 2025 unless noted otherwise (In progress...).
@@ -46,7 +54,7 @@ Below is the planned list of project deliverables, based on the proposal and cur
 - Pablo Rodriguez	- Research Software EngineerResearch Software Engineer
 - Stefan Verhoeven - 	Research Software Engineer
 - peter kalverla - Research Software Engineer
-- Jesse Gonzalez - Project Lead - Research Software Engineer  
+- Jesse Gonzalez - Project Lead - Research Software Engineer
 
 
 - Adam Belloum- Tech Lead
