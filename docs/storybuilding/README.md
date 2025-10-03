@@ -11,7 +11,7 @@ This tutorials presents a strategy for simplifying the creative process of build
 
 ### What is a story?
 
-If you ever experienced the so-called _"blank page syndrome"_, chances are that it originated not a lack of ideas to write about, but from an overwhelming unordered pile of them.
+If you ever experienced the so-called _"blank page syndrome"_, chances are that it originated not from a lack of ideas to write about, but from an overwhelming, chaotic pile of them.
 
 A story, any story, is linear.
 It doesn't matter if it is a text, a speech, or a movie: it will progress from a beginning to an end.
