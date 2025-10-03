@@ -23,7 +23,7 @@ It doesn't matter if it is a text, a speech, a movie or even a scientific public
 
 And here comes the challenge: our thoughts are rarely that linear.
 Most people entertain multiple thoughts simultaneously, or quickly switch from one to the other.
-It takes a conscious effort to order them into a narrative.
+It takes a conscious effort to order them into a coherent narrative.
 
 ## Embracing chaos
 Instead of getting frustrated about the chaotic nature of our thoughts, let's just embrace it.
@@ -36,12 +36,32 @@ Just write them down.
 My advice is to do it like in the figure below, in small squares, with no pre-defined order.
 Just drop them around as if they were LEGO bricks.
 
-FIGURE HERE
+![Auxiliary](./img/01-bricks.png)
+
+## Structuring your thoughts: the building blocks
 
 The challenge is set!
 Our goal is to build something with these bricks.
 But first we have to see our bricks, identify them, make sure we're not missing any.
 Almost _feel_ them.
+
+Take a moment to look at your building blocks.
+Very likely, you'll notice some of them are related.
+This relationship can be logical, narrative, chronological, ...
+
+Draw a line between them if that's the case (I suggest using solid lines for solid links, and dashed lines for slightly more subtle links).
+We are starting to have **some** structure!
+We are slowly creating order out of chaos!
+
+At this stage, you might realize some building blocks are missing.
+When that's the case, just add them.
+You might also notice some building blocks are redundant.
+Well, just merge those together.
+You might even judge some of the blocks to be unnecessary.
+Drop those without hesitation!
+Nothing creates more order out of chaos than reducing the amount of moving parts!
+
+FIGURE HERE
 
 ## Navigating your thoughts: the story map
 
