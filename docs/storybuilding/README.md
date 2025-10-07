@@ -36,7 +36,7 @@ Just write them down.
 My advice is to do it like in the figure below, in small squares, with no pre-defined order.
 Just drop them around as if they were LEGO bricks.
 
-![Auxiliary](./img/01-bricks.png)
+![Bricks](./img/01-bricks.png)
 
 ## Structuring your thoughts: the building blocks
 
@@ -49,9 +49,12 @@ Take a moment to look at your building blocks.
 Very likely, you'll notice some of them are related.
 This relationship can be logical, narrative, chronological, ...
 
-Draw a line between them if that's the case (I suggest using solid lines for solid links, and dashed lines for slightly more subtle links).
+Draw a line between them if that's the case.
+I suggest using **solid lines for strong relatedness**, and **dashed lines for less clear relatedness**.
 We are starting to have **some** structure!
 We are slowly creating order out of chaos!
+
+![Links](./img/02-links.png)
 
 At this stage, you might realize some building blocks are missing.
 When that's the case, just add them.
@@ -61,9 +64,29 @@ You might even judge some of the blocks to be unnecessary.
 Drop those without hesitation!
 Nothing creates more order out of chaos than reducing the amount of moving parts!
 
-FIGURE HERE
-
 ## Navigating your thoughts: the story map
+The ultimate goal would be to navigate your thoughts.
+Almost literally: you want to create a route from the beginning to the end.
+And the diagram above can be very useful.
+
+For instance, the diagram shows clearly what the core topics are.
+This allows for a drawing a first, straightforward route that covers just the basics.
+If your audience is already knowledgeable about the topic and your time is limited, this route is an excellent choice:
+
+![Direct](./img/03-direct.png)
+
+If your time is less limited, you can consider taking a detour and dropping an anecdote to make the experience more enjoyable:
+
+![Anecdote](./img/04-anecdote.png)
+
+Last but not least, if you have the possibility of expanding as much as you want, you might want to cover all the topics.
+In such a case, a reasonable route will look like:
+
+![Exhaustive](./img/05-exhaustive.png)
+
+In the figure below we summarize three possible routes we could envision for the same material:
+
+![All](./img/06-all.png)
 
 ## References
 - [Así nace una charla Naukas](https://naukas.com/2023/10/11/asi-nace-una-charla-naukas/)
