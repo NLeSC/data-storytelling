@@ -1,42 +1,83 @@
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
+import Lenis from 'lenis';
 
 interface ScrollState {
 	scrollY: number;
 	scrollProgress: number;
 	windowHeight: number;
 	documentHeight: number;
+	velocity: number;
+	direction: 1 | -1;
 }
+
+let lenisInstance: Lenis | null = null;
 
 function createScrollStore() {
 	const { subscribe, set, update } = writable<ScrollState>({
 		scrollY: 0,
 		scrollProgress: 0,
 		windowHeight: 0,
-		documentHeight: 0
+		documentHeight: 0,
+		velocity: 0,
+		direction: 1
 	});
 
 	if (browser) {
-		const updateScroll = () => {
-			const scrollY = window.scrollY;
+		// Initialize Lenis smooth scroll
+		lenisInstance = new Lenis({
+			duration: 1.2,
+			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+			orientation: 'vertical',
+			smoothWheel: true,
+			wheelMultiplier: 1,
+			touchMultiplier: 2
+		});
+
+		// Update scroll state on Lenis scroll event
+		lenisInstance.on('scroll', ({ scroll, velocity, direction }: any) => {
 			const windowHeight = window.innerHeight;
 			const documentHeight = document.documentElement.scrollHeight;
-			const scrollProgress = scrollY / (documentHeight - windowHeight);
+			const scrollProgress = scroll / (documentHeight - windowHeight);
 
 			set({
-				scrollY,
+				scrollY: scroll,
 				scrollProgress: Math.max(0, Math.min(1, scrollProgress)),
 				windowHeight,
-				documentHeight
+				documentHeight,
+				velocity,
+				direction: direction as 1 | -1
 			});
-		};
+		});
 
-		window.addEventListener('scroll', updateScroll, { passive: true });
-		window.addEventListener('resize', updateScroll);
-		updateScroll();
+		// Lenis animation frame
+		function raf(time: number) {
+			lenisInstance?.raf(time);
+			requestAnimationFrame(raf);
+		}
+		requestAnimationFrame(raf);
+
+		// Handle window resize
+		const handleResize = () => {
+			update((state) => ({
+				...state,
+				windowHeight: window.innerHeight,
+				documentHeight: document.documentElement.scrollHeight
+			}));
+		};
+		window.addEventListener('resize', handleResize);
 	}
 
-	return { subscribe };
+	return {
+		subscribe,
+		scrollTo: (target: number | string, options?: { offset?: number; duration?: number }) => {
+			if (lenisInstance) {
+				lenisInstance.scrollTo(target, options);
+			}
+		},
+		stop: () => lenisInstance?.stop(),
+		start: () => lenisInstance?.start()
+	};
 }
 
 export const scrollStore = createScrollStore();

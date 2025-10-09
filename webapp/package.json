@@ -42,6 +42,7 @@
 	"dependencies": {
 		"@threlte/core": "^8.1.5",
 		"@threlte/extras": "^9.5.4",
+		"lenis": "^1.3.11",
 		"three": "^0.180.0"
 	}
 }
