@@ -33,24 +33,26 @@
 
 		sections.forEach((section, index) => {
 			const rect = section.getBoundingClientRect();
-			const sectionProgress = Math.max(
-				0,
-				Math.min(1, 1 - (rect.top + rect.height / 2) / window.innerHeight)
-			);
+
+			// Calculate progress only when section is in viewport
+			const viewportCenter = window.innerHeight / 2;
+			const sectionCenter = rect.top + rect.height / 2;
+			const distanceFromCenter = Math.abs(viewportCenter - sectionCenter);
+			const maxDistance = window.innerHeight;
+			const sectionProgress = Math.max(0, Math.min(1, 1 - distanceFromCenter / maxDistance));
 
 			const canvas = section.querySelector('.canvas-background') as HTMLElement;
 			const content = section.querySelector('.content-overlay') as HTMLElement;
 
 			if (canvas) {
 				// Background moves slower (parallax effect)
-				const bgOffset = sectionProgress * 50 - 25;
+				const bgOffset = rect.top * 0.3;
 				canvas.style.transform = `translateY(${bgOffset}px) scale(${1 + Math.abs(velocity) * 0.02})`;
 			}
 
 			if (content) {
-				// Content moves at normal speed but with subtle offset
-				const contentOffset = sectionProgress * 20 - 10;
-				content.style.transform = `translateY(${contentOffset}px)`;
+				// Content moves at normal speed - no offset to maintain centering
+				content.style.transform = `translateY(50%)`;
 			}
 		});
 	});
@@ -459,12 +461,7 @@
 		);
 		border-radius: 1.5rem;
 		border: 1px solid;
-		border-image: linear-gradient(
-				135deg,
-				rgba(123, 175, 212, 0.5),
-				rgba(244, 184, 65, 0.3)
-			)
-			1;
+		border-image: linear-gradient(135deg, rgba(123, 175, 212, 0.5), rgba(244, 184, 65, 0.3)) 1;
 		box-shadow:
 			0 8px 32px 0 rgba(0, 0, 0, 0.37),
 			inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
