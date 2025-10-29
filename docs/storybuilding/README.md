@@ -3,13 +3,13 @@
 We are all natural-born storytellers.
 Or at the very least, storylisteners.
 The same drive lies behind a gathering around the fireplace, a night at the movies or listening to a podcast on your morning run: our brain's hunger for narratives.
-We are (almost literally) wired for it.
+We are almost literally wired for it.
 
 And yet creating a story can be challenging.
 
 This tutorial presents a strategy for simplifying the creative process of building a story.
 
-And as in any good story, we have to start... from the beginning.
+And as in any good story, we have to start from the beginning.
 
 ## What is a story?
 
@@ -29,10 +29,10 @@ It takes a conscious effort to order them into a coherent narrative.
 Instead of getting frustrated about the chaotic nature of our thoughts, let's just embrace it.
 Our thoughts are fine just how they are.
 
-Of course, it is not that practical to have our working memory juggling them all.
+Of course, it is not that practical to have our working memory juggling them all at once.
 So let's free our memory and outsource them to... a piece of paper!
-
 Just write them down.
+
 My advice is to do it like in the figure below, in small squares, with no pre-defined order.
 Just drop them around as if they were LEGO bricks.
 
@@ -66,14 +66,24 @@ Nothing creates more order out of chaos than reducing the amount of moving parts
 
 ## Navigating your thoughts: the story map
 The ultimate goal would be to navigate your thoughts.
-Almost literally: you want to create a route from the beginning to the end.
-And the diagram above can be very useful.
+And I don't use the verb navigate lightly: you literally want to create a route from the beginning to the end.
+The diagram above will be very useful for achieving this.
 
-For instance, the diagram shows clearly what the core topics are.
-This allows for a drawing a first, straightforward route that covers just the basics.
+To begin with, the diagram shows clearly what the core topics are.
+This allows for drawing a first, straightforward route that covers just the basics.
 If your audience is already knowledgeable about the topic and your time is limited, this route is an excellent choice:
 
 ![Direct](./img/03-direct.png)
+
+> For many people, especially in academia, skipping information feels wrong.
+> In the verge of immoral.
+>
+> What we did above is tailoring your materials to our audience (sounds better than skipping, doesn't it?).
+> And yes, we did it by eliminating some of them.
+> Actually, this is going to happen often, and it is very good news.
+> Less complexity, less moving parts; less is more, remember?
+>
+> Effective communication is not about turning everything that we write or say into a self-contained compendium, but about providing chunks that can be reasonably digested in whatever context they are delivered.
 
 If your time is less limited, you can consider taking a detour and dropping an anecdote to make the experience more enjoyable:
 
@@ -87,6 +97,3 @@ In such a case, a reasonable route will look like:
 In the figure below we summarize three possible routes we could envision for the same material:
 
 ![All](./img/06-all.png)
-
-## References
-- [Así nace una charla Naukas](https://naukas.com/2023/10/11/asi-nace-una-charla-naukas/)
