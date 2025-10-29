@@ -52,7 +52,7 @@ This relationship can be logical, narrative, chronological, ...
 Draw a line between them if that's the case.
 I suggest using **solid lines for strong relatedness**, and **dashed lines for less clear relatedness**.
 We are starting to have **some** structure!
-We are slowly creating order out of chaos!
+We are slowly creating order out of chaos![^1]
 
 ![Links](./img/02-links.png)
 
@@ -97,3 +97,21 @@ In such a case, a reasonable route will look like:
 In the figure below we summarize three possible routes we could envision for the same material:
 
 ![All](./img/06-all.png)
+
+## Applications
+I've used the described framework in many settings where storytelling played a role.
+Perhaps this sounds limited, but believe me: storytelling is everywhere.
+I used it for, among others:
+
+- Scientific presentations
+- Comedy monologues
+- Software tutorials
+- My own PhD dissertation
+- Blog posts
+- A strategic plan for a research institution
+- Publications in research journals (real-life example [here](https://fuga.naukas.com/files/2021/03/IMG_20190301_091759-768x404.jpg))
+- A theater play
+
+I honestly encourage you to give it a try next time you face a blank page.
+
+[^1]: For those of you interested in knowledge management, chances are this method will remind you of the [Zettelkasten note-taking method](https://en.wikipedia.org/wiki/Zettelkasten). Actually, the Zettelkasten idea is a strong, even more structured form of the one presented here.
