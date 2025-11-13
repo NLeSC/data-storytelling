@@ -24,11 +24,11 @@ Below is the planned list of project deliverables, based on the proposal and cur
 
 - ✅ Literature Review: Systematic overview of data storytelling across domains
 - ✅ Working AI Pipelines: Modular storytelling pipeline using small LLMs
-- ⏳ Training Guide: Work-in-progress handbook for data storytelling in RSE
+- Training Guide: Work-in-progress handbook for data storytelling in RSE
   - Best use of LLMs, RAG model quality analysis, etc.
   - Story generation quality metrics: structure, factual accuracy, engagement, etc.
-- ⏳ Use Case Application: Storytelling applied to eScience evaluation project(s)
-- ⏳ Showcase Outputs: Poster, website, and internal presentation planned for December
+- Use Case Application: Storytelling applied to eScience evaluation project(s)
+- Showcase Outputs: Poster, website, and internal presentation planned for December
 
 
 ## Awesome Resources
@@ -60,7 +60,7 @@ See also:
 - [Pablo Rodríguez](https://github.com/PabRod)	- Research Software Engineer
 - Stefan Verhoeven - Research Software Engineer
 - Peter Kalverla - Research Software Engineer
-- Jesse Gonzalez - Project Lead - Research Software Engineer  
+- [Jesse Gonzalez](https://github.com/ctwhome) - Research Software Engineer  
 
 - Adam Belloum - Tech Lead
 - Junming Ye - Student Researcher
