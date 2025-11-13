@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Data Storytelling Web Application"
+abstract: "A web application for data storytelling, part of the eScience Center Tech Focus Project 2025. Built with SvelteKit and designed to help Research Software Engineers and scientists present complex research outputs using storytelling techniques, combining narrative design, data visualization, and AI tooling."
+authors:
+  - family-names: "Moodley"
+    given-names: "Kody"
+    affiliation: "Netherlands eScience Center"
+    orcid: "https://orcid.org/0000-0001-5666-1658"
+  - family-names: "Rodríguez"
+    given-names: "Pablo"
+    affiliation: "Netherlands eScience Center"
+    orcid: "https://orcid.org/0000-0002-2855-940X"
+  - family-names: "Verhoeven"
+    given-names: "Stefan"
+    affiliation: "Netherlands eScience Center"
+  - family-names: "Kalverla"
+    given-names: "Peter"
+    affiliation: "Netherlands eScience Center"
+  - family-names: "Gonzalez"
+    given-names: "Jesse"
+    affiliation: "Netherlands eScience Center"
+    orcid: "https://orcid.org/0000-0002-2170-3253"
+  - family-names: "Belloum"
+    given-names: "Adam"
+    affiliation: "Netherlands eScience Center"
+  - family-names: "Ye"
+    given-names: "Junming"
+    affiliation: "Netherlands eScience Center"
+repository-code: "https://github.com/escience/data-storytelling"
+url: "https://github.com/escience/data-storytelling"
+keywords:
+  - data-storytelling
+  - data-visualization
+  - research-software
+  - sveltekit
+  - ai-powered
+  - scientific-communication
+license: Apache-2.0
+version: 0.0.1
+date-released: 2025-01-01
