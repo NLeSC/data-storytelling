@@ -1,10 +1,12 @@
-# 📊 Data Storytelling @ eScience Center
+![](https://github.com/NLeSC/.github/blob/main/profile/escience.png)
+
+# Data Storytelling @ eScience Center
 
 Welcome to the repository for our **Tech Focus Project 2025: Data Storytelling**, part of the NLeSC initiative to enhance communication and accessibility of research software through compelling, AI-powered narratives.
 
 This repository gathers all deliverables, research, tools, and demos created during the project.
 
-> 🧠 Goal: Help Research Software Engineers (RSEs) and scientists **present complex research outputs using storytelling techniques**, combining narrative design, data visualization, and AI tooling.
+> Goal: Help Research Software Engineers (RSEs) and scientists **present complex research outputs using storytelling techniques**, combining narrative design, data visualization, and AI tooling.
 
 ---
 
@@ -16,7 +18,7 @@ This repository gathers all deliverables, research, tools, and demos created dur
 
 ---
 
-## 🌟 Project Highlights (Deliverables & Milestones)
+## Project Highlights (Deliverables & Milestones)
 
 Below is the planned list of project deliverables, based on the proposal and current progress. We aim to complete these by December 2025 unless noted otherwise (In progress...).
 
@@ -29,15 +31,15 @@ Below is the planned list of project deliverables, based on the proposal and cur
 - ⏳ Showcase Outputs: Poster, website, and internal presentation planned for December
 
 
-## 📚 Awesome Resources
+## Awesome Resources
 
 ### 🧾 Core Documents
-- 📘 Student Literature Review (2025) — Theoretical background across journalism, finance, education, and medicine
-- 📙 MSc Thesis: Educational Data Storytelling with SLMs (Ye, 2025) — Modular AI pipeline using RAG + SLMs
-- 📝 Project Proposal (TFP25) — Official eScience Center project definition
+- Student Literature Review (2025) — Theoretical background across journalism, finance, education, and medicine
+- MSc Thesis: Educational Data Storytelling with SLMs (Ye, 2025) — Modular AI pipeline using RAG + SLMs
+- Project Proposal (TFP25) — Official eScience Center project definition
 
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```text
 📁 /docs           → Literature review, thesis, and guidelines
@@ -52,7 +54,7 @@ See also:
 
 📁 [sharepoint](https://nlesc.sharepoint.com/sites/all/Shared%20Documents/Forms/AllItems.aspx?CT=1759496178615&OR=OWA%2DNT%2DMail&CID=ec1b06c4%2Dfca1%2D9f15%2D76d3%2D4f178df059fb&id=%2Fsites%2Fall%2FShared%20Documents%2FProjectportfolio%2FProjects%2F27025T01%20TFP25%20Story%20Telling&sortField=Modified&isAscending=false&viewid=8c7214e3%2Ddfc5%2D4ffa%2Dac92%2D421aab48d30f&p=true&ct=1752486265370&or=OWA%2DNT%2DMail&cid=d3bcbc02%2D2e50%2Df150%2De44d%2D4047d80d23ed&ga=1) (Requires login, members only)
 
-### 👥 Team
+### Team
 
 - Kody Moodley - Research Software Engineer
 - [Pablo Rodríguez](https://github.com/PabRod)	- Research Software Engineer
@@ -65,11 +67,10 @@ See also:
 
 ⸻
 
-🔗 Contributing
+Contributing
 
 This repository is for internal use at the eScience Center. However, if you’re interested in contributing examples, feedback, or tools, please contact the team.
 
 ---
 
 🚀 Let’s make scientific data accessible, impactful, and memorable through better storytelling.
-`
