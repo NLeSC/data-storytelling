@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
+	import { OrbitControls } from '@threlte/extras';
 	import * as THREE from 'three';
+	import ProjectCard from './ProjectCard.svelte';
+	import type { ProjectWithDomain } from '$lib/types/project';
 
 	interface Props {
 		scrollProgress?: number;
+		projects?: ProjectWithDomain[];
+		onProjectClick?: (project: ProjectWithDomain) => void;
+		selectedProject?: ProjectWithDomain | null;
 	}
 
-	let { scrollProgress = 0 }: Props = $props();
+	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject }: Props = $props();
 
 	// DNA helix parameters
 	const helixHeight = 20;
@@ -127,7 +133,9 @@
 	});
 </script>
 
-<T.PerspectiveCamera makeDefault position={[0, 0, 30]} fov={60} />
+<T.PerspectiveCamera makeDefault position={[0, 0, 30]} fov={60}>
+	<OrbitControls enableDamping dampingFactor={0.05} minDistance={15} maxDistance={60} />
+</T.PerspectiveCamera>
 
 <!-- DNA Double Helix -->
 <T.Group bind:ref={dnaGroupRef}>
@@ -187,3 +195,19 @@
 <T.AmbientLight intensity={0.6} />
 <T.PointLight position={[10, 10, 10]} intensity={0.8} color="#FF6B6B" />
 <T.PointLight position={[-10, -10, 10]} intensity={0.6} color="#4ECDC4" />
+
+<!-- Project Cards -->
+{#each projects as project, index (project.id)}
+	{@const radius = 16 + index * 0.5}
+	{@const angle = (index / projects.length) * Math.PI * 2}
+	{@const x = Math.cos(angle) * radius}
+	{@const z = Math.sin(angle) * radius}
+	{@const y = Math.sin(index * 0.5) * 3}
+
+	<ProjectCard
+		{project}
+		position={[x, y, z]}
+		onClick={onProjectClick}
+		selected={selectedProject?.id === project.id}
+	/>
+{/each}

@@ -8,7 +8,10 @@
 	import LifeSciencesScene from '$lib/components/threlte/LifeSciencesScene.svelte';
 	import FloatingShapes from '$lib/components/FloatingShapes.svelte';
 	import ScrollProgress from '$lib/components/ScrollProgress.svelte';
-	import ProjectGallery from '$lib/components/ProjectGallery.svelte';
+	import ProjectModal from '$lib/components/ProjectModal.svelte';
+	import { fetchAllProjects } from '$lib/api/projects';
+	import type { ProjectWithDomain } from '$lib/types/project';
+	import { onMount } from 'svelte';
 
 	// Section progress stores
 	const heroProgress = getSectionProgress(0, 5);
@@ -18,6 +21,38 @@
 	const lifeProgress = getSectionProgress(4, 5);
 
 	let currentSection = $state(0);
+	let projects = $state<ProjectWithDomain[]>([]);
+	let selectedProject = $state<ProjectWithDomain | null>(null);
+
+	// Filter projects by domain
+	const environmentalProjects = $derived(
+		projects.filter((p) => p.domain.slug === 'environment-sustainability')
+	);
+	const engineeringProjects = $derived(
+		projects.filter((p) => p.domain.slug === 'natural-sciences-engineering')
+	);
+	const sshProjects = $derived(
+		projects.filter((p) => p.domain.slug === 'social-sciences-humanities')
+	);
+	const lifeSciencesProjects = $derived(projects.filter((p) => p.domain.slug === 'life-sciences'));
+
+	// Load projects on mount
+	onMount(async () => {
+		try {
+			projects = await fetchAllProjects();
+			console.log(`Loaded ${projects.length} projects`);
+		} catch (error) {
+			console.error('Error loading projects:', error);
+		}
+	});
+
+	function handleProjectClick(project: ProjectWithDomain) {
+		selectedProject = project;
+	}
+
+	function closeModal() {
+		selectedProject = null;
+	}
 
 	// Determine which section is currently in view
 	$effect(() => {
@@ -92,7 +127,7 @@
 			</div>
 			<div class="flex gap-8 text-sm">
 				<a href="#hero" class="nav-link">The Story Map</a>
-				<a href="#projects" class="nav-link">Project Gallery</a>
+				<a href="#environmental" class="nav-link">Domains</a>
 				<a href="#footer" class="nav-link">Resources</a>
 			</div>
 		</div>
@@ -125,7 +160,12 @@
 	<section id="environmental" class="section-container">
 		<div class="canvas-background">
 			<Canvas>
-				<EnvironmentalScene scrollProgress={$envProgress} />
+				<EnvironmentalScene
+					scrollProgress={$envProgress}
+					projects={environmentalProjects}
+					onProjectClick={handleProjectClick}
+					{selectedProject}
+				/>
 			</Canvas>
 		</div>
 		<div class="content-overlay">
@@ -149,7 +189,12 @@
 	<section id="engineering" class="section-container">
 		<div class="canvas-background">
 			<Canvas>
-				<EngineeringScene scrollProgress={$engProgress} />
+				<EngineeringScene
+					scrollProgress={$engProgress}
+					projects={engineeringProjects}
+					onProjectClick={handleProjectClick}
+					{selectedProject}
+				/>
 			</Canvas>
 		</div>
 		<div class="content-overlay">
@@ -172,7 +217,12 @@
 	<section id="ssh" class="section-container">
 		<div class="canvas-background">
 			<Canvas>
-				<SSHScene scrollProgress={$sshProgress} />
+				<SSHScene
+					scrollProgress={$sshProgress}
+					projects={sshProjects}
+					onProjectClick={handleProjectClick}
+					{selectedProject}
+				/>
 			</Canvas>
 		</div>
 		<div class="content-overlay">
@@ -196,7 +246,12 @@
 	<section id="life-sciences" class="section-container">
 		<div class="canvas-background">
 			<Canvas>
-				<LifeSciencesScene scrollProgress={$lifeProgress} />
+				<LifeSciencesScene
+					scrollProgress={$lifeProgress}
+					projects={lifeSciencesProjects}
+					onProjectClick={handleProjectClick}
+					{selectedProject}
+				/>
 			</Canvas>
 		</div>
 		<div class="content-overlay">
@@ -215,11 +270,6 @@
 		</div>
 	</section>
 
-	<!-- Section 6: Project Gallery -->
-	<section id="projects" class="project-gallery-section">
-		<ProjectGallery />
-	</section>
-
 	<!-- Footer -->
 	<footer id="footer" class="footer-container">
 		<div class="footer-content">
@@ -235,6 +285,9 @@
 		</div>
 	</footer>
 </div>
+
+<!-- Project Modal (shared across all sections) -->
+<ProjectModal project={selectedProject} onClose={closeModal} />
 
 <style>
 	:global(body) {
@@ -635,14 +688,6 @@
 
 	.footer-divider {
 		color: #3b1f54;
-	}
-
-	/* Project Gallery Section */
-	.project-gallery-section {
-		position: relative;
-		width: 100%;
-		min-height: 100vh;
-		overflow: hidden;
 	}
 
 	/* Responsive */

@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
+	import { OrbitControls } from '@threlte/extras';
 	import * as THREE from 'three';
+	import ProjectCard from './ProjectCard.svelte';
+	import type { ProjectWithDomain } from '$lib/types/project';
 
 	interface Props {
 		scrollProgress?: number;
+		projects?: ProjectWithDomain[];
+		onProjectClick?: (project: ProjectWithDomain) => void;
+		selectedProject?: ProjectWithDomain | null;
 	}
 
-	let { scrollProgress = 0 }: Props = $props();
+	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject }: Props = $props();
 
 	// Create wireframe globe
 	const globeGeometry = new THREE.SphereGeometry(5, 32, 32);
@@ -110,7 +116,9 @@
 	});
 </script>
 
-<T.PerspectiveCamera makeDefault position={[0, 0, 20]} fov={60} />
+<T.PerspectiveCamera makeDefault position={[0, 0, 20]} fov={60}>
+	<OrbitControls enableDamping dampingFactor={0.05} minDistance={10} maxDistance={40} />
+</T.PerspectiveCamera>
 
 <!-- Globe -->
 <T.Mesh bind:ref={globeRef} geometry={globeGeometry} material={globeMaterial} />
@@ -122,3 +130,19 @@
 <T.AmbientLight intensity={0.3} />
 <T.DirectionalLight position={[10, 10, 5]} intensity={1} color="#7BAFD4" />
 <T.PointLight position={[0, 0, 0]} intensity={0.5} color="#3B1F54" />
+
+<!-- Project Cards -->
+{#each projects as project, index (project.id)}
+	{@const radius = 12 + index * 0.5}
+	{@const angle = (index / projects.length) * Math.PI * 2}
+	{@const x = Math.cos(angle) * radius}
+	{@const z = Math.sin(angle) * radius}
+	{@const y = Math.sin(index * 0.5) * 3}
+
+	<ProjectCard
+		{project}
+		position={[x, y, z]}
+		onClick={onProjectClick}
+		selected={selectedProject?.id === project.id}
+	/>
+{/each}
