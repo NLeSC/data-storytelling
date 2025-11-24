@@ -1,0 +1,1 @@
+import { PointsMaterial } from 'three';

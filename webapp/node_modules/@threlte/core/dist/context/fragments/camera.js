@@ -1,0 +1,37 @@
+import { getContext, setContext } from 'svelte';
+import { PerspectiveCamera } from 'three';
+import { currentWritable, watch } from '../../utilities';
+import { useDOM } from './dom';
+import { useScheduler } from './scheduler.svelte';
+export const createCameraContext = () => {
+    const { size } = useDOM();
+    const { invalidate } = useScheduler();
+    // Create a default camera to use when no camera is defined by the user
+    const defaultCamera = new PerspectiveCamera(75, 0, 0.1, 1000);
+    defaultCamera.position.z = 5;
+    defaultCamera.lookAt(0, 0, 0);
+    const camera = currentWritable(defaultCamera);
+    watch(size, (size) => {
+        if (camera.current === defaultCamera) {
+            const cam = camera.current;
+            cam.aspect = size.width / size.height;
+            cam.updateProjectionMatrix();
+            invalidate();
+        }
+    });
+    watch(camera, ($camera) => {
+        if ($camera === undefined) {
+            camera.set(defaultCamera);
+        }
+    });
+    const context = { camera };
+    setContext('threlte-camera-context', context);
+    return context;
+};
+export const useCamera = () => {
+    const context = getContext('threlte-camera-context');
+    if (!context) {
+        throw new Error('useCamera can only be used in a child component to <Canvas>.');
+    }
+    return context;
+};
