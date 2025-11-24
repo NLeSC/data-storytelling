@@ -8,6 +8,7 @@
 	import LifeSciencesScene from '$lib/components/threlte/LifeSciencesScene.svelte';
 	import FloatingShapes from '$lib/components/FloatingShapes.svelte';
 	import ScrollProgress from '$lib/components/ScrollProgress.svelte';
+	import ProjectGallery from '$lib/components/ProjectGallery.svelte';
 
 	// Section progress stores
 	const heroProgress = getSectionProgress(0, 5);
@@ -91,8 +92,8 @@
 			</div>
 			<div class="flex gap-8 text-sm">
 				<a href="#hero" class="nav-link">The Story Map</a>
-				<a href="#footer" class="nav-link">Awesome Resources</a>
-				<a href="#footer" class="nav-link">Other Options?</a>
+				<a href="#projects" class="nav-link">Project Gallery</a>
+				<a href="#footer" class="nav-link">Resources</a>
 			</div>
 		</div>
 	</nav>
@@ -212,6 +213,11 @@
 				</div>
 			</div>
 		</div>
+	</section>
+
+	<!-- Section 6: Project Gallery -->
+	<section id="projects" class="project-gallery-section">
+		<ProjectGallery />
 	</section>
 
 	<!-- Footer -->
@@ -629,6 +635,14 @@
 
 	.footer-divider {
 		color: #3b1f54;
+	}
+
+	/* Project Gallery Section */
+	.project-gallery-section {
+		position: relative;
+		width: 100%;
+		min-height: 100vh;
+		overflow: hidden;
 	}
 
 	/* Responsive */
