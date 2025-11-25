@@ -3,12 +3,11 @@
 We are all natural-born storytellers.
 Or at the very least, storylisteners.
 The same drive lies behind a gathering around the fireplace, a night at the movies or listening to a podcast on your morning run: our brain's hunger for narratives.
-We are almost literally wired for it.
+Our brains are literally wired for it.
 
 And yet creating a story can be challenging.
 
-This tutorial presents a strategy for simplifying the creative process of building a story.
-
+This tutorial presents a strategy for simplifying the creative process of building a story. 
 And as in any good story, we have to start from the beginning.
 
 ## What is a story?
@@ -48,8 +47,8 @@ Almost _feel_ them.
 Take a moment to look at your building blocks.
 Very likely, you'll notice some of them are related.
 This relationship can be logical, narrative, chronological, ...
-
 Draw a line between them if that's the case.
+
 I suggest using **solid lines for strong relatedness**, and **dashed lines for less clear relatedness**.
 We are starting to have **some** structure!
 We are slowly creating order out of chaos![^1]
@@ -111,7 +110,9 @@ I used it for, among others:
 - A strategic plan for a research institution
 - Publications in research journals (real-life example [here](https://fuga.naukas.com/files/2021/03/IMG_20190301_091759-768x404.jpg))
 - A theater play
+- And also for this text you are reading now
 
 I honestly encourage you to give it a try next time you face a blank page.
+It works wonders!
 
-[^1]: For those of you interested in knowledge management, chances are this method will remind you of the [Zettelkasten note-taking method](https://en.wikipedia.org/wiki/Zettelkasten). Actually, the Zettelkasten idea is a strong, even more structured form of the one presented here.
+[^1]: For those of you interested in knowledge management, chances are this method will remind you of the [Zettelkasten note-taking method](https://en.wikipedia.org/wiki/Zettelkasten), a strong, even more structured form of the ideas presented here. Also, you'd be interested in knowing that some software applications, such as [logseq](https://logseq.com/) or [Obsidian](https://obsidian.md/), are designed with this model in mind.
