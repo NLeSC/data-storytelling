@@ -28,6 +28,9 @@
 
 	// Load texture for logo
 	let texture = $state<THREE.Texture | null>(null);
+	let logoWidth = $state(1.4);
+	let logoHeight = $state(1.4);
+
 	$effect(() => {
 		if (imageUrl) {
 			const loader = new THREE.TextureLoader();
@@ -35,6 +38,23 @@
 				imageUrl,
 				(loadedTexture) => {
 					texture = loadedTexture;
+
+					// Calculate aspect ratio and adjust dimensions
+					const image = loadedTexture.image;
+					if (image && image.width && image.height) {
+						const aspectRatio = image.width / image.height;
+						const maxSize = 1.4; // Maximum size
+
+						if (aspectRatio > 1) {
+							// Wider than tall
+							logoWidth = maxSize;
+							logoHeight = maxSize / aspectRatio;
+						} else {
+							// Taller than wide
+							logoHeight = maxSize;
+							logoWidth = maxSize * aspectRatio;
+						}
+					}
 				},
 				undefined,
 				(error) => {
@@ -43,6 +63,9 @@
 			);
 		}
 	});
+
+	// Floating Y position
+	let floatY = $state(0);
 
 	// Animation
 	let elapsedTime = $state(0);
@@ -55,7 +78,7 @@
 
 			// Floating animation
 			const time = elapsedTime + floatOffset;
-			meshRef.position.y = position[1] + Math.sin(time * 0.5) * 0.3;
+			floatY = Math.sin(time * 0.5) * 0.3;
 		}
 	});
 
@@ -81,72 +104,151 @@
 	}
 </script>
 
-<T.Group position={[position[0], position[1], position[2]]}>
-	<T.Mesh
-		bind:ref={meshRef}
-		onclick={handleClick}
-		onpointerover={handlePointerOver}
-		onpointerout={handlePointerOut}
-		scale={[scale, scale, scale]}
-	>
-		<!-- Card base -->
-		<T.BoxGeometry args={[2, 2.5, 0.1]} />
+<T.Group
+	position={[position[0], position[1] + floatY, position[2]]}
+	bind:ref={meshRef}
+	scale={[scale, scale, scale]}
+>
+	<!-- Card base with border -->
+	<T.Mesh onclick={handleClick} onpointerover={handlePointerOver} onpointerout={handlePointerOut}>
+		<T.BoxGeometry args={[2.2, 2.8, 0.08]} />
 		<T.MeshStandardMaterial
 			color={cardColor}
-			metalness={0.3}
-			roughness={0.4}
+			metalness={0.4}
+			roughness={0.3}
 			emissive={cardColor}
-			emissiveIntensity={hovered ? 0.3 : selected ? 0.2 : 0.1}
+			emissiveIntensity={hovered ? 0.4 : selected ? 0.3 : 0.15}
 		/>
 	</T.Mesh>
 
-	<!-- Logo (if available) -->
+	<!-- FRONT SIDE -->
+	<!-- White card surface (front) -->
+	<T.Mesh
+		position={[0, 0, 0.05]}
+		onclick={handleClick}
+		onpointerover={handlePointerOver}
+		onpointerout={handlePointerOut}
+	>
+		<T.BoxGeometry args={[2, 2.6, 0.01]} />
+		<T.MeshStandardMaterial color="#ffffff" />
+	</T.Mesh>
+
+	<!-- Logo (front) -->
 	{#if texture}
-		<T.Mesh position={[0, 0.4, 0.06]}>
-			<T.PlaneGeometry args={[1.5, 1.5]} />
+		<T.Mesh
+			position={[0, 0.5, 0.06]}
+			onclick={handleClick}
+			onpointerover={handlePointerOver}
+			onpointerout={handlePointerOut}
+		>
+			<T.PlaneGeometry args={[logoWidth, logoHeight]} />
 			<T.MeshBasicMaterial map={texture} transparent={true} />
+		</T.Mesh>
+	{:else}
+		<T.Mesh
+			position={[0, 0.5, 0.06]}
+			onclick={handleClick}
+			onpointerover={handlePointerOver}
+			onpointerout={handlePointerOut}
+		>
+			<T.PlaneGeometry args={[1.4, 1.4]} />
+			<T.MeshBasicMaterial color={cardColor} opacity={0.3} transparent={true} />
 		</T.Mesh>
 	{/if}
 
-	<!-- Project name as 3D text -->
+	<!-- Project name (front) -->
 	<Text
 		text={project.brand_name}
-		fontSize={0.15}
+		fontSize={0.12}
 		maxWidth={1.8}
 		textAlign="center"
 		anchorX="center"
 		anchorY="middle"
-		position={[0, -0.8, 0.06]}
-		color="#ffffff"
-		outlineWidth={0.02}
-		outlineColor="#000000"
+		position={[0, -0.5, 0.06]}
+		color="#1a1a1a"
+		outlineWidth={0}
 	/>
 
-	<!-- Domain indicator (small sphere) -->
-	<T.Mesh position={[0.85, 1.15, 0.06]}>
-		<T.SphereGeometry args={[0.1, 16, 16]} />
-		<T.MeshStandardMaterial color={cardColor} emissive={cardColor} emissiveIntensity={0.5} />
+	<!-- Short statement on hover (front) -->
+	{#if hovered}
+		<Text
+			text={project.short_statement.substring(0, 60) + '...'}
+			fontSize={0.08}
+			maxWidth={1.8}
+			textAlign="center"
+			anchorX="center"
+			anchorY="top"
+			position={[0, -0.9, 0.06]}
+			color="#666666"
+			outlineWidth={0}
+		/>
+	{/if}
+
+	<!-- BACK SIDE -->
+	<!-- White card surface (back) -->
+	<T.Mesh
+		position={[0, 0, -0.05]}
+		rotation={[0, Math.PI, 0]}
+		onclick={handleClick}
+		onpointerover={handlePointerOver}
+		onpointerout={handlePointerOut}
+	>
+		<T.BoxGeometry args={[2, 2.6, 0.01]} />
+		<T.MeshStandardMaterial color="#ffffff" />
 	</T.Mesh>
 
-	<!-- Hover HTML overlay (optional) -->
+	<!-- Logo (back) -->
+	{#if texture}
+		<T.Mesh
+			position={[0, 0.5, -0.06]}
+			rotation={[0, Math.PI, 0]}
+			onclick={handleClick}
+			onpointerover={handlePointerOver}
+			onpointerout={handlePointerOut}
+		>
+			<T.PlaneGeometry args={[logoWidth, logoHeight]} />
+			<T.MeshBasicMaterial map={texture} transparent={true} />
+		</T.Mesh>
+	{:else}
+		<T.Mesh
+			position={[0, 0.5, -0.06]}
+			rotation={[0, Math.PI, 0]}
+			onclick={handleClick}
+			onpointerover={handlePointerOver}
+			onpointerout={handlePointerOut}
+		>
+			<T.PlaneGeometry args={[1.4, 1.4]} />
+			<T.MeshBasicMaterial color={cardColor} opacity={0.3} transparent={true} />
+		</T.Mesh>
+	{/if}
+
+	<!-- Project name (back) -->
+	<Text
+		text={project.brand_name}
+		fontSize={0.12}
+		maxWidth={1.8}
+		textAlign="center"
+		anchorX="center"
+		anchorY="middle"
+		position={[0, -0.5, -0.06]}
+		rotation={[0, Math.PI, 0]}
+		color="#1a1a1a"
+		outlineWidth={0}
+	/>
+
+	<!-- Short statement on hover (back) -->
 	{#if hovered}
-		<HTML transform position={[0, -1.4, 0]} center>
-			<div class="project-tooltip">
-				<p class="text-xs text-white/90 max-w-[150px] text-center">
-					{project.short_statement.substring(0, 80)}...
-				</p>
-			</div>
-		</HTML>
+		<Text
+			text={project.short_statement.substring(0, 60) + '...'}
+			fontSize={0.08}
+			maxWidth={1.8}
+			textAlign="center"
+			anchorX="center"
+			anchorY="top"
+			position={[0, -0.9, -0.06]}
+			rotation={[0, Math.PI, 0]}
+			color="#666666"
+			outlineWidth={0}
+		/>
 	{/if}
 </T.Group>
-
-<style>
-	.project-tooltip {
-		background: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(10px);
-		padding: 0.5rem;
-		border-radius: 0.5rem;
-		border: 1px solid rgba(123, 175, 212, 0.3);
-		pointer-events: none;
-	}
-</style>
