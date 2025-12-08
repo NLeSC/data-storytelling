@@ -1,0 +1,181 @@
+name: Version Bump and Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get current version from CITATION.cff
+        id: current_version
+        run: |
+          VERSION=$(grep "^version:" CITATION.cff | sed 's/version: //' | tr -d "'" | tr -d '"')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Determine version bump type
+        id: bump_type
+        run: |
+          # Get commit messages since last tag (or all if no tags)
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"%s" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"%s" ${LAST_TAG}..HEAD)
+          fi
+
+          echo "Commits since last release:"
+          echo "$COMMITS"
+
+          # Determine bump type based on conventional commits
+          if echo "$COMMITS" | grep -qiE "^BREAKING CHANGE:|!:"; then
+            BUMP="major"
+          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
+            BUMP="minor"
+          else
+            BUMP="patch"
+          fi
+
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "Bump type: $BUMP"
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          BUMP="${{ steps.bump_type.outputs.bump }}"
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          case $BUMP in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update CITATION.cff version and date
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          TODAY=$(date +%Y-%m-%d)
+
+          sed -i "s/^version: .*/version: $NEW_VERSION/" CITATION.cff
+          sed -i "s/^date-released: .*/date-released: $TODAY/" CITATION.cff
+
+      - name: Sync version to webapp/package.json
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          cd webapp
+          npm version $NEW_VERSION --no-git-tag-version --allow-same-version
+          cd ..
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)" ${LAST_TAG}..HEAD)
+          fi
+
+          # Create changelog content
+          CHANGELOG="## What's Changed\n\n"
+
+          # Group by type
+          BREAKING=$(echo "$COMMITS" | grep -iE "^- BREAKING CHANGE:|^- .*!:" || true)
+          FEATURES=$(echo "$COMMITS" | grep -iE "^- feat" || true)
+          FIXES=$(echo "$COMMITS" | grep -iE "^- fix" || true)
+          DOCS=$(echo "$COMMITS" | grep -iE "^- docs" || true)
+          CHORE=$(echo "$COMMITS" | grep -iE "^- chore|^- ci|^- build|^- style|^- refactor|^- perf|^- test" || true)
+          OTHER=$(echo "$COMMITS" | grep -ivE "^- (feat|fix|docs|chore|ci|build|style|refactor|perf|test|BREAKING)" || true)
+
+          if [ -n "$BREAKING" ]; then
+            CHANGELOG="${CHANGELOG}### 💥 Breaking Changes\n${BREAKING}\n\n"
+          fi
+
+          if [ -n "$FEATURES" ]; then
+            CHANGELOG="${CHANGELOG}### ✨ Features\n${FEATURES}\n\n"
+          fi
+
+          if [ -n "$FIXES" ]; then
+            CHANGELOG="${CHANGELOG}### 🐛 Bug Fixes\n${FIXES}\n\n"
+          fi
+
+          if [ -n "$DOCS" ]; then
+            CHANGELOG="${CHANGELOG}### 📚 Documentation\n${DOCS}\n\n"
+          fi
+
+          if [ -n "$CHORE" ]; then
+            CHANGELOG="${CHANGELOG}### 🔧 Maintenance\n${CHORE}\n\n"
+          fi
+
+          if [ -n "$OTHER" ]; then
+            CHANGELOG="${CHANGELOG}### 📦 Other Changes\n${OTHER}\n\n"
+          fi
+
+          # Write to file for multiline handling
+          echo -e "$CHANGELOG" > /tmp/changelog.md
+
+          # Also set as output (escaped for GitHub Actions)
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          git add webapp/package.json CITATION.cff
+          git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]"
+          git push
+
+      - name: Create and push tag
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          git push origin "v$NEW_VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.new_version.outputs.version }}
+          name: Release v${{ steps.new_version.outputs.version }}
+          body_path: /tmp/changelog.md
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
