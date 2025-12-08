@@ -64,12 +64,7 @@ See also:
 - [Pablo Rodríguez](https://github.com/PabRod)	- Research Software Engineer
 - Stefan Verhoeven - Research Software Engineer
 - Peter Kalverla - Research Software Engineer
-<<<<<<< HEAD
 - [Jesse Gonzalez](https://github.com/ctwhome) - Project Lead - Research Software Engineer
-=======
-- Jesse Gonzalez - Project Lead - Research Software Engineer
->>>>>>> website
-
 - Adam Belloum - Tech Lead
 - Junming Ye - Student Researcher
 
