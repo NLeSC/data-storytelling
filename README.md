@@ -6,6 +6,10 @@
 [![Research Software Directory](https://img.shields.io/badge/rsd-data--storytelling-00a3e3.svg)](https://research-software-directory.org/projects/data-storytelling)
 <!-- [![DOI](https://zenodo.org/badge/413814951.svg)](https://zenodo.org/badge/latestdoi/413814951) -->
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Research Software Directory](https://img.shields.io/badge/rsd-RSD--as--a--service-00a3e3.svg)](https://research-software-directory.org/projects/data-storytelling)
+<!-- [![DOI](https://zenodo.org/badge/413814951.svg)](https://zenodo.org/badge/latestdoi/413814951) -->
+
 Welcome to the repository for our **Tech Focus Project 2025: Data Storytelling**, part of the NLeSC initiative to enhance communication and accessibility of research software through compelling, AI-powered narratives.
 
 This repository gathers all deliverables, research, tools, and demos created during the project.
@@ -64,7 +68,11 @@ See also:
 - [Pablo Rodríguez](https://github.com/PabRod)	- Research Software Engineer
 - Stefan Verhoeven - Research Software Engineer
 - Peter Kalverla - Research Software Engineer
+<<<<<<< HEAD
 - [Jesse Gonzalez](https://github.com/ctwhome) - Project Lead - Research Software Engineer
+=======
+- Jesse Gonzalez - Project Lead - Research Software Engineer
+>>>>>>> website
 
 - Adam Belloum - Tech Lead
 - Junming Ye - Student Researcher
