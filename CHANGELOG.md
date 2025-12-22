@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.6.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.6.0) - 2025-12-22
+
+## What's Changed
+
+### ✨ Features
+- feat: Implement story generation features with markdown rendering and export options (594bb34)
+
+
+
 ## [0.5.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.5.0) - 2025-12-22
 
 ## What's Changed
