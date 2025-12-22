@@ -1,0 +1,46 @@
+/**
+ * Story Generator Settings Types
+ */
+
+export type AudienceType = 'communications' | 'academic' | 'internal-review' | 'one-pager';
+
+export const AUDIENCE_LABELS: Record<AudienceType, string> = {
+	communications: 'Communications',
+	academic: 'Academic',
+	'internal-review': 'Internal Review',
+	'one-pager': 'One Pager'
+};
+
+export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
+	communications: 'General public and media - accessible, impact-focused storytelling',
+	academic: 'Scholarly audiences - rigorous, methodology-focused content',
+	'internal-review': 'Leadership and review committees - analytical, metrics-driven',
+	'one-pager': 'Executive summary - ultra-concise, scannable format'
+};
+
+export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-flash' | 'gemini-2.0-flash' | 'gemini-1.5-pro';
+
+export const MODEL_LABELS: Record<GeminiModel, string> = {
+	'gemini-3-flash-preview': 'Gemini 3 Flash Preview (Latest)',
+	'gemini-2.5-flash': 'Gemini 2.5 Flash',
+	'gemini-2.0-flash': 'Gemini 2.0 Flash',
+	'gemini-1.5-pro': 'Gemini 1.5 Pro'
+};
+
+export interface StorySettings {
+	geminiApiKey: string;
+	defaultAudience: AudienceType;
+	temperature: number; // 0.0 - 2.0, default 0.7
+	maxTokens: number; // default 2048
+	model: GeminiModel;
+	customPrompts: Partial<Record<AudienceType, string>>;
+}
+
+export const DEFAULT_SETTINGS: StorySettings = {
+	geminiApiKey: '',
+	defaultAudience: 'communications',
+	temperature: 0.7,
+	maxTokens: 2048,
+	model: 'gemini-3-flash-preview',
+	customPrompts: {}
+};

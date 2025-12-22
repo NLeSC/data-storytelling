@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { OrbitControls } from '@threlte/extras';
+	import { OrbitControls, interactivity } from '@threlte/extras';
 	import * as THREE from 'three';
 	import ProjectCard from './ProjectCard.svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { zoomLevel } from '$lib/stores/zoom';
+
+	// Enable interactivity for 3D objects (clicks, hover, etc.)
+	interactivity();
 
 	interface Props {
 		scrollProgress?: number;

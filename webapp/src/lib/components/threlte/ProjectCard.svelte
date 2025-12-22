@@ -15,7 +15,7 @@
 	let { project, position, onClick, selected = false }: Props = $props();
 
 	// State
-	let meshRef = $state<THREE.Mesh | undefined>(undefined);
+	let meshRef = $state<THREE.Group | undefined>(undefined);
 	let hovered = $state(false);
 	let rotation = $state(0);
 	let floatOffset = $state(Math.random() * Math.PI * 2); // Random phase for floating
@@ -24,7 +24,13 @@
 	// Derived values
 	const imageUrl = $derived(getProjectImageUrl(project.image_id));
 	const cardColor = $derived(project.domain.color);
-	const scale = $derived(hovered ? 1.15 : selected ? 1.1 : 1);
+	const scale = $derived(hovered ? 1.2 : selected ? 1.1 : 1);
+
+	// Hover highlight color (brighter version of domain color)
+	const highlightColor = $derived(hovered ? '#ffffff' : '#f8f8f8');
+	const borderEmissive = $derived(hovered ? 0.8 : selected ? 0.4 : 0.15);
+	const borderMetalness = $derived(hovered ? 0.6 : 0.4);
+	const borderRoughness = $derived(hovered ? 0.1 : 0.3);
 
 	// Load texture for logo
 	let texture = $state<THREE.Texture | null>(null);
@@ -109,20 +115,32 @@
 	bind:ref={meshRef}
 	scale={[scale, scale, scale]}
 >
-	<!-- Card base with border -->
+	<!-- Card base with border (glows on hover) -->
 	<T.Mesh onclick={handleClick} onpointerover={handlePointerOver} onpointerout={handlePointerOut}>
 		<T.BoxGeometry args={[2.2, 2.8, 0.08]} />
 		<T.MeshStandardMaterial
 			color={cardColor}
-			metalness={0.4}
-			roughness={0.3}
+			metalness={borderMetalness}
+			roughness={borderRoughness}
 			emissive={cardColor}
-			emissiveIntensity={hovered ? 0.4 : selected ? 0.3 : 0.15}
+			emissiveIntensity={borderEmissive}
 		/>
 	</T.Mesh>
 
+	<!-- Outer glow ring on hover -->
+	{#if hovered}
+		<T.Mesh>
+			<T.BoxGeometry args={[2.4, 3.0, 0.02]} />
+			<T.MeshBasicMaterial
+				color={cardColor}
+				transparent={true}
+				opacity={0.4}
+			/>
+		</T.Mesh>
+	{/if}
+
 	<!-- FRONT SIDE -->
-	<!-- White card surface (front) -->
+	<!-- White card surface (front) - slight tint on hover -->
 	<T.Mesh
 		position={[0, 0, 0.05]}
 		onclick={handleClick}
@@ -130,7 +148,11 @@
 		onpointerout={handlePointerOut}
 	>
 		<T.BoxGeometry args={[2, 2.6, 0.01]} />
-		<T.MeshStandardMaterial color="#ffffff" />
+		<T.MeshStandardMaterial
+			color={highlightColor}
+			emissive={hovered ? cardColor : '#000000'}
+			emissiveIntensity={hovered ? 0.15 : 0}
+		/>
 	</T.Mesh>
 
 	<!-- Logo (front) -->
@@ -185,7 +207,7 @@
 	{/if}
 
 	<!-- BACK SIDE -->
-	<!-- White card surface (back) -->
+	<!-- White card surface (back) - slight tint on hover -->
 	<T.Mesh
 		position={[0, 0, -0.05]}
 		rotation={[0, Math.PI, 0]}
@@ -194,7 +216,11 @@
 		onpointerout={handlePointerOut}
 	>
 		<T.BoxGeometry args={[2, 2.6, 0.01]} />
-		<T.MeshStandardMaterial color="#ffffff" />
+		<T.MeshStandardMaterial
+			color={highlightColor}
+			emissive={hovered ? cardColor : '#000000'}
+			emissiveIntensity={hovered ? 0.15 : 0}
+		/>
 	</T.Mesh>
 
 	<!-- Logo (back) -->

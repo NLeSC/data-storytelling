@@ -12,6 +12,8 @@
 	import ProjectModal from '$lib/components/ProjectModal.svelte';
 	import ProjectSearch from '$lib/components/ProjectSearch.svelte';
 	import ZoomControls from '$lib/components/ZoomControls.svelte';
+	import SettingsButton from '$lib/components/settings/SettingsButton.svelte';
+	import SettingsPanel from '$lib/components/settings/SettingsPanel.svelte';
 	import { fetchAllProjects } from '$lib/api/projects';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { onMount } from 'svelte';
@@ -26,6 +28,15 @@
 	let currentSection = $state(0);
 	let projects = $state<ProjectWithDomain[]>([]);
 	let selectedProject = $state<ProjectWithDomain | null>(null);
+	let isSettingsOpen = $state(false);
+
+	function openSettings() {
+		isSettingsOpen = true;
+	}
+
+	function closeSettings() {
+		isSettingsOpen = false;
+	}
 
 	// Filter projects by domain
 	const environmentalProjects = $derived(
@@ -128,6 +139,7 @@
 							/>
 						</svg>
 					</a>
+					<SettingsButton onclick={openSettings} />
 				</div>
 			</div>
 		</div>
@@ -241,7 +253,10 @@
 </div>
 
 <!-- Project Modal (shared across all sections) -->
-<ProjectModal project={selectedProject} onClose={closeModal} />
+<ProjectModal project={selectedProject} onClose={closeModal} onOpenSettings={openSettings} />
+
+<!-- Settings Panel -->
+<SettingsPanel isOpen={isSettingsOpen} onClose={closeSettings} />
 
 <style>
 	:global(body) {

@@ -2,17 +2,36 @@
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { getProjectImageUrl, getProjectPageUrl } from '$lib/types/project';
 	import { fade, scale } from 'svelte/transition';
+	import StoryGeneratorTab from './story/StoryGeneratorTab.svelte';
+
+	type TabType = 'details' | 'story';
 
 	interface Props {
 		project: ProjectWithDomain | null;
 		onClose: () => void;
+		onOpenSettings?: () => void;
 	}
 
-	let { project, onClose }: Props = $props();
+	let { project, onClose, onOpenSettings }: Props = $props();
+
+	let activeTab = $state<TabType>('details');
 
 	const isOpen = $derived(project !== null);
 	const imageUrl = $derived(project ? getProjectImageUrl(project.image_id) : null);
 	const projectUrl = $derived(project ? getProjectPageUrl(project.slug) : null);
+
+	// Reset tab when modal closes/opens
+	$effect(() => {
+		if (!isOpen) {
+			activeTab = 'details';
+		}
+	});
+
+	function handleOpenSettings() {
+		if (onOpenSettings) {
+			onOpenSettings();
+		}
+	}
 
 	// Close on escape key
 	$effect(() => {
@@ -53,25 +72,57 @@
 		transition:fade={{ duration: 200 }}
 		onclick={handleBackdropClick}
 	>
-		<div class="modal-content" transition:scale={{ duration: 300, start: 0.9 }}>
-			<!-- Close button -->
-			<button class="close-button" onclick={onClose} aria-label="Close modal">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<line x1="18" y1="6" x2="6" y2="18"></line>
-					<line x1="6" y1="6" x2="18" y2="18"></line>
-				</svg>
-			</button>
+		<div class="modal-content" class:story-mode={activeTab === 'story'} transition:scale={{ duration: 300, start: 0.9 }}>
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<!-- Tab Navigation -->
+				<div class="tab-navigation">
+					<button
+						class="tab-button"
+						class:active={activeTab === 'details'}
+						onclick={() => (activeTab = 'details')}
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"/>
+							<line x1="12" y1="16" x2="12" y2="12"/>
+							<line x1="12" y1="8" x2="12.01" y2="8"/>
+						</svg>
+						Details
+					</button>
+					<button
+						class="tab-button"
+						class:active={activeTab === 'story'}
+						onclick={() => (activeTab = 'story')}
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+						</svg>
+						Generate Story
+					</button>
+				</div>
 
+				<!-- Close button -->
+				<button class="close-button" onclick={onClose} aria-label="Close modal">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				</button>
+			</div>
+
+			{#if activeTab === 'details'}
+			<!-- Details Tab Content -->
+			<div class="details-tab">
 			<!-- Domain badge -->
 			<div class="domain-badge" style="background-color: {project.domain.color};">
 				{project.domain.name}
@@ -192,6 +243,13 @@
 					</a>
 				{/if}
 			</div>
+			</div>
+			{:else}
+			<!-- Story Generator Tab Content -->
+			<div class="story-tab">
+				<StoryGeneratorTab {project} onOpenSettings={handleOpenSettings} />
+			</div>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -227,12 +285,68 @@
 		overflow-y: auto;
 		padding: 3rem;
 		position: relative;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.modal-content.story-mode {
+		max-width: 1200px;
+		height: 90vh;
+	}
+
+	.modal-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(123, 175, 212, 0.2);
+	}
+
+	.tab-navigation {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.tab-button {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1rem;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 0.5rem;
+		color: #888;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.tab-button:hover {
+		background: rgba(123, 175, 212, 0.1);
+		color: #7bafd4;
+		border-color: rgba(123, 175, 212, 0.4);
+	}
+
+	.tab-button.active {
+		background: rgba(123, 175, 212, 0.15);
+		color: #7bafd4;
+		border-color: #7bafd4;
+	}
+
+	.details-tab {
+		flex: 1;
+	}
+
+	.story-tab {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
 	}
 
 	.close-button {
-		position: absolute;
-		top: 1.5rem;
-		right: 1.5rem;
 		background: rgba(123, 175, 212, 0.2);
 		border: 1px solid rgba(123, 175, 212, 0.3);
 		border-radius: 0.5rem;
@@ -244,6 +358,7 @@
 		justify-content: center;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		flex-shrink: 0;
 	}
 
 	.close-button:hover {
