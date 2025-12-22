@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.8.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.8.0) - 2025-12-22
+
+## What's Changed
+
+### ✨ Features
+- feat: Update favicon and enhance SEO with Open Graph and Twitter meta tags (9b0397d)
+
+
+
 ## [0.7.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.7.0) - 2025-12-22
 
 ## What's Changed
