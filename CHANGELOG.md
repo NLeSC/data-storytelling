@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [0.7.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.7.0) - 2025-12-22
+
+## What's Changed
+
+### ✨ Features
+- feat: Add rehype-slug for heading slugs in markdown rendering (dce943c)
+- feat: Enhance README with interactive web application details and AI story generator features (bb98ab1)
+- feat: Implement project selection in search results (b16fa6b)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (fb4fbf7)
+
+
+
 ## [0.6.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.6.0) - 2025-12-22
 
 ## What's Changed
