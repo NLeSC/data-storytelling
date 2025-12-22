@@ -28,11 +28,31 @@ Below is the planned list of project deliverables, based on the proposal and cur
 
 - ✅ Literature Review: Systematic overview of data storytelling across domains
 - ✅ Working AI Pipelines: Modular storytelling pipeline using small LLMs
+- ✅ **Interactive Web Application**: 3D visualization platform with AI story generator ([webapp/](./webapp/))
 - Training Guide: Work-in-progress handbook for data storytelling in RSE
   - Best use of LLMs, RAG model quality analysis, etc.
   - Story generation quality metrics: structure, factual accuracy, engagement, etc.
 - Use Case Application: Storytelling applied to eScience evaluation project(s)
 - Showcase Outputs: Poster, website, and internal presentation planned for December
+
+---
+
+## Web Application
+
+The [`webapp/`](./webapp/) directory contains an interactive 3D visualization platform for exploring eScience Center research software projects.
+
+### Key Features
+
+- **3D Domain Exploration**: Navigate through four research domains (Life Sciences, Environment, Social Sciences, Engineering) with unique 3D visualizations
+- **AI Story Generator**: Generate audience-specific narratives using Google Gemini:
+  - Communications (general public)
+  - Academic (scholarly)
+  - Internal Review (leadership)
+  - One Pager (executive summary)
+- **Context Enrichment**: Include related software and uploaded documents for richer stories
+- **Export Options**: Download stories as Markdown or PDF
+
+See the [webapp README](./webapp/README.md) for setup and usage instructions.
 
 
 ## Awesome Resources
