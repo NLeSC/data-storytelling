@@ -103,6 +103,8 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          TODAY=$(date +%Y-%m-%d)
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
           if [ -z "$LAST_TAG" ]; then
@@ -111,8 +113,8 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" ${LAST_TAG}..HEAD)
           fi
 
-          # Create changelog content
-          CHANGELOG="## What's Changed\n\n"
+          # Create changelog content for GitHub Release
+          RELEASE_CHANGELOG="## What's Changed\n\n"
 
           # Group by type
           BREAKING=$(echo "$COMMITS" | grep -iE "^- BREAKING CHANGE:|^- .*!:" || true)
@@ -123,42 +125,66 @@ jobs:
           OTHER=$(echo "$COMMITS" | grep -ivE "^- (feat|fix|docs|chore|ci|build|style|refactor|perf|test|BREAKING)" || true)
 
           if [ -n "$BREAKING" ]; then
-            CHANGELOG="${CHANGELOG}### 💥 Breaking Changes\n${BREAKING}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### 💥 Breaking Changes\n${BREAKING}\n\n"
           fi
 
           if [ -n "$FEATURES" ]; then
-            CHANGELOG="${CHANGELOG}### ✨ Features\n${FEATURES}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### ✨ Features\n${FEATURES}\n\n"
           fi
 
           if [ -n "$FIXES" ]; then
-            CHANGELOG="${CHANGELOG}### 🐛 Bug Fixes\n${FIXES}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### 🐛 Bug Fixes\n${FIXES}\n\n"
           fi
 
           if [ -n "$DOCS" ]; then
-            CHANGELOG="${CHANGELOG}### 📚 Documentation\n${DOCS}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### 📚 Documentation\n${DOCS}\n\n"
           fi
 
           if [ -n "$CHORE" ]; then
-            CHANGELOG="${CHANGELOG}### 🔧 Maintenance\n${CHORE}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### 🔧 Maintenance\n${CHORE}\n\n"
           fi
 
           if [ -n "$OTHER" ]; then
-            CHANGELOG="${CHANGELOG}### 📦 Other Changes\n${OTHER}\n\n"
+            RELEASE_CHANGELOG="${RELEASE_CHANGELOG}### 📦 Other Changes\n${OTHER}\n\n"
           fi
 
-          # Write to file for multiline handling
-          echo -e "$CHANGELOG" > /tmp/changelog.md
+          # Write to file for GitHub Release
+          echo -e "$RELEASE_CHANGELOG" > /tmp/changelog.md
+
+          # Update CHANGELOG.md file in repo
+          VERSION_HEADER="## [${NEW_VERSION}](https://github.com/${{ github.repository }}/releases/tag/v${NEW_VERSION}) - ${TODAY}\n\n"
+          NEW_ENTRY="${VERSION_HEADER}${RELEASE_CHANGELOG}"
+
+          if [ -f CHANGELOG.md ]; then
+            # Prepend new entry after the title (first two lines)
+            {
+              head -n 2 CHANGELOG.md
+              echo ""
+              echo -e "$NEW_ENTRY"
+              tail -n +3 CHANGELOG.md
+            } > /tmp/CHANGELOG_NEW.md
+            mv /tmp/CHANGELOG_NEW.md CHANGELOG.md
+          else
+            # Create new CHANGELOG.md
+            {
+              echo "# Changelog"
+              echo ""
+              echo "All notable changes to this project will be documented in this file."
+              echo ""
+              echo -e "$NEW_ENTRY"
+            } > CHANGELOG.md
+          fi
 
           # Also set as output (escaped for GitHub Actions)
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "changelog<<$EOF" >> $GITHUB_OUTPUT
-          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo -e "$RELEASE_CHANGELOG" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Commit version bump
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.version }}"
-          git add webapp/package.json CITATION.cff
+          git add webapp/package.json CITATION.cff CHANGELOG.md
           git commit -m "chore(release): bump version to $NEW_VERSION [skip ci]"
           git push
 
