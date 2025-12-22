@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { Canvas } from '@threlte/core';
 	import { scrollStore, getSectionProgress } from '$lib/stores/scroll';
 	import HeroScene from '$lib/components/threlte/HeroScene.svelte';
@@ -126,7 +127,7 @@
 				</svg>
 			</div>
 			<div class="flex gap-8 text-sm">
-				<a href="#hero" class="nav-link">The Story Map</a>
+				<a href="{base}/story-map" class="nav-link">The Story Map</a>
 				<a href="#environmental" class="nav-link">Domains</a>
 				<a href="#footer" class="nav-link">Resources</a>
 			</div>

@@ -1,0 +1,275 @@
+<script lang="ts">
+	import { base } from '$app/paths';
+</script>
+
+<svelte:head>
+	<title>The Story Map - eScience Center</title>
+	<meta name="description" content="A framework for story-building" />
+</svelte:head>
+
+<div class="story-map-container">
+	<nav class="fixed top-0 left-0 right-0 z-50 px-8 py-6 backdrop-blur-sm bg-black/30">
+		<div class="max-w-7xl mx-auto flex items-center justify-between">
+			<a href="{base}/" class="logo-link">
+				<svg width="200" viewBox="0 0 1729 294" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H799.968C846.019 0 883.35 38.4084 883.35 85.7875L883.35 233.401L883.35 205.865C871.351 202.814 864.131 194.472 863.745 179.39V177.595L883.35 177.594V151.352L863.87 151.352L863.911 150.84C865.034 137.867 872.353 128.343 883.35 124.665L883.349 96.935C848.39 101.146 827.293 126.677 827.293 165.828C827.293 204.771 847.868 229.274 883.35 233.401L883.35 293.269H61.0114C28.3644 293.269 1.70649 266.888 0.0787475 233.715C29.6954 231.425 50.258 216.441 55.338 193.584H21.2741L21.1435 193.871C17.8474 200.946 10.5242 205.452 0 206.798V177.595L56.4693 177.595V162.957L56.4621 161.706C56.0195 123.565 35.2839 99.9179 0 96.6967V0ZM0 123.973V151.351L20.52 151.352C19.8976 136.939 12.2573 127.006 0 123.973ZM208.902 108.043C207.77 77.2961 178.678 54.0864 138.706 54.0864C96.849 54.0864 69.3214 75.5016 69.3214 108.043C69.3214 134.363 85.5363 150.754 118.595 157.334L142.226 162.119C164.474 166.666 173.524 173.006 173.524 184.013C173.524 197.053 158.692 207.144 138.958 207.144C103.374 207.144 100.891 190.471 99.1312 176.473H62.4277C63.8104 208.656 94.5865 235.577 137.826 235.577C183.329 235.577 211.359 214.281 211.359 179.467C211.359 152.668 195.647 137.713 159.195 130.415L137.323 125.989C116.081 121.682 107.408 115.58 107.408 104.932C107.408 91.7723 119.977 83.3977 138.958 83.3977C157.309 83.3977 171.444 94.4043 173.204 108.043H208.902ZM340.348 148.465C337.547 118.436 318.753 96.3185 284.664 96.3185C244.388 96.3185 221.74 121.084 221.74 164.871C221.74 209.137 244.505 234.022 284.664 234.022C318.169 234.022 339.182 214.999 341.984 185.449H310.23C307.662 198.489 298.556 205.428 284.664 205.428C266.452 205.428 256.062 191.191 256.062 164.871C256.062 138.91 266.336 127.539 284.664 127.539C299.14 127.539 306.26 135.903 308.595 148.465H340.348ZM816.769 148.465C813.967 118.436 795.173 96.3185 761.084 96.3185C720.808 96.3185 698.16 121.084 698.16 164.871C698.16 209.137 720.925 234.022 761.084 234.022C794.589 234.022 815.603 214.999 818.404 185.449H786.651C784.082 198.489 774.976 205.428 761.084 205.428C742.872 205.428 732.482 191.191 732.482 164.871C732.482 138.91 742.756 127.539 761.084 127.539C775.56 127.539 782.68 135.903 785.015 148.465H816.769ZM394.331 231.15V103.978H361.629V231.15H394.331ZM543.285 161.706C542.808 120.591 518.75 96.3185 478.307 96.3185C437.078 96.3185 411.687 122.878 411.687 165.828C411.687 208.658 436.575 234.022 478.809 234.022C512.748 234.022 536.63 218.469 542.161 193.584H508.097L507.966 193.871C503.981 202.425 494.111 207.223 479.815 207.223C460.709 207.223 451.158 199.01 450.655 179.39V177.595H543.292V162.957L543.285 161.706ZM682.595 145.849C682.595 114.264 666.003 96.3185 635.207 96.3185C614.719 96.3185 598.378 105.531 591.968 120.366V99.1898H556.521V231.15H595.615V161.6C596.897 142.068 605.549 129.518 622.518 129.518C639.865 129.518 646.017 135.919 646.017 154.104V231.15H682.595V145.849ZM450.897 150.841C452.343 134.063 463.763 125.178 480.563 125.178C497.657 125.178 506.589 133.885 507.343 151.352H450.856L450.897 150.841ZM396.116 86.0106V54.0864H361.736V86.0106H396.116Z" fill="currentColor"/>
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M1474.72 234.012C1482.44 234.012 1489.88 233.289 1494.84 232.446V205.702C1490.98 206.064 1488.23 206.184 1482.99 206.184C1469.35 206.184 1458.17 202.491 1458.17 190.926V131.174H1494.84V103.588H1458.17V63.7019L1423.18 70.7V103.588H1399.48V131.174H1423.18V199.238C1423.18 225.139 1437.79 234.012 1474.72 234.012ZM1108.03 186.592C1105.19 216.417 1083.92 235.615 1049.99 235.615C1009.32 235.615 986.273 210.5 986.273 165.824C986.273 121.63 1009.21 96.6359 1049.99 96.6359C1084.51 96.6359 1103.54 118.958 1106.37 149.265H1074.22C1071.86 136.587 1064.65 128.146 1049.99 128.146C1031.43 128.146 1021.03 139.622 1021.03 165.824C1021.03 192.388 1031.55 206.757 1049.99 206.757C1064.06 206.757 1073.28 199.754 1075.88 186.592H1108.03ZM1250.47 163.892C1250.47 121.63 1225.96 96.6359 1184.47 96.6359C1142.59 96.6359 1116.8 123.442 1116.8 166.79C1116.8 210.017 1142.08 235.615 1184.98 235.615C1219.45 235.615 1243.71 219.918 1249.33 194.803H1214.73C1210.77 203.617 1200.68 208.568 1186 208.568C1166.59 208.568 1156.89 200.279 1156.38 180.477V178.666H1250.47V163.892ZM1156.58 152.179C1157.86 134.913 1169.52 125.763 1186.76 125.763C1204.12 125.763 1213.19 134.55 1213.96 152.179H1156.58ZM1631.07 163.892C1631.07 121.63 1606.56 96.6359 1565.06 96.6359C1523.19 96.6359 1497.39 123.442 1497.39 166.79C1497.39 210.017 1522.67 235.615 1565.57 235.615C1600.05 235.615 1624.3 219.918 1629.92 194.803H1595.32C1591.36 203.617 1581.28 208.568 1566.6 208.568C1547.19 208.568 1537.49 200.279 1536.98 180.477V178.666H1631.07V163.892ZM1537.18 152.179C1538.46 134.913 1550.12 125.763 1567.35 125.763C1584.72 125.763 1593.79 134.55 1594.56 152.179H1537.18ZM1303.7 233.207V163.175C1305 143.508 1313.77 130.871 1330.96 130.871C1348.53 130.871 1354.76 137.316 1354.76 155.627V233.207H1391.82V147.315C1391.82 115.511 1375.01 97.4413 1343.81 97.4413C1323.05 97.4413 1306.5 106.717 1300.01 121.655V100.333H1264.1V233.207H1303.7ZM1682.54 164.752V232.405H1649.8V102.817H1679.07V126.059C1682.37 112.853 1700.13 100.656 1716.04 100.656C1720.58 100.656 1726.15 101.256 1728.99 102.336V134.152C1726.37 133.071 1718.65 131.991 1713.31 131.991C1697.5 131.991 1682.54 151.03 1682.54 164.752Z" fill="currentColor"/>
+				</svg>
+			</a>
+			<a href="{base}/" class="nav-link">Back to Home</a>
+		</div>
+	</nav>
+
+	<article class="prose-container">
+
+# The Story Map
+## A framework for story-building
+
+We are all natural-born storytellers. Or at the very least, storylisteners. The same drive lies behind a gathering around the fireplace, a night at the movies or listening to a podcast on your morning run: our brain's hunger for narratives. Our brains are literally wired for it.
+
+And yet creating a story can be challenging.
+
+This tutorial presents a strategy for simplifying the creative process of building a story. And as in any good story, we have to start from the beginning.
+
+## What is a story?
+
+If you ever experienced the so-called _"blank page syndrome"_, chances are that it originated not from a lack of ideas to write about, but from an overwhelming, chaotic pile of them.
+
+A story, any story, is linear. It doesn't matter if it is a text, a speech, a movie or even a scientific publication: it will progress from a beginning to an end.
+
+> More specifically, any story will be **consumed** in a linear way. Even a story which content is structured in a non-chronological order has a beginning and an end.
+
+And here comes the challenge: our thoughts are rarely that linear. Most people entertain multiple thoughts simultaneously, or quickly switch from one to the other. It takes a conscious effort to order them into a coherent narrative.
+
+## Embracing chaos
+
+Instead of getting frustrated about the chaotic nature of our thoughts, let's just embrace it. Our thoughts are fine just how they are.
+
+Of course, it is not that practical to have our working memory juggling them all at once. So let's free our memory and outsource them to... a piece of paper! Just write them down.
+
+My advice is to do it like in the figure below, in small squares, with no pre-defined order. Just drop them around as if they were LEGO bricks.
+
+<figure>
+	<img src="{base}/images/storymap/01-bricks.png" alt="Bricks - ideas as building blocks" />
+	<figcaption>Ideas as building blocks</figcaption>
+</figure>
+
+## Structuring your thoughts: the building blocks
+
+The challenge is set! Our goal is to build something with these bricks. But first we have to see our bricks, identify them, make sure we're not missing any. Almost _feel_ them.
+
+Take a moment to look at your building blocks. Very likely, you'll notice some of them are related. This relationship can be logical, narrative, chronological, ... Draw a line between them if that's the case.
+
+I suggest using **solid lines for strong relatedness**, and **dashed lines for less clear relatedness**. We are starting to have **some** structure! We are slowly creating order out of chaos!
+
+<figure>
+	<img src="{base}/images/storymap/02-links.png" alt="Links between building blocks" />
+	<figcaption>Drawing connections between related ideas</figcaption>
+</figure>
+
+At this stage, you might realize some building blocks are missing. When that's the case, just add them. You might also notice some building blocks are redundant. Well, just merge those together. You might even judge some of the blocks to be unnecessary. Drop those without hesitation! Nothing creates more order out of chaos than reducing the amount of moving parts!
+
+## Navigating your thoughts: the story map
+
+The ultimate goal would be to navigate your thoughts. And I don't use the verb navigate lightly: you literally want to create a route from the beginning to the end. The diagram above will be very useful for achieving this.
+
+To begin with, the diagram shows clearly what the core topics are. This allows for drawing a first, straightforward route that covers just the basics. If your audience is already knowledgeable about the topic and your time is limited, this route is an excellent choice:
+
+<figure>
+	<img src="{base}/images/storymap/03-direct.png" alt="Direct route through the story" />
+	<figcaption>The direct route - covering just the basics</figcaption>
+</figure>
+
+> For many people, especially in academia, skipping information feels wrong. In the verge of immoral.
+>
+> What we did above is tailoring your materials to our audience (sounds better than skipping, doesn't it?). And yes, we did it by eliminating some of them. Actually, this is going to happen often, and it is very good news. Less complexity, less moving parts; less is more, remember?
+>
+> Effective communication is not about turning everything that we write or say into a self-contained compendium, but about providing chunks that can be reasonably digested in whatever context they are delivered.
+
+If your time is less limited, you can consider taking a detour and dropping an anecdote to make the experience more enjoyable:
+
+<figure>
+	<img src="{base}/images/storymap/04-anecdote.png" alt="Route with anecdote" />
+	<figcaption>Adding an anecdote to enrich the narrative</figcaption>
+</figure>
+
+Last but not least, if you have the possibility of expanding as much as you want, you might want to cover all the topics. In such a case, a reasonable route will look like:
+
+<figure>
+	<img src="{base}/images/storymap/05-exhaustive.png" alt="Exhaustive route" />
+	<figcaption>The exhaustive route - covering everything</figcaption>
+</figure>
+
+In the figure below we summarize three possible routes we could envision for the same material:
+
+<figure>
+	<img src="{base}/images/storymap/06-all.png" alt="All routes combined" />
+	<figcaption>Three different routes for the same content</figcaption>
+</figure>
+
+## Applications
+
+I've used the described framework in many settings where storytelling played a role. Perhaps this sounds limited, but believe me: storytelling is everywhere. I used it for, among others:
+
+- Scientific presentations
+- Comedy monologues
+- Software tutorials
+- My own PhD dissertation
+- Blog posts
+- A strategic plan for a research institution
+- Publications in research journals
+- A theater play
+- And also for this text you are reading now
+
+**I honestly encourage you to give it a try next time you face a blank page. It works wonders!**
+
+---
+
+For those interested in knowledge management, this method might remind you of the [Zettelkasten note-taking method](https://en.wikipedia.org/wiki/Zettelkasten). Software applications like [Logseq](https://logseq.com/) or [Obsidian](https://obsidian.md/) are designed with this model in mind.
+
+</article>
+</div>
+
+<style>
+	.story-map-container {
+		min-height: 100vh;
+		background: #0a0a0a;
+		color: #e0e0e0;
+	}
+
+	.logo-link {
+		color: #7bafd4;
+		transition: color 0.3s ease;
+	}
+
+	.logo-link:hover {
+		color: #f4b841;
+	}
+
+	.nav-link {
+		color: #7bafd4;
+		text-decoration: none;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.nav-link:hover {
+		color: #f4b841;
+		background: rgba(123, 175, 212, 0.1);
+	}
+
+	.prose-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 8rem 2rem 4rem;
+		line-height: 1.8;
+	}
+
+	.prose-container :global(h1) {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+		font-weight: 700;
+		color: #7bafd4;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, #7bafd4 0%, #f4b841 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.prose-container :global(h2) {
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: #7bafd4;
+		margin-top: 3rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid rgba(123, 175, 212, 0.3);
+	}
+
+	.prose-container :global(p) {
+		margin-bottom: 1.5rem;
+		color: #d0d0d0;
+	}
+
+	.prose-container :global(blockquote) {
+		margin: 2rem 0;
+		padding: 1.5rem 2rem;
+		background: linear-gradient(135deg, rgba(123, 175, 212, 0.1), rgba(59, 31, 84, 0.1));
+		border-left: 4px solid #7bafd4;
+		border-radius: 0 1rem 1rem 0;
+		font-style: italic;
+		color: #b0b0b0;
+	}
+
+	.prose-container :global(figure) {
+		margin: 2.5rem 0;
+		text-align: center;
+	}
+
+	.prose-container :global(figure img) {
+		max-width: 100%;
+		height: auto;
+		border-radius: 1rem;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+	}
+
+	.prose-container :global(figcaption) {
+		margin-top: 1rem;
+		font-size: 0.9rem;
+		color: #888;
+		font-style: italic;
+	}
+
+	.prose-container :global(ul) {
+		margin: 1.5rem 0;
+		padding-left: 2rem;
+	}
+
+	.prose-container :global(li) {
+		margin-bottom: 0.75rem;
+		color: #d0d0d0;
+	}
+
+	.prose-container :global(li::marker) {
+		color: #7bafd4;
+	}
+
+	.prose-container :global(em) {
+		color: #f4b841;
+		font-style: italic;
+	}
+
+	.prose-container :global(strong) {
+		color: #7bafd4;
+		font-weight: 600;
+	}
+
+	.prose-container :global(a) {
+		color: #7bafd4;
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	.prose-container :global(a:hover) {
+		color: #f4b841;
+		text-decoration: underline;
+	}
+
+	.prose-container :global(hr) {
+		margin: 3rem 0;
+		border: none;
+		border-top: 1px solid rgba(123, 175, 212, 0.2);
+	}
+
+	@media (max-width: 768px) {
+		.prose-container {
+			padding: 6rem 1.5rem 3rem;
+		}
+
+		nav {
+			padding: 1rem;
+		}
+	}
+</style>
