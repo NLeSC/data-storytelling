@@ -10,6 +10,7 @@
 	import FloatingShapes from '$lib/components/FloatingShapes.svelte';
 	import ScrollProgress from '$lib/components/ScrollProgress.svelte';
 	import ProjectModal from '$lib/components/ProjectModal.svelte';
+	import ProjectSearch from '$lib/components/ProjectSearch.svelte';
 	import { fetchAllProjects } from '$lib/api/projects';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { onMount } from 'svelte';
@@ -53,6 +54,12 @@
 
 	function closeModal() {
 		selectedProject = null;
+	}
+
+	function handleSearchSelect(project: ProjectWithDomain) {
+		// TODO: Implement search result action
+		// This placeholder will be connected to actual functionality later
+		console.log('Search selected project:', project.brand_name, project.id);
 	}
 
 	// Determine which section is currently in view
@@ -126,10 +133,13 @@
 					/>
 				</svg>
 			</div>
-			<div class="flex gap-8 text-sm">
-				<a href="{base}/story-map" class="nav-link">The Story Map</a>
-				<a href="#environmental" class="nav-link">Domains</a>
-				<a href="#footer" class="nav-link">Resources</a>
+			<div class="flex items-center gap-6">
+				<ProjectSearch {projects} onSelect={handleSearchSelect} />
+				<div class="flex gap-8 text-sm">
+					<a href="{base}/story-map" class="nav-link">The Story Map</a>
+					<a href="#environmental" class="nav-link">Domains</a>
+					<a href="#footer" class="nav-link">Resources</a>
+				</div>
 			</div>
 		</div>
 	</nav>
