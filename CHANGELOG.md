@@ -1,5 +1,18 @@
 # Changelog
 
+
+## [0.5.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.5.0) - 2025-12-22
+
+## What's Changed
+
+### ✨ Features
+- feat: Add resources page for data storytelling tools and guides. feat: add zoom buttons to manipulate cards fix: unresponsive scroll (f3eb97c)
+- feat: update changelog generation and create CHANGELOG.md file (24ef070)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (5a9f9b5)
+
+
 All notable changes to this project will be documented in this file.
 
 ## [0.3.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.3.1) - 2025-12-22
