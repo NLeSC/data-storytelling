@@ -69,9 +69,7 @@
 	}
 
 	function handleSearchSelect(project: ProjectWithDomain) {
-		// TODO: Implement search result action
-		// This placeholder will be connected to actual functionality later
-		console.log('Search selected project:', project.brand_name, project.id);
+		selectedProject = project;
 	}
 
 	// Determine which section is currently in view
