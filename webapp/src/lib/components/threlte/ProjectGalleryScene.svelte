@@ -84,6 +84,7 @@
 		minDistance={10}
 		maxDistance={100}
 		target={[0, 0, 0]}
+		enableZoom={false}
 	/>
 </T.PerspectiveCamera>
 

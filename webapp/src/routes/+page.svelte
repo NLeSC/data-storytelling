@@ -11,6 +11,7 @@
 	import ScrollProgress from '$lib/components/ScrollProgress.svelte';
 	import ProjectModal from '$lib/components/ProjectModal.svelte';
 	import ProjectSearch from '$lib/components/ProjectSearch.svelte';
+	import ZoomControls from '$lib/components/ZoomControls.svelte';
 	import { fetchAllProjects } from '$lib/api/projects';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { onMount } from 'svelte';
@@ -68,38 +69,6 @@
 		currentSection = Math.floor(progress * 5);
 	});
 
-	// Parallax effect on sections
-	$effect(() => {
-		if (typeof document === 'undefined') return;
-
-		const sections = document.querySelectorAll('.section-container');
-		const velocity = $scrollStore.velocity;
-
-		sections.forEach((section, index) => {
-			const rect = section.getBoundingClientRect();
-
-			// Calculate progress only when section is in viewport
-			const viewportCenter = window.innerHeight / 2;
-			const sectionCenter = rect.top + rect.height / 2;
-			const distanceFromCenter = Math.abs(viewportCenter - sectionCenter);
-			const maxDistance = window.innerHeight;
-			const sectionProgress = Math.max(0, Math.min(1, 1 - distanceFromCenter / maxDistance));
-
-			const canvas = section.querySelector('.canvas-background') as HTMLElement;
-			const content = section.querySelector('.content-overlay') as HTMLElement;
-
-			if (canvas) {
-				// Background moves slower (parallax effect)
-				const bgOffset = rect.top * 0.3;
-				canvas.style.transform = `translateY(${bgOffset}px) scale(${1 + Math.abs(velocity) * 0.02})`;
-			}
-
-			if (content) {
-				// Content moves at normal speed - no offset to maintain centering
-				content.style.transform = `translateY(50%)`;
-			}
-		});
-	});
 </script>
 
 <svelte:head>
@@ -112,6 +81,7 @@
 
 <FloatingShapes />
 <ScrollProgress />
+<ZoomControls />
 
 <div class="landing-container">
 	<!-- Fixed Navigation -->
@@ -135,10 +105,29 @@
 			</div>
 			<div class="flex items-center gap-6">
 				<ProjectSearch {projects} onSelect={handleSearchSelect} />
-				<div class="flex gap-8 text-sm">
+				<div class="flex gap-8 text-sm items-center">
 					<a href="{base}/story-map" class="nav-link">The Story Map</a>
 					<a href="#environmental" class="nav-link">Domains</a>
-					<a href="#footer" class="nav-link">Resources</a>
+					<a href="{base}/resources" class="nav-link">Resources</a>
+					<a
+						href="https://github.com/NLeSC/data-storytelling"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="nav-link flex items-center"
+						aria-label="View source on GitHub"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+						>
+							<path
+								d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+							/>
+						</svg>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -179,20 +168,8 @@
 				/>
 			</Canvas>
 		</div>
-		<div class="content-overlay">
-			<div class="domain-content">
-				<h2 class="domain-title">Environmental</h2>
-				<p class="domain-description">
-					Visualizing climate patterns, weather data, and environmental systems through interactive
-					3D representations
-				</p>
-				<div class="domain-features">
-					<div class="feature-tag">Climate Data</div>
-					<div class="feature-tag">Weather Patterns</div>
-					<div class="feature-tag">Geospatial Analysis</div>
-					<div class="feature-tag">Temperature Gradients</div>
-				</div>
-			</div>
+		<div class="domain-label">
+			<span class="domain-label-text">Environmental</span>
 		</div>
 	</section>
 
@@ -208,19 +185,8 @@
 				/>
 			</Canvas>
 		</div>
-		<div class="content-overlay">
-			<div class="domain-content">
-				<h2 class="domain-title">Engineering</h2>
-				<p class="domain-description">
-					Bringing complex systems, network architectures, and structural simulations to life
-				</p>
-				<div class="domain-features">
-					<div class="feature-tag">System Architecture</div>
-					<div class="feature-tag">Network Graphs</div>
-					<div class="feature-tag">CAD Models</div>
-					<div class="feature-tag">Structural Analysis</div>
-				</div>
-			</div>
+		<div class="domain-label">
+			<span class="domain-label-text">Engineering</span>
 		</div>
 	</section>
 
@@ -236,20 +202,8 @@
 				/>
 			</Canvas>
 		</div>
-		<div class="content-overlay">
-			<div class="domain-content">
-				<h2 class="domain-title">SSH</h2>
-				<p class="domain-description">
-					Making social networks, relationships, and human data comprehensible through visual
-					storytelling
-				</p>
-				<div class="domain-features">
-					<div class="feature-tag">Social Networks</div>
-					<div class="feature-tag">Network Analysis</div>
-					<div class="feature-tag">Text Data</div>
-					<div class="feature-tag">Relationship Mapping</div>
-				</div>
-			</div>
+		<div class="domain-label">
+			<span class="domain-label-text">Social Sciences & Humanities</span>
 		</div>
 	</section>
 
@@ -265,19 +219,8 @@
 				/>
 			</Canvas>
 		</div>
-		<div class="content-overlay">
-			<div class="domain-content">
-				<h2 class="domain-title">Life Sciences</h2>
-				<p class="domain-description">
-					Exploring genomic data, molecular structures, and biological systems in stunning 3D detail
-				</p>
-				<div class="domain-features">
-					<div class="feature-tag">DNA Visualization</div>
-					<div class="feature-tag">Protein Structures</div>
-					<div class="feature-tag">Genomic Data</div>
-					<div class="feature-tag">Molecular Biology</div>
-				</div>
-			</div>
+		<div class="domain-label">
+			<span class="domain-label-text">Life Sciences</span>
 		</div>
 	</section>
 
@@ -316,27 +259,8 @@
 	}
 
 	:global(html) {
-		scroll-behavior: auto;
-	}
-
-	:global(html.lenis, html.lenis body) {
-		height: auto;
-	}
-
-	:global(.lenis.lenis-smooth) {
-		scroll-behavior: auto !important;
-	}
-
-	:global(.lenis.lenis-smooth [data-lenis-prevent]) {
-		overscroll-behavior: contain;
-	}
-
-	:global(.lenis.lenis-stopped) {
-		overflow: hidden;
-	}
-
-	:global(.lenis.lenis-scrolling iframe) {
-		pointer-events: none;
+		scroll-behavior: smooth;
+		scroll-snap-type: y mandatory;
 	}
 
 	.landing-container {
@@ -347,8 +271,10 @@
 	.section-container {
 		position: relative;
 		width: 100%;
-		min-height: 100vh;
+		height: 100vh;
 		overflow: hidden;
+		scroll-snap-align: start;
+		scroll-snap-stop: always;
 	}
 
 	.section-container::before {
@@ -392,11 +318,11 @@
 		width: 100%;
 		height: 100%;
 		z-index: 1;
-		will-change: transform;
 	}
 
 	.content-overlay {
-		position: relative;
+		position: absolute;
+		inset: 0;
 		z-index: 10;
 		width: 100%;
 		height: 100%;
@@ -404,7 +330,6 @@
 		align-items: center;
 		justify-content: center;
 		pointer-events: none;
-		will-change: transform;
 	}
 
 	.content-overlay > * {
@@ -532,11 +457,21 @@
 		}
 	}
 
-	/* Domain Sections */
-	.domain-content {
-		max-width: 600px;
-		padding: 3rem;
-		margin-left: 5%;
+	/* Domain Label - Top-left indicator with glassmorphism */
+	.domain-label {
+		position: absolute;
+		top: 6rem;
+		left: 2rem;
+		z-index: 10;
+		pointer-events: none;
+	}
+
+	.domain-label-text {
+		display: block;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #7bafd4;
+		padding: 1rem 1.5rem;
 		backdrop-filter: blur(20px) saturate(180%);
 		background: linear-gradient(
 			135deg,
@@ -544,122 +479,11 @@
 			rgba(59, 31, 84, 0.1) 50%,
 			rgba(244, 184, 65, 0.05) 100%
 		);
-		border-radius: 1.5rem;
-		border: 1px solid;
-		border-image: linear-gradient(135deg, rgba(123, 175, 212, 0.5), rgba(244, 184, 65, 0.3)) 1;
+		border-radius: 1rem;
+		border: 1px solid rgba(123, 175, 212, 0.3);
 		box-shadow:
 			0 8px 32px 0 rgba(0, 0, 0, 0.37),
 			inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
-		transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-		will-change: transform;
-	}
-
-	.domain-content:hover {
-		transform: translateY(-8px) scale(1.02);
-		background: linear-gradient(
-			135deg,
-			rgba(123, 175, 212, 0.25) 0%,
-			rgba(59, 31, 84, 0.2) 50%,
-			rgba(244, 184, 65, 0.15) 100%
-		);
-		box-shadow:
-			0 12px 48px 0 rgba(123, 175, 212, 0.3),
-			inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
-	}
-
-	.domain-title {
-		font-size: clamp(2.5rem, 5vw, 4rem);
-		font-weight: 700;
-		margin-bottom: 1rem;
-		color: #7bafd4;
-		opacity: 0;
-		transform: translateY(30px);
-		animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-		animation-delay: 0.2s;
-	}
-
-	.domain-description {
-		font-size: clamp(1.125rem, 1.5vw, 1.25rem);
-		line-height: 1.6;
-		color: #e0e0e0;
-		margin-bottom: 2rem;
-		opacity: 0;
-		transform: translateY(30px);
-		animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-		animation-delay: 0.4s;
-	}
-
-	@keyframes fadeInUp {
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.domain-features {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-	}
-
-	.feature-tag {
-		padding: 0.5rem 1rem;
-		background: rgba(59, 31, 84, 0.4);
-		border: 1px solid #3b1f54;
-		border-radius: 2rem;
-		font-size: 0.875rem;
-		color: #7bafd4;
-		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		position: relative;
-		overflow: hidden;
-		cursor: pointer;
-		opacity: 0;
-		transform: translateY(20px) scale(0.9);
-		animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-	}
-
-	.feature-tag:nth-child(1) {
-		animation-delay: 0.6s;
-	}
-	.feature-tag:nth-child(2) {
-		animation-delay: 0.7s;
-	}
-	.feature-tag:nth-child(3) {
-		animation-delay: 0.8s;
-	}
-	.feature-tag:nth-child(4) {
-		animation-delay: 0.9s;
-	}
-
-	@keyframes fadeInScale {
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	.feature-tag::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(135deg, rgba(123, 175, 212, 0.3), rgba(244, 184, 65, 0.2));
-		opacity: 0;
-		transition: opacity 0.4s ease;
-	}
-
-	.feature-tag:hover {
-		background: rgba(59, 31, 84, 0.7);
-		border-color: #7bafd4;
-		transform: translateY(-4px) scale(1.05);
-		box-shadow: 0 8px 20px rgba(123, 175, 212, 0.3);
-	}
-
-	.feature-tag:hover::before {
-		opacity: 1;
-	}
-
-	.feature-tag:active {
-		transform: translateY(-2px) scale(1.02);
 	}
 
 	/* Footer */
@@ -667,10 +491,12 @@
 		background: linear-gradient(180deg, rgba(10, 10, 10, 0.9) 0%, #0a0a0a 100%);
 		padding: 4rem 2rem;
 		text-align: center;
-		min-height: 100vh;
+		height: 100vh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		scroll-snap-align: start;
+		scroll-snap-stop: always;
 	}
 
 	.footer-content {

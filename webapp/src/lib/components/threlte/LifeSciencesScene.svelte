@@ -4,6 +4,7 @@
 	import * as THREE from 'three';
 	import ProjectCard from './ProjectCard.svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
+	import { zoomLevel } from '$lib/stores/zoom';
 
 	interface Props {
 		scrollProgress?: number;
@@ -13,6 +14,9 @@
 	}
 
 	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject }: Props = $props();
+
+	const baseZoom = 38;
+	let cameraRef = $state<THREE.PerspectiveCamera | undefined>(undefined);
 
 	// DNA helix parameters
 	const helixHeight = 20;
@@ -97,6 +101,16 @@
 	useTask((delta) => {
 		time += delta;
 
+		// Update camera zoom (preserving rotation direction)
+		if (cameraRef) {
+			const targetDistance = baseZoom * $zoomLevel;
+			const currentDistance = cameraRef.position.length();
+			if (currentDistance > 0.1) {
+				const newDistance = currentDistance + (targetDistance - currentDistance) * 0.1;
+				cameraRef.position.normalize().multiplyScalar(newDistance);
+			}
+		}
+
 		if (dnaGroupRef) {
 			// Rotate DNA helix
 			dnaGroupRef.rotation.y = scrollProgress * Math.PI * 4;
@@ -133,8 +147,8 @@
 	});
 </script>
 
-<T.PerspectiveCamera makeDefault position={[0, 0, 30]} fov={60}>
-	<OrbitControls enableDamping dampingFactor={0.05} minDistance={15} maxDistance={60} />
+<T.PerspectiveCamera bind:ref={cameraRef} makeDefault position={[0, 0, 38]} fov={60}>
+	<OrbitControls enableDamping dampingFactor={0.05} minDistance={20} maxDistance={80} enableZoom={false} />
 </T.PerspectiveCamera>
 
 <!-- DNA Double Helix -->

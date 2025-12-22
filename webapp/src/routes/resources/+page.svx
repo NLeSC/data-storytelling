@@ -1,0 +1,498 @@
+<script lang="ts">
+	import { base } from '$app/paths';
+</script>
+
+<svelte:head>
+	<title>Awesome Data Storytelling Resources - eScience Center</title>
+	<meta name="description" content="A curated list of tools, videos, guides, and examples to turn data into clear stories" />
+</svelte:head>
+
+<div class="resources-container">
+	<nav class="fixed top-0 left-0 right-0 z-50 px-8 py-6 backdrop-blur-sm bg-black/30">
+		<div class="max-w-7xl mx-auto flex items-center justify-between">
+			<a href="{base}/" class="logo-link">
+				<svg width="200" viewBox="0 0 1729 294" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H799.968C846.019 0 883.35 38.4084 883.35 85.7875L883.35 233.401L883.35 205.865C871.351 202.814 864.131 194.472 863.745 179.39V177.595L883.35 177.594V151.352L863.87 151.352L863.911 150.84C865.034 137.867 872.353 128.343 883.35 124.665L883.349 96.935C848.39 101.146 827.293 126.677 827.293 165.828C827.293 204.771 847.868 229.274 883.35 233.401L883.35 293.269H61.0114C28.3644 293.269 1.70649 266.888 0.0787475 233.715C29.6954 231.425 50.258 216.441 55.338 193.584H21.2741L21.1435 193.871C17.8474 200.946 10.5242 205.452 0 206.798V177.595L56.4693 177.595V162.957L56.4621 161.706C56.0195 123.565 35.2839 99.9179 0 96.6967V0ZM0 123.973V151.351L20.52 151.352C19.8976 136.939 12.2573 127.006 0 123.973ZM208.902 108.043C207.77 77.2961 178.678 54.0864 138.706 54.0864C96.849 54.0864 69.3214 75.5016 69.3214 108.043C69.3214 134.363 85.5363 150.754 118.595 157.334L142.226 162.119C164.474 166.666 173.524 173.006 173.524 184.013C173.524 197.053 158.692 207.144 138.958 207.144C103.374 207.144 100.891 190.471 99.1312 176.473H62.4277C63.8104 208.656 94.5865 235.577 137.826 235.577C183.329 235.577 211.359 214.281 211.359 179.467C211.359 152.668 195.647 137.713 159.195 130.415L137.323 125.989C116.081 121.682 107.408 115.58 107.408 104.932C107.408 91.7723 119.977 83.3977 138.958 83.3977C157.309 83.3977 171.444 94.4043 173.204 108.043H208.902ZM340.348 148.465C337.547 118.436 318.753 96.3185 284.664 96.3185C244.388 96.3185 221.74 121.084 221.74 164.871C221.74 209.137 244.505 234.022 284.664 234.022C318.169 234.022 339.182 214.999 341.984 185.449H310.23C307.662 198.489 298.556 205.428 284.664 205.428C266.452 205.428 256.062 191.191 256.062 164.871C256.062 138.91 266.336 127.539 284.664 127.539C299.14 127.539 306.26 135.903 308.595 148.465H340.348ZM816.769 148.465C813.967 118.436 795.173 96.3185 761.084 96.3185C720.808 96.3185 698.16 121.084 698.16 164.871C698.16 209.137 720.925 234.022 761.084 234.022C794.589 234.022 815.603 214.999 818.404 185.449H786.651C784.082 198.489 774.976 205.428 761.084 205.428C742.872 205.428 732.482 191.191 732.482 164.871C732.482 138.91 742.756 127.539 761.084 127.539C775.56 127.539 782.68 135.903 785.015 148.465H816.769ZM394.331 231.15V103.978H361.629V231.15H394.331ZM543.285 161.706C542.808 120.591 518.75 96.3185 478.307 96.3185C437.078 96.3185 411.687 122.878 411.687 165.828C411.687 208.658 436.575 234.022 478.809 234.022C512.748 234.022 536.63 218.469 542.161 193.584H508.097L507.966 193.871C503.981 202.425 494.111 207.223 479.815 207.223C460.709 207.223 451.158 199.01 450.655 179.39V177.595H543.292V162.957L543.285 161.706ZM682.595 145.849C682.595 114.264 666.003 96.3185 635.207 96.3185C614.719 96.3185 598.378 105.531 591.968 120.366V99.1898H556.521V231.15H595.615V161.6C596.897 142.068 605.549 129.518 622.518 129.518C639.865 129.518 646.017 135.919 646.017 154.104V231.15H682.595V145.849ZM450.897 150.841C452.343 134.063 463.763 125.178 480.563 125.178C497.657 125.178 506.589 133.885 507.343 151.352H450.856L450.897 150.841ZM396.116 86.0106V54.0864H361.736V86.0106H396.116Z" fill="currentColor"/>
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M1474.72 234.012C1482.44 234.012 1489.88 233.289 1494.84 232.446V205.702C1490.98 206.064 1488.23 206.184 1482.99 206.184C1469.35 206.184 1458.17 202.491 1458.17 190.926V131.174H1494.84V103.588H1458.17V63.7019L1423.18 70.7V103.588H1399.48V131.174H1423.18V199.238C1423.18 225.139 1437.79 234.012 1474.72 234.012ZM1108.03 186.592C1105.19 216.417 1083.92 235.615 1049.99 235.615C1009.32 235.615 986.273 210.5 986.273 165.824C986.273 121.63 1009.21 96.6359 1049.99 96.6359C1084.51 96.6359 1103.54 118.958 1106.37 149.265H1074.22C1071.86 136.587 1064.65 128.146 1049.99 128.146C1031.43 128.146 1021.03 139.622 1021.03 165.824C1021.03 192.388 1031.55 206.757 1049.99 206.757C1064.06 206.757 1073.28 199.754 1075.88 186.592H1108.03ZM1250.47 163.892C1250.47 121.63 1225.96 96.6359 1184.47 96.6359C1142.59 96.6359 1116.8 123.442 1116.8 166.79C1116.8 210.017 1142.08 235.615 1184.98 235.615C1219.45 235.615 1243.71 219.918 1249.33 194.803H1214.73C1210.77 203.617 1200.68 208.568 1186 208.568C1166.59 208.568 1156.89 200.279 1156.38 180.477V178.666H1250.47V163.892ZM1156.58 152.179C1157.86 134.913 1169.52 125.763 1186.76 125.763C1204.12 125.763 1213.19 134.55 1213.96 152.179H1156.58ZM1631.07 163.892C1631.07 121.63 1606.56 96.6359 1565.06 96.6359C1523.19 96.6359 1497.39 123.442 1497.39 166.79C1497.39 210.017 1522.67 235.615 1565.57 235.615C1600.05 235.615 1624.3 219.918 1629.92 194.803H1595.32C1591.36 203.617 1581.28 208.568 1566.6 208.568C1547.19 208.568 1537.49 200.279 1536.98 180.477V178.666H1631.07V163.892ZM1537.18 152.179C1538.46 134.913 1550.12 125.763 1567.35 125.763C1584.72 125.763 1593.79 134.55 1594.56 152.179H1537.18ZM1303.7 233.207V163.175C1305 143.508 1313.77 130.871 1330.96 130.871C1348.53 130.871 1354.76 137.316 1354.76 155.627V233.207H1391.82V147.315C1391.82 115.511 1375.01 97.4413 1343.81 97.4413C1323.05 97.4413 1306.5 106.717 1300.01 121.655V100.333H1264.1V233.207H1303.7ZM1682.54 164.752V232.405H1649.8V102.817H1679.07V126.059C1682.37 112.853 1700.13 100.656 1716.04 100.656C1720.58 100.656 1726.15 101.256 1728.99 102.336V134.152C1726.37 133.071 1718.65 131.991 1713.31 131.991C1697.5 131.991 1682.54 151.03 1682.54 164.752Z" fill="currentColor"/>
+				</svg>
+			</a>
+			<a href="{base}/" class="nav-link">Back to Home</a>
+		</div>
+	</nav>
+
+	<article class="prose-container">
+
+# Awesome Data Storytelling
+
+A curated list of tools, videos, guides, and examples to turn data into clear stories that people understand and remember.
+
+---
+
+## Contents
+
+- [Videos](#videos)
+- [Starter kits and templates](#starter-kits-and-templates)
+- [Tools](#tools)
+  - [No code and low code](#no-code-and-low-code)
+  - [Charting and interaction](#charting-and-interaction)
+  - [Mapping and geospatial](#mapping-and-geospatial)
+  - [Notebooks and publishing](#notebooks-and-publishing)
+  - [Scrollytelling](#scrollytelling)
+  - [Design and prototyping](#design-and-prototyping)
+- [Design, color, and accessibility](#design-color-and-accessibility)
+- [Story craft and structure](#story-craft-and-structure)
+- [Courses and training](#courses-and-training)
+- [Articles and guides](#articles-and-guides)
+- [Datasets](#datasets)
+  - [General](#general)
+  - [Global health focus](#global-health-focus)
+- [Inspiration and case studies](#inspiration-and-case-studies)
+- [Workflow and templates](#workflow-and-templates)
+- [Communities and newsletters](#communities-and-newsletters)
+- [Podcasts](#podcasts)
+
+---
+
+## Videos
+
+- **[Hans Rosling – The best stats you've ever seen](https://www.ted.com/talks/hans_rosling_the_best_stats_you_ve_ever_seen)** – An eye-opening TED talk demonstrating dynamic data visualization in storytelling (Gapminder) – *classic example of animated stats*
+
+- **[Hans Rosling – 200 countries, 200 years in 4 minutes](https://www.youtube.com/watch?v=jbkSRLYSojo)** – Dramatic visualization of global development data over 200 years using moving bubbles – *makes complex history easy to grasp*
+
+- **[David McCandless – The beauty of data visualization](https://www.ted.com/talks/david_mccandless_the_beauty_of_data_visualization)** – Explores how design and information combine for understanding – *highlights the power of well-crafted visuals*
+
+- **[Aaron Koblin – Visualizing ourselves with crowd data](https://www.ted.com/talks/aaron_koblin_visualizing_ourselves_with_crowd_sourced_data)** – Showcases artistic data viz from crowdsourced datasets – *creative approach to turning big data into personal stories*
+
+- **[Alan Smith – Why you should love statistics](https://www.ted.com/talks/alan_smith_why_you_should_love_statistics)** – A witty talk by the FT's data visuals editor on our misperceptions and how stats can surprise us – *makes statistics engaging through relatable examples*
+
+- **[Ben Wellington – Making data mean more through storytelling](https://www.youtube.com/watch?v=6xsvGYIxJok)** – How a data scientist used NYC open data to find unusual insights (like the worst parking spot) – *illustrates key lessons for communicating data*
+
+---
+
+## Starter kits and templates
+
+- **[FT Visual Vocabulary](https://ft-interactive.github.io/visual-vocabulary/)** – Chart chooser by Financial Times to pick the right chart type for your message – *great starting point for choosing an effective visualization*
+
+- **[From Data to Viz](https://www.data-to-viz.com/)** – Decision tree to find the best visualization based on your data characteristics, with guidance and code examples – *helps you select the appropriate chart and learn how to create it*
+
+---
+
+## Tools
+
+### No code and low code
+
+- **[Datawrapper](https://www.datawrapper.de/)** – Fast creation of responsive charts, maps and tables for the web with an easy GUI – *perfect for reporters and scientists to publish visuals without coding*
+
+- **[RAWGraphs](https://www.rawgraphs.io/)** – Open-source app to convert spreadsheet data into unconventional charts – *great for quick exploration and unique chart types*
+
+- **[Tableau Public](https://public.tableau.com/)** – Free version of Tableau to build interactive dashboards and stories, and publish them online – *powerful drag-and-drop analytics for everyone*
+
+- **[Looker Studio](https://lookerstudio.google.com/)** (Google Data Studio) – Free web-based tool for creating shareable dashboards and reports on top of your data – *connects easily to many data sources for live visuals*
+
+- **[Knight Lab Tools](https://knightlab.northwestern.edu/projects/)** – Suite of storytelling tools (TimelineJS, StoryMapJS, etc.) for easy interactive timelines, maps and more – *quickly create narrative visualizations without coding*
+
+- **[Flourish](https://flourish.studio/)** – Platform for interactive charts, maps, and "stories" without coding – *turns your data into beautiful visuals and multi-step story presentations*
+
+- **[Infogram](https://infogram.com/)** – Online tool to design infographics, charts, and interactive dashboards with drag-and-drop – *useful for creating polished visuals and embeds quickly*
+
+### Charting and interaction
+
+- **[D3.js](https://d3js.org/)** – The standard low-level JavaScript library for custom interactive data visualizations – *extremely powerful for bespoke charts and graphics on the web*
+
+- **[Vega & Vega-Lite](https://vega.github.io/vega-lite/)** – Declarative grammars of graphics in JSON – *specify charts in a high-level format and let the library handle drawing; power behind many tools*
+
+- **[Observable Plot](https://observablehq.com/plot)** – High-level JavaScript plotting library for rapid visualizations – *simple syntax to make exploratory charts in Observable and vanilla JS*
+
+- **[Chart.js](https://www.chartjs.org/)** – Popular simple charting library for websites – *great for dashboards or small projects with bar, line, pie charts etc. out of the box*
+
+- **[ECharts](https://echarts.apache.org/)** – Rich interactive charts from Apache, with dozens of chart types and smooth performance – *good for heavy data and complex visualizations*
+
+- **[Highcharts](https://www.highcharts.com/)** – Mature charting library offering many chart types and features (free for non-commercial use) – *well-documented and widely used for business visuals*
+
+- **[Plotly.js](https://plotly.com/javascript/)** – JavaScript library for interactive charts, also powering Plotly's Python/R tools – *creates dynamic, publication-quality graphs with hover tooltips and zoom*
+
+- **[Apache Superset](https://superset.apache.org/)** – Open-source BI platform for data exploration and dashboards – *allows you to create and share interactive charts and SQL-based dashboards at scale*
+
+- **[Dash (Plotly)](https://plotly.com/dash)** – Low-code framework for building interactive analytical web apps in Python (and R) – *connects Python data analysis to a web UI without needing JavaScript*
+
+- **[Shiny](https://shiny.posit.co/)** – R package and framework to build interactive web apps straight from R (also available for Python) – *lets you turn analyses into shareable web applications without web development skills*
+
+### Mapping and geospatial
+
+- **[Leaflet](https://leafletjs.com/)** – Lightweight open-source JS library for interactive maps – *easy to use for pin maps, tile layers, and basic geospatial visualizations*
+
+- **[Mapbox GL JS](https://www.mapbox.com/)** – Powerful library for vector maps with custom styling – *enables smooth, interactive maps and data layers with WebGL, great for advanced map visuals*
+
+- **[deck.gl](https://deck.gl/)** – Uber's WebGL framework for large-scale geospatial data visualization – *renders millions of points or complex 3D maps efficiently in the browser*
+
+- **[kepler.gl](https://kepler.gl/)** – Open-source tool by Uber for geospatial analysis and visualization with no coding – *upload data and quickly visualize it on maps, with filters and 3D hex bins, etc.*
+
+- **[CARTO](https://carto.com/)** – Platform for spatial data analysis and interactive map publishing (offers open source libraries and a hosted service) – *useful for location intelligence and storytelling with maps*
+
+- **[QGIS](https://qgis.org/)** – Full-featured desktop Geographic Information System – *open source software to analyze and visualize geospatial data, create map layouts, and export for presentations*
+
+### Notebooks and publishing
+
+- **[Observable](https://observablehq.com/)** – Web-based computational notebook platform for JavaScript and data visualization (by the creators of D3) – *collaborative notebooks that run in the browser, ideal for sharing interactive analyses*
+
+- **[Quarto](https://quarto.org/)** – Open-source framework to publish data analyses as websites, reports, presentations, blogs (supports R, Python, Julia) – *next-generation of R Markdown for creating reproducible, shareable outputs*
+
+- **[Jupyter](https://jupyter.org/)** – The classic notebook environment for Python, R, etc. – *mix code, data, and narrative, and share as HTML or via JupyterHub; a staple for data science storytelling*
+
+- **[R Markdown](https://rmarkdown.rstudio.com/)** – Authoring framework in R for creating dynamic reports, books, slides – *weave together prose and R code to generate polished documents with results, great for transparent reporting*
+
+### Scrollytelling
+
+- **[Scrollama](https://github.com/russellgoldenberg/scrollama)** – Lightweight library for scrollytelling using IntersectionObserver – *helps trigger events based on scroll position to build narrative scroll-based graphics*
+
+- **[GSAP ScrollTrigger](https://greensock.com/scrolltrigger/)** – Plugin for GreenSock Animation Platform to create scroll-driven animations – *smooth and powerful way to tie animations to scrollbar progress without heavy code*
+
+- **[Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)** – Browser API for observing scroll position of elements – *the underlying web technology for building custom scrollytelling and lazy-loading content*
+
+### Design and prototyping
+
+- **[Figma](https://www.figma.com/)** – Collaborative interface design tool (free for basic use) – *design your data story layout, annotations, and visuals, or create mockups before coding*
+
+- **[Penpot](https://penpot.app/)** – Open-source design and prototyping tool (similar to Figma) – *great for teams preferring self-hosted or open solutions for UX/UI design*
+
+- **[Svelte & SvelteKit](https://svelte.dev/)** – UI framework and metaframework for building fast, interactive web stories – *efficient alternative to React; helps create reactive visualizations with less code*
+
+- **[Next.js](https://nextjs.org/)** – React framework for web applications, ideal for content-rich sites – *offers hybrid static/SSR rendering, great for building interactive data story websites with React components*
+
+- **[Astro](https://astro.build/)** – Modern static site builder focused on content (MDX, Markdown) – *lets you sprinkle interactive components as needed, keeping site speed high – good for longform articles with some charts*
+
+- **[Eleventy (11ty)](https://www.11ty.dev/)** – Simple and flexible static site generator – *useful for generating data storytelling websites from templates and content, with no client-side overhead by default*
+
+---
+
+## Design, color, and accessibility
+
+- **[ColorBrewer](https://colorbrewer2.org/)** – Tried-and-true color palettes for maps and charts, with guidance on usage – *select palettes optimized for readability and colorblind-friendliness*
+
+- **[Viz Palette](https://projects.susielu.com/viz-palette)** – Tool by Susie Lu to test color palettes for data viz – *see how your colors look in charts, check for colorblind issues and accessibility contrast*
+
+- **[iwanthue](https://medialab.github.io/iwanthue/)** – Color generator for maximally distinct hues – *great for when you need many categorical colors that are visually distinct*
+
+- **[Chroma.js](https://gka.github.io/chroma.js/)** – JavaScript library for color conversions and palette generation – *helps with color interpolation, lightness adjustment, and ensuring color scales are perceptually uniform*
+
+- **[WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)** – Quick web tool to check contrast ratios between text and background colors – *useful for making sure your chart labels and elements meet accessibility standards (WCAG)*
+
+- **[Color Oracle](https://colororacle.org/)** – Free desktop tool to simulate color vision deficiencies – *lets you preview how your visuals appear to those with color blindness, ensuring no information is lost*
+
+- **[Chartability](https://chartability.fizz.studio/)** – Comprehensive accessibility checklist and guide for charts by Frank Elavsky – *provides structured tests to make data visualizations more accessible to all users*
+
+- **[W3C WAI Tutorials](https://www.w3.org/WAI/tutorials/)** – Practical guides from Web Accessibility Initiative on developing accessible web content – *includes sections relevant to data tables, images, and visualizations*
+
+- **[WCAG Quick Reference](https://www.w3.org/WAI/WCAG21/quickref/)** – Web Content Accessibility Guidelines (WCAG 2.1) with success criteria and techniques – *use this as a reference to ensure your data story meets established accessibility standards*
+
+---
+
+## Story craft and structure
+
+- **[Storytelling with Data](https://www.storytellingwithdata.com/)** (Cole Nussbaumer Knaflic) – Blog and resources teaching practical techniques to make charts clear and influential – *focuses on communicating effectively and designing with a narrative in mind*
+
+- **[Good Charts](https://store.hbr.org/product/good-charts-the-hbr-guide-to-making-smarter-more-persuasive-data-visualizations/10063)** (Scott Berinato) – Guide to making smarter, more persuasive data visualizations – *emphasizes the messaging and design choices that turn charts into compelling stories*
+
+- **[DataStory](https://www.duarte.com/books/datastory/)** (Nancy Duarte) – Book on structuring data-driven presentations to drive action – *helps you craft a narrative arc (with beginning, middle, end) around your data insights*
+
+- **[Effective Data Storytelling](https://www.effectivedatastorytelling.com/)** (Brent Dykes) – Framework for connecting data to decision-making through narrative – *covers how to find the narrative in data and communicate it to stakeholders for impact*
+
+- **[The Visual Display of Quantitative Information](https://www.edwardtufte.com/tufte/books_vdqi)** (Edward Tufte) – The classic text on data visualization design principles – *foundational lessons on clarity, honesty, and efficiency in statistical graphics*
+
+- **[The Truthful Art](https://www.albertocairo.com/books/the-truthful-art/)** (Alberto Cairo) – Book on principles of truthful, intelligent visualization and the ethics of charts – *teaches how to be both accurate and captivating when telling stories with data*
+
+- **[Visualize This & Data Points](https://flowingdata.com/book/visualize-this/)** (Nathan Yau) – Practical books for designing creative infographics and understanding data – *full of examples and step-by-step processes for making your data relatable*
+
+- **[Information Dashboard Design](https://www.perceptualedge.com/library.php)** (Stephen Few) – Guide to creating dashboards that inform effectively – *though focused on dashboards, it teaches principles of decluttering, arranging data, and focusing attention*
+
+- **[Data Visualisation: A Handbook for Data Driven Design](https://book.visualisingdata.com/)** (Andy Kirk) – Comprehensive book on the process of visualizing data from preparation to design to iteration – *offers a structured approach and case studies to improve your data viz projects*
+
+- **[Data Sketches](https://www.datasketchesbook.com/)** (Nadieh Bremer & Shirley Wu) – Showcase of 12 creative data visualization projects and their detailed process – *inspires thinking outside the box in data storytelling, with an emphasis on the journey from data to final art*
+
+---
+
+## Courses and training
+
+- **[HarvardX: Data Science Visualization (edX)](https://www.edx.org/course/data-science-visualization)** – Free online course teaching data visualization basics in R (ggplot2) as part of Harvard's Data Science series – *great for scientists to learn principles and hands-on plotting*
+
+- **[UC Davis: Fundamentals of Visualization with Tableau (Coursera)](https://www.coursera.org/learn/data-visualization-tableau)** – Intro course on creating visualizations and dashboards in Tableau – *learns by doing, focusing on real-world datasets and storytelling in business contexts*
+
+- **[freeCodeCamp: Data Visualization with D3.js](https://www.freecodecamp.org/learn/data-visualization/)** – A free online curriculum to learn D3.js basics and build projects – *excellent for web developers or anyone looking to create custom interactive visualizations*
+
+- **[Knight Center: Data Visualization and Infographics MOOC](https://journalismcourses.org/product/infographics/)** – Periodically offered massive open course covering design and development of infographics, taught by Alberto Cairo – *covers theory and practice from one of the leading experts*
+
+- **[Visualising Data (Andy Kirk) Training](https://www.visualisingdata.com/training/)** – Workshops (online and in-person) and e-learning by Andy Kirk covering data visualization skills from beginner to advanced – *learn practical techniques and the data viz design process from a seasoned trainer*
+
+- **[Storytelling with Data Workshops](https://www.storytellingwithdata.com/workshops)** – Training sessions and community resources from the Storytelling with Data team – *hands-on practice in refining charts and crafting persuasive data narratives*
+
+- **[Kaggle: Data Visualization Course](https://www.kaggle.com/learn/data-visualization)** – Free short course on Kaggle (uses Python's seaborn & matplotlib) to teach the basics of visualizing data and building effective charts – *good for scientists and analysts to quickly level up plotting skills*
+
+---
+
+## Articles and guides
+
+- **[The Pudding – Process Posts](https://pudding.cool/process/)** – In-depth write-ups on how each visual essay was made (data, design, code) – *offers a transparent look at the creative and analytical process behind award-winning data stories*
+
+- **[Datawrapper Academy](https://academy.datawrapper.de/)** – Extensive collection of step-by-step tutorials and tips for creating charts, maps, and tables with Datawrapper – *learn not just the tool but also general design best practices*
+
+- **[Reuters Graphics – "How We Built It"](https://www.reuters.com/graphics/)** – Articles by the Reuters graphics/data team explaining the development of their high-profile visual stories and news graphics – *valuable insight into tools, techniques, and challenges in newsroom data storytelling*
+
+- **[FT Visual & Data Journalism](https://www.ft.com/visual-and-data-journalism)** – Blog posts and showcases from the Financial Times data journalism team – *explains methods and reasoning behind some of FT's data visuals and projects*
+
+- **[BBC News Graphics R Cookbook](https://bbc.github.io/rcookbook/)** – Guidelines and examples from BBC News for creating graphics in R (ggplot2) following BBC style – *practical recipes for making publication-ready charts with consistency and accessibility*
+
+- **[Google News Initiative Training – Data Journalism](https://newsinitiative.withgoogle.com/training/topics/data-journalism/)** – Free lessons on using data in journalism, including finding data, using spreadsheets, visualization tools, maps, etc. – *good beginner-friendly modules for journalists and communicators new to data storytelling*
+
+- **[Ten Simple Rules for Better Figures](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003833)** – PLOS Computational Biology article outlining core principles for scientific figure design – *concise, practical advice to make research graphics clearer and more effective*
+
+- **[Data Journalism Handbook](https://datajournalism.com/read/handbook/one)** – Open-access resource (1st edition) compiling tips, case studies, and techniques from journalists around the world – *covers the entire workflow from getting data to telling impactful stories*
+
+---
+
+## Datasets
+
+### General
+
+- **[Our World in Data](https://ourworldindata.org/)** – Repository of clean, up-to-date datasets on global topics (economy, health, environment, etc.), often with ready-made visuals – *excellent for finding reliable data for storytelling*
+
+- **[World Bank Data](https://data.worldbank.org/)** – Huge collection of global development indicators and country statistics – *great for economic, social, and environmental data with an easy country/year query interface*
+
+- **[UN Data](https://data.un.org/)** – UN repository of official statistics from many UN agencies and databases – *good for country-level data on population, education, GDP, etc., often hard to find elsewhere*
+
+- **[OECD Data](https://data.oecd.org/)** – Economic and social indicators for OECD member countries (and some partners) – *useful for comparing policy-relevant metrics (health, education, economy) across developed nations*
+
+- **[Eurostat](https://ec.europa.eu/eurostat)** – European Union's official statistics portal – *wide range of data (economy, demographics, elections, etc.) for EU countries and regions, with visualization tools included*
+
+- **[Data.gov](https://data.gov/)** – U.S. Government open data portal – *tens of thousands of datasets from federal and local agencies, covering topics from climate to health to transportation*
+
+- **[Kaggle Datasets](https://www.kaggle.com/datasets)** – Community-contributed datasets on a variety of topics – *great for finding ready-to-use CSVs for practice projects or storytelling (check data quality and licensing per dataset)*
+
+- **[Google Dataset Search](https://datasetsearch.research.google.com/)** – Search engine for datasets across the web – *helps you discover data hosted on various portals, repositories, and websites by keyword*
+
+### Global health focus
+
+- **[WHO Global Health Observatory](https://www.who.int/data/gho)** – Health-related data from the World Health Organization (mortality, disease prevalence, risk factors, healthcare resources) – *authoritative source for global and country health statistics*
+
+- **[IHME Global Burden of Disease (GBD)](https://www.healthdata.org/gbd)** – Results from the GBD study by Institute for Health Metrics and Evaluation – *rich dataset on diseases, injuries, and risk factors globally, with tools to visualize health trends*
+
+- **[GHDx (Global Health Data Exchange)](https://ghdx.healthdata.org/)** – Catalog of health-related datasets, surveys, and indicators from IHME and partners – *useful for finding specific health datasets (by country, by topic) and downloading them*
+
+- **[UNICEF Data](https://data.unicef.org/)** – Statistics on children and maternal health, education, and equity – *data and reports focused on child well-being worldwide, often in user-friendly formats*
+
+- **[Our World in Data – Health](https://ourworldindata.org/health-meta)** – The health section of OWID with charts and data on various health outcomes (life expectancy, disease, nutrition, etc.) – *quickly get annotated charts or download the underlying data for reuse*
+
+---
+
+## Inspiration and case studies
+
+- **[The New York Times – Graphics](https://www.nytimes.com/section/graphics)** – Archive of NYT's special visual projects and interactive graphics – *top-tier examples of data storytelling and visual explanation in journalism*
+
+- **[The Pudding](https://pudding.cool/)** – Digital publication that crafts visual essays to explain ideas with data – *innovative and often playful interactive stories that push the boundaries of data visualization*
+
+- **[Bloomberg Graphics](https://www.bloomberg.com/graphics/)** – Data-driven news features and graphics by Bloomberg's team – *great examples of business and finance-related visual storytelling with high production value*
+
+- **[Reuters Graphics](https://www.reuters.com/graphics/)** – Portfolio of Reuters' interactive stories and explanatory graphics – *notable for clean design and strong integration of data, code, and narrative for global news*
+
+- **[Washington Post Graphics](https://www.washingtonpost.com/graphics/)** – The WP's visual journalism projects covering news, analysis, and investigative stories – *shows how data and graphics can clarify complex issues and add depth to reporting*
+
+- **[Financial Times – Visual & Data Journalism](https://www.ft.com/visual-and-data-journalism)** – FT's data visualization and journalism hub (stories, graphics, and behind-the-scenes) – *often focused on economics and markets, illustrating how to communicate insights to a niche audience*
+
+- **[The Guardian – Data Visualizations and Interactives](https://www.theguardian.com/infographics)** – Gallery of infographics and interactive content from The Guardian – *combines playful design with serious data in an accessible way*
+
+- **[FlowingData](https://flowingdata.com/)** – Blog by Nathan Yau showcasing everyday insights with data visualization (plus tutorials for members) – *inspiration from creative charts, humorous data analysis, and real-life data stories*
+
+- **[Observable Gallery](https://observablehq.com/explore)** – Community showcase of notebooks created on Observable – *find interactive data visualizations and mini data stories across diverse topics, with the ability to view and fork the underlying code*
+
+- **[Information is Beautiful Awards](https://www.informationisbeautifulawards.com/)** – Annual awards highlighting the best in data visualization and storytelling across the world – *browse winning and shortlisted projects for inspiration on design and narrative techniques*
+
+---
+
+## Workflow and templates
+
+- **[ABT Narrative Framing](https://www.simplerstorytelling.com/abt-method)** – The "And, But, Therefore" method for structuring the core narrative of your data story – *helps in formulating a concise story premise that has setup, tension, and resolution*
+
+- **[Data Ethics Canvas](https://theodi.org/article/data-ethics-canvas/)** – Worksheet by ODI to identify ethical issues in data projects (privacy, bias, consent, etc.) – *ensure your data storytelling considers risks and is responsible*
+
+- **[Notion Storytelling & Project Templates](https://www.notion.so/templates)** – Collection of Notion templates for data story planning, tracking tasks (GTD), and outlining story briefs – *useful starting points to organize your project and narrative structure*
+
+---
+
+## Communities and newsletters
+
+- **[Data Visualization Society (DVS)](https://www.datavisualizationsociety.org/)** – Global community of data viz professionals and enthusiasts (with an active Slack, forums, and local chapters) – *great for networking, feedback, and learning from peers*
+
+- **[Nightingale](https://nightingaledvs.com/)** – Online magazine by DVS featuring articles on data visualization practice, case studies, and interviews – *regular insight into the art and science of data storytelling from practitioners*
+
+- **[FlowingData Newsletter](https://flowingdata.com/newsletter/)** – Weekly newsletter by Nathan Yau with highlights of new interesting data vizzes and resources – *keep up with creative examples and datasets in your inbox*
+
+- **[The Why Axis](https://thewhyaxis.substack.com/)** – Substack newsletter by Lisa Charlotte Rost (Datawrapper) analyzing what works and what doesn't in specific charts each week – *practical design tips and critiques that improve your "chart literacy"*
+
+- **[Datawrapper Weekly Charts](https://www.datawrapper.de/weeklycharts/)** – Weekly email showcasing a compelling chart with context and how it was made – *learn by example each week, often touching on design and data choices*
+
+- **[Reddit r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/)** – Community of hundreds of thousands sharing data visualizations (mostly static images) – *inspiration and crowd feedback, with diverse topics and skill levels (upvote-worthy examples daily)*
+
+- **[Reddit r/DataViz](https://www.reddit.com/r/DataViz/)** – Discussion-focused subreddit on data visualization techniques, tools, and questions – *good for asking for tool recommendations, feedback, or reading about others' workflows*
+
+---
+
+## Podcasts
+
+- **[Data Stories](https://datastori.es/)** – Long-running podcast by Enrico Bertini and Moritz Stefaner interviewing data viz experts – *insightful conversations on the craft of data visualization and storytelling, with diverse guests*
+
+- **[Storytelling with Data](https://www.storytellingwithdata.com/podcast)** – Podcast from Cole Nussbaumer Knaflic's team discussing how to turn charts into clear messages – *short episodes with tips on chart design, presenting data, and listener Q&A*
+
+- **[PolicyViz Podcast](https://policyviz.com/podcast/)** – Hosted by Jon Schwabish, covering the communication of data and evidence, often in policy contexts – *mix of tool talk, design best practices, and how data viz fits into making decisions*
+
+- **[Data Viz Today](https://dataviztoday.com/)** – Hosted by Alli Torban, focusing on the creative process behind effective data visualizations – *each episode breaks down one specific data viz project or tip for practical learning*
+
+---
+
+## License
+
+This list is inspired by the [Awesome list](https://awesome.re) guidelines – it is open for the community to contribute.
+
+Each linked item belongs to its creator; please check individual resources for their own license or terms of use.
+
+</article>
+</div>
+
+<style>
+	.resources-container {
+		min-height: 100vh;
+		background: #0a0a0a;
+		color: #e0e0e0;
+	}
+
+	.logo-link {
+		color: #7bafd4;
+		transition: color 0.3s ease;
+	}
+
+	.logo-link:hover {
+		color: #f4b841;
+	}
+
+	.nav-link {
+		color: #7bafd4;
+		text-decoration: none;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.nav-link:hover {
+		color: #f4b841;
+		background: rgba(123, 175, 212, 0.1);
+	}
+
+	.prose-container {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 8rem 2rem 4rem;
+		line-height: 1.8;
+	}
+
+	.prose-container :global(h1) {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+		font-weight: 700;
+		color: #7bafd4;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, #7bafd4 0%, #f4b841 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.prose-container :global(h2) {
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: #7bafd4;
+		margin-top: 3rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid rgba(123, 175, 212, 0.3);
+	}
+
+	.prose-container :global(h3) {
+		font-size: 1.35rem;
+		font-weight: 600;
+		color: #f4b841;
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+	}
+
+	.prose-container :global(p) {
+		margin-bottom: 1.5rem;
+		color: #d0d0d0;
+	}
+
+	.prose-container :global(ul) {
+		margin: 1.5rem 0;
+		padding-left: 1.5rem;
+		list-style: none;
+	}
+
+	.prose-container :global(li) {
+		margin-bottom: 1rem;
+		color: #d0d0d0;
+		position: relative;
+		padding-left: 1rem;
+	}
+
+	.prose-container :global(li::before) {
+		content: '';
+		position: absolute;
+		left: -0.5rem;
+		top: 0.6rem;
+		width: 6px;
+		height: 6px;
+		background: #7bafd4;
+		border-radius: 50%;
+	}
+
+	.prose-container :global(em) {
+		color: #888;
+		font-style: italic;
+	}
+
+	.prose-container :global(strong) {
+		color: #e0e0e0;
+		font-weight: 600;
+	}
+
+	.prose-container :global(a) {
+		color: #7bafd4;
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	.prose-container :global(a:hover) {
+		color: #f4b841;
+		text-decoration: underline;
+	}
+
+	.prose-container :global(hr) {
+		margin: 3rem 0;
+		border: none;
+		border-top: 1px solid rgba(123, 175, 212, 0.2);
+	}
+
+	/* Table of contents styling */
+	.prose-container :global(ul ul) {
+		margin: 0.5rem 0 0.5rem 1rem;
+	}
+
+	.prose-container :global(ul ul li) {
+		margin-bottom: 0.5rem;
+	}
+
+	@media (max-width: 768px) {
+		.prose-container {
+			padding: 6rem 1.5rem 3rem;
+		}
+
+		nav {
+			padding: 1rem;
+		}
+	}
+</style>

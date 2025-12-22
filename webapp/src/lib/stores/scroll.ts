@@ -1,6 +1,5 @@
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
-import Lenis from 'lenis';
 
 interface ScrollState {
 	scrollY: number;
@@ -11,10 +10,8 @@ interface ScrollState {
 	direction: 1 | -1;
 }
 
-let lenisInstance: Lenis | null = null;
-
 function createScrollStore() {
-	const { subscribe, set, update } = writable<ScrollState>({
+	const { subscribe, set } = writable<ScrollState>({
 		scrollY: 0,
 		scrollProgress: 0,
 		windowHeight: 0,
@@ -24,59 +21,54 @@ function createScrollStore() {
 	});
 
 	if (browser) {
-		// Initialize Lenis smooth scroll
-		lenisInstance = new Lenis({
-			duration: 1.2,
-			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-			orientation: 'vertical',
-			smoothWheel: true,
-			wheelMultiplier: 1,
-			touchMultiplier: 2
-		});
+		let lastScrollY = 0;
+		let lastTime = performance.now();
 
-		// Update scroll state on Lenis scroll event
-		lenisInstance.on('scroll', ({ scroll, velocity, direction }: any) => {
+		const updateScroll = () => {
+			const now = performance.now();
+			const deltaTime = (now - lastTime) / 1000; // seconds
+			const scrollY = window.scrollY;
 			const windowHeight = window.innerHeight;
 			const documentHeight = document.documentElement.scrollHeight;
-			const scrollProgress = scroll / (documentHeight - windowHeight);
+			const scrollProgress = scrollY / (documentHeight - windowHeight);
+
+			const rawVelocity = deltaTime > 0 ? (scrollY - lastScrollY) / deltaTime / 1000 : 0;
+			const velocity = Math.max(-5, Math.min(5, rawVelocity)); // clamp to prevent spikes
+			const direction = scrollY >= lastScrollY ? 1 : -1;
+
+			lastScrollY = scrollY;
+			lastTime = now;
 
 			set({
-				scrollY: scroll,
+				scrollY,
 				scrollProgress: Math.max(0, Math.min(1, scrollProgress)),
 				windowHeight,
 				documentHeight,
 				velocity,
 				direction: direction as 1 | -1
 			});
-		});
-
-		// Lenis animation frame
-		function raf(time: number) {
-			lenisInstance?.raf(time);
-			requestAnimationFrame(raf);
-		}
-		requestAnimationFrame(raf);
-
-		// Handle window resize
-		const handleResize = () => {
-			update((state) => ({
-				...state,
-				windowHeight: window.innerHeight,
-				documentHeight: document.documentElement.scrollHeight
-			}));
 		};
-		window.addEventListener('resize', handleResize);
+
+		window.addEventListener('scroll', updateScroll, { passive: true });
+		window.addEventListener('resize', updateScroll);
+		updateScroll(); // initial call
 	}
 
 	return {
 		subscribe,
 		scrollTo: (target: number | string, options?: { offset?: number; duration?: number }) => {
-			if (lenisInstance) {
-				lenisInstance.scrollTo(target, options);
+			if (typeof target === 'number') {
+				window.scrollTo({ top: target + (options?.offset ?? 0), behavior: 'smooth' });
+			} else {
+				const element = document.querySelector(target);
+				if (element) {
+					const top = element.getBoundingClientRect().top + window.scrollY + (options?.offset ?? 0);
+					window.scrollTo({ top, behavior: 'smooth' });
+				}
 			}
 		},
-		stop: () => lenisInstance?.stop(),
-		start: () => lenisInstance?.start()
+		stop: () => {},
+		start: () => {}
 	};
 }
 
