@@ -64,6 +64,7 @@ Misalignment of these elements is one of the most common reasons for bad communi
 Actually, I invite you to apply this mental model to any communication event (talks, lessons, even emails!) that called your attention, either for good or for bad.
 It's very illuminating.
 
+## Examples of misaligned communication
 We can even build some other classic "genres", in this case examples of bad communication, by randomly sticking together some of the pieces above. Let's start with our previous combination, that we can identify as:
 
 - A talk trying to cover too much
@@ -89,6 +90,10 @@ We can build more familiar genres:
     - Content: detailed description of the performed research
     - Format: written, subject to strict styling rules
     - Audience: usually one or two persons, not necessarily interested in what you have to tell
+
+## Take home message
+Always keep your purpose, content, format and audience aligned.
+Remember: the why, the what, the how and the who.
 
 
 [^1]: This is more than a poetic metaphor. After all, that's the literal meaning of the word _seminar_ (from latin _seminarium_: plant nursery).
