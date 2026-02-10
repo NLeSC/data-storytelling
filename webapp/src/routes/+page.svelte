@@ -14,6 +14,8 @@
 	import ZoomControls from '$lib/components/ZoomControls.svelte';
 	import SettingsButton from '$lib/components/settings/SettingsButton.svelte';
 	import SettingsPanel from '$lib/components/settings/SettingsPanel.svelte';
+	import CustomStoryFab from '$lib/components/custom/CustomStoryFab.svelte';
+	import CustomStoryModal from '$lib/components/custom/CustomStoryModal.svelte';
 	import { fetchAllProjects } from '$lib/api/projects';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { onMount } from 'svelte';
@@ -29,6 +31,7 @@
 	let projects = $state<ProjectWithDomain[]>([]);
 	let selectedProject = $state<ProjectWithDomain | null>(null);
 	let isSettingsOpen = $state(false);
+	let isCustomStoryOpen = $state(false);
 
 	function openSettings() {
 		isSettingsOpen = true;
@@ -137,6 +140,7 @@
 							/>
 						</svg>
 					</a>
+					<CustomStoryFab onclick={() => (isCustomStoryOpen = true)} />
 					<SettingsButton onclick={openSettings} />
 				</div>
 			</div>
@@ -252,6 +256,13 @@
 
 <!-- Project Modal (shared across all sections) -->
 <ProjectModal project={selectedProject} onClose={closeModal} onOpenSettings={openSettings} />
+
+<!-- Custom Story Modal -->
+<CustomStoryModal
+	isOpen={isCustomStoryOpen}
+	onClose={() => (isCustomStoryOpen = false)}
+	onOpenSettings={openSettings}
+/>
 
 <!-- Settings Panel -->
 <SettingsPanel isOpen={isSettingsOpen} onClose={closeSettings} />

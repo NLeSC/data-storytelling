@@ -46,6 +46,7 @@ export interface StoryGenerationRequest {
 	audience: AudienceType;
 	relatedSoftware: RelatedSoftware[];
 	additionalContext: string; // from uploaded files
+	urls?: string[];
 }
 
 export interface StoryGenerationState {

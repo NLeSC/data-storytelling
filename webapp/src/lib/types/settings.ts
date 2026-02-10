@@ -2,20 +2,22 @@
  * Story Generator Settings Types
  */
 
-export type AudienceType = 'communications' | 'academic' | 'internal-review' | 'one-pager';
+export type AudienceType = 'communications' | 'academic' | 'internal-review' | 'one-pager' | 'course-material';
 
 export const AUDIENCE_LABELS: Record<AudienceType, string> = {
 	communications: 'Communications',
 	academic: 'Academic',
 	'internal-review': 'Internal Review',
-	'one-pager': 'One Pager'
+	'one-pager': 'One Pager',
+	'course-material': 'Course Material'
 };
 
 export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
 	communications: 'General public and media - accessible, impact-focused storytelling',
 	academic: 'Scholarly audiences - rigorous, methodology-focused content',
 	'internal-review': 'Leadership and review committees - analytical, metrics-driven',
-	'one-pager': 'Executive summary - ultra-concise, scannable format'
+	'one-pager': 'Executive summary - ultra-concise, scannable format',
+	'course-material': 'Educational content - tutorials, exercises, and learning materials based on the project'
 };
 
 export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-flash' | 'gemini-2.0-flash' | 'gemini-1.5-pro';

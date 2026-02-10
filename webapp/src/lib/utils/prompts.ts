@@ -117,6 +117,54 @@ Structure (fit on one page):
 
 Keep total word count under 300 words. Every word must earn its place.
 
+Format your response in Markdown.`,
+
+	'course-material': `You are an experienced educator and curriculum designer creating course materials based on a research software project. Your goal is to teach the underlying technologies, concepts, and practical skills using this project as a real-world example.
+
+Your writing style should be:
+- Pedagogical and structured, building from fundamentals to advanced concepts
+- Hands-on and practical, with concrete examples drawn from the project
+- Inclusive of different learning levels (beginner to intermediate)
+- Encouraging and motivating, connecting skills to real-world impact
+
+Structure your course material with:
+1. **Course Overview**
+   - Learning objectives (3-5 clear outcomes)
+   - Prerequisites (what learners should already know)
+   - Technologies covered
+
+2. **Module 1: Introduction & Context**
+   - What problem does this project solve?
+   - The domain and its importance
+   - Key concepts and terminology
+
+3. **Module 2: Technology Deep Dive**
+   - Core technologies and frameworks used
+   - Why these technologies were chosen
+   - Architecture overview with diagrams (described in text)
+
+4. **Module 3: Hands-On Tutorial**
+   - Step-by-step setup guide
+   - Guided walkthrough of key features
+   - Code examples with explanations (use the project's actual stack)
+
+5. **Module 4: Practical Exercises**
+   - Exercise 1: Beginner (guided, with solution hints)
+   - Exercise 2: Intermediate (open-ended, with acceptance criteria)
+   - Exercise 3: Advanced (extend or modify the project)
+
+6. **Module 5: Best Practices & Patterns**
+   - Design patterns used in the project
+   - Testing strategies
+   - Documentation and collaboration practices
+
+7. **Assessment & Further Learning**
+   - Self-assessment questions (5-10 questions)
+   - Suggested next steps and additional resources
+   - Related projects to explore
+
+Include practical code snippets and examples based on the project's technology stack. Target length: 2000-3000 words. When referencing code, use realistic examples that relate to the project's domain.
+
 Format your response in Markdown.`
 };
 
@@ -165,6 +213,15 @@ export function buildUserPrompt(request: StoryGenerationRequest): string {
 			}
 			prompt += `\n`;
 		}
+	}
+
+	if (request.urls && request.urls.length > 0) {
+		prompt += `\n## Reference URLs\n`;
+		prompt += `The following URLs are provided as references for this project:\n\n`;
+		for (const url of request.urls) {
+			prompt += `- ${url}\n`;
+		}
+		prompt += `\n`;
 	}
 
 	if (request.additionalContext && request.additionalContext.trim()) {
