@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.9.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.9.0) - 2026-02-10
+
+## What's Changed
+
+### ✨ Features
+- feat: Implement custom story generation feature with modal and URL references (8007276)
+- feat: Add themed scrollbars for improved UI aesthetics (401cd88)
+
+
+
 ## [0.8.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.8.0) - 2025-12-22
 
 ## What's Changed
