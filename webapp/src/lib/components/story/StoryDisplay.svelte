@@ -13,7 +13,7 @@
 
 	let copied = $state(false);
 
-	const showExport = $derived(content.length > 0 && !isStreaming && projectName);
+	const exportDisabled = $derived(!content || isStreaming);
 
 	async function copyToClipboard() {
 		try {
@@ -175,26 +175,24 @@ audience: ${audience}
 	<div class="display-header">
 		<h4 class="display-label">Generated Story</h4>
 		<div class="display-actions">
-			{#if showExport}
-				<button class="action-button" onclick={exportMarkdown} title="Export as Markdown">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-						<polyline points="14 2 14 8 20 8"/>
-						<line x1="16" y1="13" x2="8" y2="13"/>
-						<line x1="16" y1="17" x2="8" y2="17"/>
-					</svg>
-					.md
-				</button>
-				<button class="action-button" onclick={exportPdf} title="Export as PDF">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-						<polyline points="14 2 14 8 20 8"/>
-						<path d="M12 18v-6"/>
-						<path d="M9 15l3 3 3-3"/>
-					</svg>
-					PDF
-				</button>
-			{/if}
+			<button class="action-button" onclick={exportMarkdown} disabled={exportDisabled} title="Export as Markdown">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+					<polyline points="14 2 14 8 20 8"/>
+					<line x1="16" y1="13" x2="8" y2="13"/>
+					<line x1="16" y1="17" x2="8" y2="17"/>
+				</svg>
+				.md
+			</button>
+			<button class="action-button" onclick={exportPdf} disabled={exportDisabled} title="Export as PDF">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+					<polyline points="14 2 14 8 20 8"/>
+					<path d="M12 18v-6"/>
+					<path d="M9 15l3 3 3-3"/>
+				</svg>
+				PDF
+			</button>
 			<button class="action-button" onclick={copyToClipboard} disabled={!content || isStreaming}>
 				{#if copied}
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
