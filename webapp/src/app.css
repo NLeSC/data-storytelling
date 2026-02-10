@@ -1,3 +1,27 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+/* Themed scrollbars */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(123, 175, 212, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: rgba(123, 175, 212, 0.3);
+	border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background: rgba(123, 175, 212, 0.5);
+}
