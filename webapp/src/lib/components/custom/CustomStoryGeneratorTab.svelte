@@ -3,7 +3,6 @@
 	import AudienceSelector from '../story/AudienceSelector.svelte';
 	import FileUploader from '../story/FileUploader.svelte';
 	import StoryDisplay from '../story/StoryDisplay.svelte';
-	import StoryExporter from '../story/StoryExporter.svelte';
 	import UrlReferencesInput from './UrlReferencesInput.svelte';
 	import { settingsStore, initSettings, hasApiKey } from '$lib/stores/settings.svelte';
 	import { generateStoryStream } from '$lib/api/gemini';
@@ -92,7 +91,6 @@
 	}
 
 	const canGenerate = $derived(hasApiKey() && !isGenerating && projectTitle.trim().length > 0);
-	const hasContent = $derived(generatedContent.length > 0);
 </script>
 
 <div id="custom-story-generator-tab" class="story-generator-tab">
@@ -169,16 +167,7 @@
 		</div>
 
 		<div class="output-panel">
-			<StoryDisplay content={generatedContent} isStreaming={isGenerating} />
-
-			{#if hasContent && !isGenerating}
-				<StoryExporter
-					content={generatedContent}
-					projectName={projectTitle || 'Custom Project'}
-					{audience}
-					disabled={isGenerating}
-				/>
-			{/if}
+			<StoryDisplay content={generatedContent} isStreaming={isGenerating} projectName={projectTitle || 'Custom Project'} {audience} />
 		</div>
 	</div>
 </div>

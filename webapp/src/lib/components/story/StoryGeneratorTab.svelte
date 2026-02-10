@@ -4,7 +4,6 @@
 	import RelatedSoftwareSelector from './RelatedSoftwareSelector.svelte';
 	import FileUploader from './FileUploader.svelte';
 	import StoryDisplay from './StoryDisplay.svelte';
-	import StoryExporter from './StoryExporter.svelte';
 	import { settingsStore, initSettings, hasApiKey } from '$lib/stores/settings.svelte';
 	import { generateStoryStream } from '$lib/api/gemini';
 	import { fetchSoftwareInOrganisation } from '$lib/api/rsd-software';
@@ -115,7 +114,6 @@
 	}
 
 	const canGenerate = $derived(hasApiKey() && !isGenerating);
-	const hasContent = $derived(generatedContent.length > 0);
 </script>
 
 <div class="story-generator-tab">
@@ -177,16 +175,7 @@
 		</div>
 
 		<div class="output-panel">
-			<StoryDisplay content={generatedContent} isStreaming={isGenerating} />
-
-			{#if hasContent && !isGenerating}
-				<StoryExporter
-					content={generatedContent}
-					projectName={project.brand_name}
-					{audience}
-					disabled={isGenerating}
-				/>
-			{/if}
+			<StoryDisplay content={generatedContent} isStreaming={isGenerating} projectName={project.brand_name} {audience} />
 		</div>
 	</div>
 </div>
