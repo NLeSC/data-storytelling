@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.10.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.10.0) - 2026-02-10
+
+## What's Changed
+
+### ✨ Features
+- feat: Disable export buttons when content is empty or streaming (c4ecd08)
+- feat: Refactor StoryDisplay and StoryGeneratorTab to streamline story export functionality (51a872f)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (eb78406)
+
+
+
 ## [0.9.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.9.0) - 2026-02-10
 
 ## What's Changed
