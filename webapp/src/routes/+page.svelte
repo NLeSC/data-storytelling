@@ -255,13 +255,13 @@
 </div>
 
 <!-- Project Modal (shared across all sections) -->
-<ProjectModal project={selectedProject} onClose={closeModal} onOpenSettings={openSettings} />
+<ProjectModal project={selectedProject} onClose={closeModal} onOpenSettings={() => { closeModal(); openSettings(); }} />
 
 <!-- Custom Story Modal -->
 <CustomStoryModal
 	isOpen={isCustomStoryOpen}
 	onClose={() => (isCustomStoryOpen = false)}
-	onOpenSettings={openSettings}
+	onOpenSettings={() => { isCustomStoryOpen = false; openSettings(); }}
 />
 
 <!-- Settings Panel -->
