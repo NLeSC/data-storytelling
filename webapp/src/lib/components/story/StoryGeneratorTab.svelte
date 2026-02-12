@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import AudienceSelector from './AudienceSelector.svelte';
+	import ModelSelector from './ModelSelector.svelte';
 	import RelatedSoftwareSelector from './RelatedSoftwareSelector.svelte';
 	import FileUploader from './FileUploader.svelte';
 	import StoryDisplay from './StoryDisplay.svelte';
 	import { settingsStore, initSettings, hasApiKey } from '$lib/stores/settings.svelte';
 	import { generateStoryStream } from '$lib/api/gemini';
-	import { fetchSoftwareInOrganisation } from '$lib/api/rsd-software';
-	import type { ProjectWithDomain } from '$lib/types/project';
+	import { fetchSoftwareInOrganisation, fetchEnrichedMetadata, type EnrichedMetadata } from '$lib/api/rsd-software';
+	import { RSD_PROJECT_DOMAIN, type ProjectWithDomain } from '$lib/types/project';
 	import type { AudienceType } from '$lib/types/settings';
 	import type { RelatedSoftware, UploadedFile, StoryGenerationRequest } from '$lib/types/story';
 
@@ -24,6 +25,8 @@
 	let selectedSoftwareIds = $state<string[]>([]);
 	let uploadedFiles = $state<UploadedFile[]>([]);
 	let loadingSoftware = $state(false);
+	let enrichedMetadata = $state<EnrichedMetadata | null>(null);
+	let loadingMetadata = $state(false);
 	let isGenerating = $state(false);
 	let generatedContent = $state('');
 	let error = $state<string | null>(null);
@@ -33,7 +36,20 @@
 		initSettings();
 		audience = settingsStore.current.defaultAudience;
 		loadRelatedSoftware();
+		loadEnrichedMetadata();
 	});
+
+	async function loadEnrichedMetadata() {
+		loadingMetadata = true;
+		try {
+			const entityType = project.domain.id === RSD_PROJECT_DOMAIN.id ? 'rsd-project' : 'software';
+			enrichedMetadata = await fetchEnrichedMetadata(project.id, entityType);
+		} catch (e) {
+			console.error('Failed to load enriched metadata:', e);
+		} finally {
+			loadingMetadata = false;
+		}
+	}
 
 	// Load related software when project changes
 	async function loadRelatedSoftware() {
@@ -95,7 +111,8 @@
 			},
 			audience,
 			relatedSoftware: selectedSoftware,
-			additionalContext
+			additionalContext,
+			enrichedMetadata: enrichedMetadata ?? undefined
 		};
 
 		try {
@@ -114,6 +131,22 @@
 	}
 
 	const canGenerate = $derived(hasApiKey() && !isGenerating);
+
+	const metadataSummary = $derived.by(() => {
+		if (!enrichedMetadata) return [];
+		const parts: string[] = [];
+		if (enrichedMetadata.team.length > 0) parts.push(`${enrichedMetadata.team.length} team`);
+		if (enrichedMetadata.keywords.length > 0) parts.push(`${enrichedMetadata.keywords.length} keywords`);
+		if (enrichedMetadata.mentions.length > 0) parts.push(`${enrichedMetadata.mentions.length} publications`);
+		if (enrichedMetadata.licenses.length > 0) {
+			const name = enrichedMetadata.licenses[0].name || enrichedMetadata.licenses[0].license;
+			parts.push(name);
+		}
+		if (enrichedMetadata.packages.length > 0) parts.push(`${enrichedMetadata.packages.length} packages`);
+		if (enrichedMetadata.urls.length > 0) parts.push(`${enrichedMetadata.urls.length} links`);
+		if (enrichedMetadata.researchDomains.length > 0) parts.push(`${enrichedMetadata.researchDomains.length} domains`);
+		return parts;
+	});
 </script>
 
 <div class="story-generator-tab">
@@ -135,6 +168,21 @@
 
 	<div class="generator-layout">
 		<div class="config-panel">
+			<div id="metadata-status" class="metadata-status">
+				{#if loadingMetadata}
+					<div class="metadata-loading">
+						<div class="spinner-sm"></div>
+						<span>Loading project metadata...</span>
+					</div>
+				{:else if metadataSummary.length > 0}
+					<div class="metadata-badges">
+						{#each metadataSummary as badge}
+							<span class="metadata-badge">{badge}</span>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
 			<AudienceSelector selected={audience} onchange={handleAudienceChange} />
 
 			<RelatedSoftwareSelector
@@ -145,6 +193,8 @@
 			/>
 
 			<FileUploader files={uploadedFiles} onfileschange={handleFilesChange} />
+
+			<ModelSelector />
 
 			<button
 				class="generate-button"
@@ -301,6 +351,43 @@
 		border-radius: 0.5rem;
 		color: #f44336;
 		font-size: 0.85rem;
+	}
+
+	.metadata-status {
+		min-height: 1.75rem;
+	}
+
+	.metadata-loading {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.spinner-sm {
+		width: 12px;
+		height: 12px;
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		border-top-color: rgba(255, 255, 255, 0.5);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.metadata-badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.375rem;
+	}
+
+	.metadata-badge {
+		display: inline-block;
+		padding: 0.125rem 0.5rem;
+		background: rgba(123, 175, 212, 0.12);
+		border: 1px solid rgba(123, 175, 212, 0.25);
+		border-radius: 9999px;
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.65);
 	}
 
 	@media (max-width: 900px) {

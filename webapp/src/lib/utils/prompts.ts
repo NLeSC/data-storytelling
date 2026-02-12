@@ -262,6 +262,75 @@ export function buildUserPrompt(request: StoryGenerationRequest): string {
 		prompt += `\n`;
 	}
 
+	if (request.enrichedMetadata) {
+		const m = request.enrichedMetadata;
+
+		if (m.team.length > 0) {
+			prompt += `\n## Team & Contributors\n`;
+			for (const member of m.team) {
+				const name = `${member.given_names} ${member.family_names}`;
+				const parts: string[] = [];
+				if (member.role) parts.push(member.role);
+				if (member.affiliation) parts.push(member.affiliation);
+				if (member.orcid) parts.push(`ORCID: ${member.orcid}`);
+				if (member.is_contact_person) parts.push('Contact person');
+				prompt += `- **${name}**${parts.length > 0 ? ` — ${parts.join(' · ')}` : ''}\n`;
+			}
+			prompt += `\n`;
+		}
+
+		if (m.keywords.length > 0) {
+			prompt += `## Keywords\n${m.keywords.join(', ')}\n\n`;
+		}
+
+		if (m.urls.length > 0) {
+			prompt += `## Links & Repositories\n`;
+			for (const link of m.urls) {
+				prompt += `- [${link.title}](${link.url})\n`;
+			}
+			prompt += `\n`;
+		}
+
+		if (m.researchDomains.length > 0) {
+			prompt += `## Research Domains\n`;
+			for (const domain of m.researchDomains) {
+				prompt += `- ${domain.name} (${domain.key})\n`;
+			}
+			prompt += `\n`;
+		}
+
+		if (m.mentions.length > 0) {
+			prompt += `## Publications & Mentions\n`;
+			for (const mention of m.mentions) {
+				const parts: string[] = [];
+				if (mention.publication_year) parts.push(String(mention.publication_year));
+				if (mention.journal) parts.push(mention.journal);
+				const detail = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+				const doi = mention.doi ? ` DOI: ${mention.doi}` : '';
+				prompt += `- "${mention.title}"${detail}${doi}\n`;
+			}
+			prompt += `\n`;
+		}
+
+		if (m.licenses.length > 0) {
+			prompt += `## Licenses\n`;
+			for (const lic of m.licenses) {
+				const osLabel = lic.open_source ? 'Open Source' : 'Proprietary';
+				prompt += `- ${lic.name || lic.license} (${osLabel})\n`;
+			}
+			prompt += `\n`;
+		}
+
+		if (m.packages.length > 0) {
+			prompt += `## Package Distribution\n`;
+			for (const pkg of m.packages) {
+				const downloads = pkg.download_count ? ` (${pkg.download_count.toLocaleString()} downloads)` : '';
+				prompt += `- ${pkg.package_manager}: ${pkg.url}${downloads}\n`;
+			}
+			prompt += `\n`;
+		}
+	}
+
 	if (request.additionalContext && request.additionalContext.trim()) {
 		prompt += `\n## Additional Context (from uploaded documents)\n`;
 		// Limit context to avoid exceeding token limits

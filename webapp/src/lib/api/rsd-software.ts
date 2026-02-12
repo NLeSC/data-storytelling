@@ -213,6 +213,157 @@ export async function searchRsdProjects(query: string, limit = 10): Promise<Proj
 }
 
 /**
+ * Enriched metadata from the RSD API for story generation context
+ */
+export interface EnrichedMetadata {
+	team: {
+		given_names: string;
+		family_names: string;
+		role: string | null;
+		affiliation: string | null;
+		orcid: string | null;
+		is_contact_person: boolean;
+	}[];
+	keywords: string[];
+	urls: { title: string; url: string }[];
+	mentions: {
+		title: string;
+		doi: string | null;
+		authors: string | null;
+		journal: string | null;
+		publication_year: number | null;
+		mention_type: string;
+	}[];
+	licenses: { name: string; license: string; open_source: boolean }[];
+	packages: { url: string; package_manager: string; download_count: number | null }[];
+	researchDomains: { name: string; key: string }[];
+}
+
+const EMPTY_METADATA: EnrichedMetadata = {
+	team: [],
+	keywords: [],
+	urls: [],
+	mentions: [],
+	licenses: [],
+	packages: [],
+	researchDomains: []
+};
+
+async function fetchJson<T>(url: string): Promise<T[]> {
+	const response = await fetch(url, { headers: { Accept: 'application/json' } });
+	if (!response.ok) return [];
+	return (await response.json()) as T[];
+}
+
+/**
+ * Fetch keywords from junction table → keyword table
+ */
+async function fetchKeywords(
+	id: string,
+	type: 'software' | 'rsd-project'
+): Promise<string[]> {
+	const junctionTable = type === 'software' ? 'keyword_for_software' : 'keyword_for_project';
+	const fkColumn = type === 'software' ? 'software' : 'project';
+	const junctions = await fetchJson<{ keyword: string }>(
+		`${API_BASE}/${junctionTable}?${fkColumn}=eq.${id}`
+	);
+	if (junctions.length === 0) return [];
+
+	const keywordIds = junctions.map((j) => j.keyword).join(',');
+	const keywords = await fetchJson<{ value: string }>(
+		`${API_BASE}/keyword?id=in.(${keywordIds})`
+	);
+	return keywords.map((k) => k.value);
+}
+
+/**
+ * Fetch mentions from junction table → mention table
+ */
+async function fetchMentions(
+	id: string,
+	junctionTable: string,
+	fkColumn: string
+): Promise<EnrichedMetadata['mentions']> {
+	const junctions = await fetchJson<{ mention: string }>(
+		`${API_BASE}/${junctionTable}?${fkColumn}=eq.${id}`
+	);
+	if (junctions.length === 0) return [];
+
+	const mentionIds = junctions.map((j) => j.mention).join(',');
+	return fetchJson<EnrichedMetadata['mentions'][number]>(
+		`${API_BASE}/mention?id=in.(${mentionIds})&select=title,doi,authors,journal,publication_year,mention_type`
+	);
+}
+
+/**
+ * Fetch research domains from junction table → research_domain table
+ */
+async function fetchResearchDomains(projectId: string): Promise<EnrichedMetadata['researchDomains']> {
+	const junctions = await fetchJson<{ research_domain: string }>(
+		`${API_BASE}/research_domain_for_project?project=eq.${projectId}`
+	);
+	if (junctions.length === 0) return [];
+
+	const domainIds = junctions.map((j) => j.research_domain).join(',');
+	return fetchJson<{ name: string; key: string }>(
+		`${API_BASE}/research_domain?id=in.(${domainIds})&select=name,key`
+	);
+}
+
+/**
+ * Fetch all enriched metadata for a software item or project.
+ * All sub-fetches run in parallel. Failed fetches return empty arrays.
+ */
+export async function fetchEnrichedMetadata(
+	id: string,
+	type: 'software' | 'rsd-project'
+): Promise<EnrichedMetadata> {
+	try {
+		if (type === 'software') {
+			const [team, keywords, licenses, mentions, packages] = await Promise.all([
+				fetchJson<EnrichedMetadata['team'][number]>(
+					`${API_BASE}/contributor?software=eq.${id}&select=given_names,family_names,role,affiliation,orcid,is_contact_person`
+				),
+				fetchKeywords(id, 'software'),
+				fetchJson<EnrichedMetadata['licenses'][number]>(
+					`${API_BASE}/license_for_software?software=eq.${id}&select=name,license,open_source`
+				),
+				fetchMentions(id, 'mention_for_software', 'software'),
+				fetchJson<EnrichedMetadata['packages'][number]>(
+					`${API_BASE}/package_manager?software=eq.${id}&select=url,package_manager,download_count`
+				)
+			]);
+			return { team, keywords, urls: [], mentions, licenses, packages, researchDomains: [] };
+		} else {
+			const [team, keywords, urls, outputMentions, impactMentions, researchDomains] =
+				await Promise.all([
+					fetchJson<EnrichedMetadata['team'][number]>(
+						`${API_BASE}/team_member?project=eq.${id}&select=given_names,family_names,role,affiliation,orcid,is_contact_person`
+					),
+					fetchKeywords(id, 'rsd-project'),
+					fetchJson<{ title: string; url: string }>(
+						`${API_BASE}/url_for_project?project=eq.${id}&select=title,url`
+					),
+					fetchMentions(id, 'output_for_project', 'project'),
+					fetchMentions(id, 'impact_for_project', 'project'),
+					fetchResearchDomains(id)
+				]);
+			// Deduplicate output + impact mentions by title
+			const seenTitles = new Set<string>();
+			const allMentions = [...outputMentions, ...impactMentions].filter((m) => {
+				if (seenTitles.has(m.title)) return false;
+				seenTitles.add(m.title);
+				return true;
+			});
+			return { team, keywords, urls, mentions: allMentions, licenses: [], packages: [], researchDomains };
+		}
+	} catch (error) {
+		console.error('Error fetching enriched metadata:', error);
+		return { ...EMPTY_METADATA };
+	}
+}
+
+/**
  * Fetch a single software item by ID
  */
 export async function fetchSoftwareById(softwareId: string): Promise<RelatedSoftware | null> {

@@ -3,6 +3,7 @@
  */
 
 import type { AudienceType } from './settings';
+import type { EnrichedMetadata } from '$lib/api/rsd-software';
 
 export interface RelatedSoftware {
 	id: string;
@@ -47,6 +48,7 @@ export interface StoryGenerationRequest {
 	relatedSoftware: RelatedSoftware[];
 	additionalContext: string; // from uploaded files
 	urls?: string[];
+	enrichedMetadata?: EnrichedMetadata;
 }
 
 export interface StoryGenerationState {

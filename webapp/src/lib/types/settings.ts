@@ -22,10 +22,11 @@ export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
 	'blog-post': 'eScience Center blog style - accessible, community-focused, impact-driven storytelling'
 };
 
-export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-pro' | 'gemini-2.5-flash' | 'gemini-2.5-flash-lite';
+export type GeminiModel = 'gemini-3-pro-preview' | 'gemini-3-flash-preview' | 'gemini-2.5-pro' | 'gemini-2.5-flash' | 'gemini-2.5-flash-lite';
 
 export const MODEL_LABELS: Record<GeminiModel, string> = {
-	'gemini-3-flash-preview': 'Gemini 3 Flash (Latest)',
+	'gemini-3-pro-preview': 'Gemini 3 Pro (Latest)',
+	'gemini-3-flash-preview': 'Gemini 3 Flash',
 	'gemini-2.5-pro': 'Gemini 2.5 Pro',
 	'gemini-2.5-flash': 'Gemini 2.5 Flash',
 	'gemini-2.5-flash-lite': 'Gemini 2.5 Flash Lite'
@@ -44,7 +45,7 @@ export const DEFAULT_SETTINGS: StorySettings = {
 	geminiApiKey: '',
 	defaultAudience: 'communications',
 	temperature: 0.7,
-	maxTokens: 2048,
+	maxTokens: 8192,
 	model: 'gemini-3-flash-preview',
 	customPrompts: {}
 };

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import AudienceSelector from '../story/AudienceSelector.svelte';
+	import ModelSelector from '../story/ModelSelector.svelte';
 	import FileUploader from '../story/FileUploader.svelte';
 	import StoryDisplay from '../story/StoryDisplay.svelte';
 	import UrlReferencesInput from './UrlReferencesInput.svelte';
@@ -137,6 +138,8 @@
 			<AudienceSelector selected={audience} onchange={handleAudienceChange} />
 
 			<FileUploader files={uploadedFiles} onfileschange={handleFilesChange} />
+
+			<ModelSelector />
 
 			<button
 				class="generate-button"
