@@ -5,6 +5,30 @@
 import type { AudienceType } from '$lib/types/settings';
 import type { StoryGenerationRequest } from '$lib/types/story';
 
+/**
+ * Shared writing-style rules appended to every system prompt.
+ * Enforces human-like output and forbids em dashes.
+ */
+const WRITING_STYLE_RULES = `
+
+## Writing Style Rules (MANDATORY)
+
+As an AI writing assistant, to ensure your output does not exhibit typical AI characteristics and feels authentically human, you must avoid certain patterns based on analysis of AI-generated text and the following specific instructions.
+
+Do not default to a generic, impersonal, or overly formal tone that lacks personal voice, anecdotes, or genuine emotional depth. Avoid presenting arguments in an overly balanced, formulaic structure without conveying a distinct perspective or emphasis.
+
+Refrain from excessive hedging with phrases like "some may argue," "it could be said," "perhaps," "maybe," "it seems," "likely," or "tends to." Minimize repetitive vocabulary, clichés, common buzzwords, or overly formal verbs where simpler alternatives are natural.
+
+Vary sentence structure and length to avoid a monotonous rhythm. Consciously mix shorter sentences with longer, more complex ones, as AI often exhibits uniformity in sentence length. Use diverse and natural transitional phrases, avoiding over-reliance on common connectors like "Moreover," "Furthermore," or "Thus." Do not use excessive signposting such as stating "In conclusion" or "To sum up" explicitly, especially in shorter texts.
+
+Do not aim for perfect grammar or spelling to the extent that it sounds unnatural. Incorporating minor, context-appropriate variations like contractions or correctly used common idioms can enhance authenticity, as AI often produces grammatically flawless text that can feel too perfect.
+
+Avoid overly detailed or unnecessary definitional passages. Strive to include specific, concrete details or examples rather than remaining consistently generic or surface-level. Do not overuse adverbs, particularly those ending in "-ly."
+
+IMPORTANT STYLE RULE: You must never use em dashes (the long dash character) under any circumstance. They are strictly forbidden. If you need to separate clauses, use commas, colons, parentheses, or semicolons instead. Before completing your output, do a final scan for em dashes and rewrite any sentences that contain them using approved punctuation.
+
+The goal is to produce text that is less statistically predictable and uniform, mimicking the dynamic variability of human writing.`;
+
 const SYSTEM_PROMPTS: Record<AudienceType, string> = {
 	communications: `You are an expert science communicator at the Netherlands eScience Center, crafting compelling narratives for the general public and media.
 
@@ -167,7 +191,7 @@ Include practical code snippets and examples based on the project's technology s
 
 Format your response in Markdown.`,
 
-	'blog-post': `You are a writer for the Netherlands eScience Center blog (published on Medium). You write in the distinctive voice of the eScience Center editorial team — professional yet warm, community-focused, and deeply passionate about the role of research software in advancing science.
+	'blog-post': `You are a writer for the Netherlands eScience Center blog (published on Medium). You write in the distinctive voice of the eScience Center editorial team: professional yet warm, community-focused, and deeply passionate about the role of research software in advancing science.
 
 Your writing style (based on actual eScience Center blog posts) should be:
 - **Accessible and human-centered**: Avoid dense jargon. When technical terms are needed, explain them naturally in context. Use analogies and concrete examples
@@ -189,7 +213,7 @@ Structure your blog post with:
 2. **Opening hook** (2-3 sentences): A compelling problem, question, or scene that draws readers in
 3. **Context & Challenge**: What research problem exists? Why does it matter? Ground it in real-world stakes
 4. **The Approach**: How does the software/project tackle this? Explain the technical approach accessibly, using the problem-solution pattern
-5. **Impact & Results**: Concrete outcomes — who uses it, what changed, what's possible now. Include representative quotes from researchers where fitting
+5. **Impact & Results**: Concrete outcomes (who uses it, what changed, what's possible now). Include representative quotes from researchers where fitting
 6. **Community & Collaboration**: Highlight partnerships, workshops, or community adoption. Reference the open science ecosystem
 7. **Looking Ahead**: What's next for this project? How can others get involved or contribute?
 8. **Links & Resources**: Include relevant URLs to the software, documentation, and related projects
@@ -211,10 +235,8 @@ Format your response in Markdown.`
  * If a custom override is provided, use that instead
  */
 export function getSystemPrompt(audience: AudienceType, customOverride?: string): string {
-	if (customOverride && customOverride.trim()) {
-		return customOverride;
-	}
-	return SYSTEM_PROMPTS[audience];
+	const base = customOverride && customOverride.trim() ? customOverride : SYSTEM_PROMPTS[audience];
+	return base + WRITING_STYLE_RULES;
 }
 
 /**
@@ -274,7 +296,7 @@ export function buildUserPrompt(request: StoryGenerationRequest): string {
 				if (member.affiliation) parts.push(member.affiliation);
 				if (member.orcid) parts.push(`ORCID: ${member.orcid}`);
 				if (member.is_contact_person) parts.push('Contact person');
-				prompt += `- **${name}**${parts.length > 0 ? ` — ${parts.join(' · ')}` : ''}\n`;
+				prompt += `- **${name}**${parts.length > 0 ? ` (${parts.join(', ')})` : ''}\n`;
 			}
 			prompt += `\n`;
 		}
