@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProjectWithDomain } from '$lib/types/project';
-	import { getProjectImageUrl, getProjectPageUrl, SOFTWARE_DOMAIN } from '$lib/types/project';
+	import { getProjectImageUrl, getProjectPageUrl, SOFTWARE_DOMAIN, RSD_PROJECT_DOMAIN } from '$lib/types/project';
 	import { fade, scale } from 'svelte/transition';
 	import StoryGeneratorTab from './story/StoryGeneratorTab.svelte';
 
@@ -18,8 +18,9 @@
 
 	const isOpen = $derived(project !== null);
 	const isSoftware = $derived(project?.domain.id === SOFTWARE_DOMAIN.id);
+	const isRsdProject = $derived(project?.domain.id === RSD_PROJECT_DOMAIN.id);
 	const imageUrl = $derived(project ? getProjectImageUrl(project.image_id) : null);
-	const projectUrl = $derived(project ? getProjectPageUrl(project.slug) : null);
+	const projectUrl = $derived(project ? getProjectPageUrl(project.slug, project.domain.id) : null);
 
 	// Reset tab when modal closes/opens
 	$effect(() => {
@@ -130,6 +131,11 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
 						<polyline points="16 18 22 12 16 6"></polyline>
 						<polyline points="8 6 2 12 8 18"></polyline>
+					</svg>
+				{:else if isRsdProject}
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+						<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+						<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
 					</svg>
 				{/if}
 				{project.domain.name}

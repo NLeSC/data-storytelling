@@ -2,14 +2,15 @@
  * Story Generator Settings Types
  */
 
-export type AudienceType = 'communications' | 'academic' | 'internal-review' | 'one-pager' | 'course-material';
+export type AudienceType = 'communications' | 'academic' | 'internal-review' | 'one-pager' | 'course-material' | 'blog-post';
 
 export const AUDIENCE_LABELS: Record<AudienceType, string> = {
 	communications: 'Communications',
 	academic: 'Academic',
 	'internal-review': 'Internal Review',
 	'one-pager': 'One Pager',
-	'course-material': 'Course Material'
+	'course-material': 'Course Material',
+	'blog-post': 'Blog Post'
 };
 
 export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
@@ -17,7 +18,8 @@ export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
 	academic: 'Scholarly audiences - rigorous, methodology-focused content',
 	'internal-review': 'Leadership and review committees - analytical, metrics-driven',
 	'one-pager': 'Executive summary - ultra-concise, scannable format',
-	'course-material': 'Educational content - tutorials, exercises, and learning materials based on the project'
+	'course-material': 'Educational content - tutorials, exercises, and learning materials based on the project',
+	'blog-post': 'eScience Center blog style - accessible, community-focused, impact-driven storytelling'
 };
 
 export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-pro' | 'gemini-2.5-flash' | 'gemini-2.5-flash-lite';

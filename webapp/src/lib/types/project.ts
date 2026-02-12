@@ -47,6 +47,14 @@ export const SOFTWARE_DOMAIN: ResearchDomain = {
 	position: { x: 0, y: 0, z: 0 }
 };
 
+export const RSD_PROJECT_DOMAIN: ResearchDomain = {
+	id: 'rsd-project',
+	name: 'RSD Project',
+	slug: 'rsd-project',
+	color: '#c084fc',
+	position: { x: 0, y: 0, z: 0 }
+};
+
 export const RESEARCH_DOMAINS: ResearchDomain[] = [
 	{
 		id: 'd6a77b80-6965-4ffa-af18-ddb6668f73dd',
@@ -87,8 +95,9 @@ export function getProjectImageUrl(imageId: string | null): string | null {
 }
 
 /**
- * Get project page URL
+ * Get RSD page URL. Uses /projects/ path for RSD projects, /software/ for everything else.
  */
-export function getProjectPageUrl(slug: string): string {
-	return `https://research-software-directory.org/software/${slug}`;
+export function getProjectPageUrl(slug: string, domainId?: string): string {
+	const type = domainId === RSD_PROJECT_DOMAIN.id ? 'projects' : 'software';
+	return `https://research-software-directory.org/${type}/${slug}`;
 }

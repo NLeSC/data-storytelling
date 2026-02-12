@@ -154,6 +154,65 @@ export async function searchSoftwareFull(query: string, limit = 10): Promise<Pro
 }
 
 /**
+ * RSD project API response shape (differs from software)
+ */
+interface RsdProjectRaw {
+	id: string;
+	slug: string;
+	title: string;
+	subtitle: string | null;
+	description: string;
+	grant_id: string | null;
+	is_published: boolean;
+	created_at: string;
+	updated_at: string;
+	image_id: string | null;
+	date_start: string | null;
+	date_end: string | null;
+}
+
+/**
+ * Search RSD projects and map to Project-compatible objects.
+ * Searches both title and description fields.
+ */
+export async function searchRsdProjects(query: string, limit = 10): Promise<Project[]> {
+	try {
+		const encodedQuery = encodeURIComponent(`%${query}%`);
+		const url = `${API_BASE}/project?or=(title.ilike.${encodedQuery},subtitle.ilike.${encodedQuery})&is_published=eq.true&limit=${limit}`;
+
+		const response = await fetch(url, {
+			headers: { Accept: 'application/json' }
+		});
+
+		if (!response.ok) {
+			console.error('Failed to search RSD projects');
+			return [];
+		}
+
+		const raw = (await response.json()) as RsdProjectRaw[];
+		return raw.map((p) => ({
+			id: p.id,
+			slug: p.slug,
+			brand_name: p.title,
+			short_statement: p.subtitle ?? '',
+			description: p.description ?? '',
+			concept_doi: null,
+			description_url: null,
+			description_type: 'markdown',
+			get_started_url: '',
+			is_published: p.is_published,
+			created_at: p.created_at,
+			updated_at: p.updated_at,
+			image_id: p.image_id,
+			closed_source: false
+		}));
+	} catch (error) {
+		console.error('Error searching RSD projects:', error);
+		return [];
+	}
+}
+
+/**
  * Fetch a single software item by ID
  */
 export async function fetchSoftwareById(softwareId: string): Promise<RelatedSoftware | null> {

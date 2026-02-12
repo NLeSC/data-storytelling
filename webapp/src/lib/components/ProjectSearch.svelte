@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ProjectWithDomain } from '$lib/types/project';
-	import { SOFTWARE_DOMAIN } from '$lib/types/project';
-	import { searchSoftwareFull } from '$lib/api/rsd-software';
+	import { SOFTWARE_DOMAIN, RSD_PROJECT_DOMAIN } from '$lib/types/project';
+	import { searchSoftwareFull, searchRsdProjects } from '$lib/api/rsd-software';
 	import { computePosition, flip, offset, size, autoUpdate } from '@floating-ui/dom';
 
 	interface Props {
@@ -19,7 +19,8 @@
 	let floatingEl: HTMLElement | undefined = $state();
 	let cleanup: (() => void) | undefined = $state();
 
-	let apiResults = $state<ProjectWithDomain[]>([]);
+	let softwareResults = $state<ProjectWithDomain[]>([]);
+	let projectResults = $state<ProjectWithDomain[]>([]);
 	let isSearching = $state(false);
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -35,25 +36,39 @@
 
 	const preloadedIds = $derived(new Set(projects.map((p) => p.id)));
 
-	const dedupedApiResults = $derived(
-		apiResults.filter((r) => !preloadedIds.has(r.id))
+	const dedupedSoftware = $derived(
+		softwareResults.filter((r) => !preloadedIds.has(r.id))
 	);
 
-	const hasBothSections = $derived(filteredProjects.length > 0 && dedupedApiResults.length > 0);
-	const allResults = $derived([...filteredProjects, ...dedupedApiResults]);
+	const dedupedProjects = $derived(
+		projectResults.filter((r) => !preloadedIds.has(r.id))
+	);
+
+	const sectionCount = $derived(
+		(filteredProjects.length > 0 ? 1 : 0) +
+		(dedupedSoftware.length > 0 ? 1 : 0) +
+		(dedupedProjects.length > 0 ? 1 : 0)
+	);
+	const showHeaders = $derived(sectionCount > 1);
+	const allResults = $derived([...filteredProjects, ...dedupedSoftware, ...dedupedProjects]);
 	const hasResults = $derived(allResults.length > 0);
 
 	function triggerApiSearch(searchQuery: string) {
 		clearTimeout(debounceTimer);
 		if (searchQuery.trim().length < 2) {
-			apiResults = [];
+			softwareResults = [];
+			projectResults = [];
 			isSearching = false;
 			return;
 		}
 		isSearching = true;
 		debounceTimer = setTimeout(async () => {
-			const results = await searchSoftwareFull(searchQuery);
-			apiResults = results.map((p) => ({ ...p, domain: SOFTWARE_DOMAIN }));
+			const [swResults, prjResults] = await Promise.all([
+				searchSoftwareFull(searchQuery),
+				searchRsdProjects(searchQuery)
+			]);
+			softwareResults = swResults.map((p) => ({ ...p, domain: SOFTWARE_DOMAIN }));
+			projectResults = prjResults.map((p) => ({ ...p, domain: RSD_PROJECT_DOMAIN }));
 			isSearching = false;
 		}, 300);
 	}
@@ -232,9 +247,9 @@
 		onwheel={handleListWheel}
 	>
 		{#if filteredProjects.length > 0}
-			{#if hasBothSections}
+			{#if showHeaders}
 				<li class="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/40 font-semibold border-b border-white/10">
-					Projects
+					Domain Projects
 				</li>
 			{/if}
 			{#each filteredProjects as project, index (project.id)}
@@ -262,13 +277,13 @@
 			{/each}
 		{/if}
 
-		{#if dedupedApiResults.length > 0}
-			{#if hasBothSections}
+		{#if dedupedSoftware.length > 0}
+			{#if showHeaders}
 				<li class="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/40 font-semibold border-b border-white/10 {filteredProjects.length > 0 ? 'border-t' : ''}">
 					Software
 				</li>
 			{/if}
-			{#each dedupedApiResults as software, i (software.id)}
+			{#each dedupedSoftware as software, i (software.id)}
 				{@const globalIndex = filteredProjects.length + i}
 				<li>
 					<button
@@ -300,13 +315,51 @@
 			{/each}
 		{/if}
 
-		{#if isSearching && dedupedApiResults.length === 0 && filteredProjects.length === 0}
+		{#if dedupedProjects.length > 0}
+			{#if showHeaders}
+				<li class="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/40 font-semibold border-b border-white/10 {(filteredProjects.length > 0 || dedupedSoftware.length > 0) ? 'border-t' : ''}">
+					RSD Projects
+				</li>
+			{/if}
+			{#each dedupedProjects as rsdProject, i (rsdProject.id)}
+				{@const globalIndex = filteredProjects.length + dedupedSoftware.length + i}
+				<li>
+					<button
+						type="button"
+						data-result-item
+						onclick={() => handleSelect(rsdProject)}
+						onmouseenter={() => (selectedIndex = globalIndex)}
+						class="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors
+							   {globalIndex === selectedIndex ? 'bg-[#7bafd4]/30' : 'hover:bg-white/10'}"
+					>
+						<svg
+							class="w-3 h-3 flex-shrink-0 text-[#c084fc]"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							stroke-width="2"
+						>
+							<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+							<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+						</svg>
+						<div class="min-w-0">
+							<p class="text-sm text-white truncate">{rsdProject.brand_name}</p>
+							{#if rsdProject.short_statement}
+								<p class="text-xs text-white/50 truncate">{rsdProject.short_statement}</p>
+							{/if}
+						</div>
+					</button>
+				</li>
+			{/each}
+		{/if}
+
+		{#if isSearching && !hasResults}
 			<li class="px-4 py-3 text-sm text-white/40 flex items-center gap-2">
 				<svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
 					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 					<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
 				</svg>
-				Searching software catalog...
+				Searching RSD catalog...
 			</li>
 		{/if}
 	</ul>
