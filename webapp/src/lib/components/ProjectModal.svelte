@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProjectWithDomain } from '$lib/types/project';
-	import { getProjectImageUrl, getProjectPageUrl } from '$lib/types/project';
+	import { getProjectImageUrl, getProjectPageUrl, SOFTWARE_DOMAIN } from '$lib/types/project';
 	import { fade, scale } from 'svelte/transition';
 	import StoryGeneratorTab from './story/StoryGeneratorTab.svelte';
 
@@ -17,6 +17,7 @@
 	let activeTab = $state<TabType>('details');
 
 	const isOpen = $derived(project !== null);
+	const isSoftware = $derived(project?.domain.id === SOFTWARE_DOMAIN.id);
 	const imageUrl = $derived(project ? getProjectImageUrl(project.image_id) : null);
 	const projectUrl = $derived(project ? getProjectPageUrl(project.slug) : null);
 
@@ -125,6 +126,12 @@
 			<div class="details-tab">
 			<!-- Domain badge -->
 			<div class="domain-badge" style="background-color: {project.domain.color};">
+				{#if isSoftware}
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px;">
+						<polyline points="16 18 22 12 16 6"></polyline>
+						<polyline points="8 6 2 12 8 18"></polyline>
+					</svg>
+				{/if}
 				{project.domain.name}
 			</div>
 

@@ -39,6 +39,14 @@ export interface ProjectWithDomain extends Project {
 	domain: ResearchDomain;
 }
 
+export const SOFTWARE_DOMAIN: ResearchDomain = {
+	id: 'software',
+	name: 'Software',
+	slug: 'software',
+	color: '#6bc5a0',
+	position: { x: 0, y: 0, z: 0 }
+};
+
 export const RESEARCH_DOMAINS: ResearchDomain[] = [
 	{
 		id: 'd6a77b80-6965-4ffa-af18-ddb6668f73dd',

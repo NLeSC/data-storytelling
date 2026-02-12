@@ -3,6 +3,7 @@
  */
 
 import type { RelatedSoftware } from '$lib/types/story';
+import type { Project } from '$lib/types/project';
 
 const API_BASE = 'https://research-software-directory.org/api/v1';
 
@@ -121,6 +122,31 @@ export async function searchSoftware(query: string, limit = 10): Promise<Related
 		}
 
 		return (await response.json()) as RelatedSoftware[];
+	} catch (error) {
+		console.error('Error searching software:', error);
+		return [];
+	}
+}
+
+/**
+ * Search for software returning full Project-compatible objects.
+ * Searches both brand_name and short_statement fields.
+ */
+export async function searchSoftwareFull(query: string, limit = 10): Promise<Project[]> {
+	try {
+		const encodedQuery = encodeURIComponent(`%${query}%`);
+		const url = `${API_BASE}/software?or=(brand_name.ilike.${encodedQuery},short_statement.ilike.${encodedQuery})&is_published=eq.true&limit=${limit}`;
+
+		const response = await fetch(url, {
+			headers: { Accept: 'application/json' }
+		});
+
+		if (!response.ok) {
+			console.error('Failed to search software');
+			return [];
+		}
+
+		return (await response.json()) as Project[];
 	} catch (error) {
 		console.error('Error searching software:', error);
 		return [];
