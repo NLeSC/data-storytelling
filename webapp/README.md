@@ -4,68 +4,7 @@ An interactive 3D visualization platform for exploring research software project
 
 ## Features
 
-### 3D Project Exploration
-
-- **Interactive 3D Scenes**: Four domain-specific visualizations using Three.js/Threlte:
-  - **Life Sciences**: DNA double helix with molecular particles
-  - **Environment & Sustainability**: Earth globe with atmospheric effects
-  - **Social Sciences & Humanities**: Social network clusters with data flow
-  - **Natural Sciences & Engineering**: Particle physics simulation
-
-- **Project Cards**: Floating 3D cards displaying project logos that:
-  - Rotate and float with gentle animations
-  - Glow and scale on hover for better discoverability
-  - Click to open detailed project modal
-
-- **Dynamic Navigation**: Scroll-based transitions between domain scenes with smooth camera movements
-
-### Project Modal
-
-- **Details Tab**: Complete project information including:
-  - Project logo and brand name
-  - Short statement and full description
-  - Technologies used
-  - Links to RSD, repository, and project website
-
-- **Story Generator Tab**: AI-powered narrative generation (see below)
-
-### AI Story Generator
-
-Generate compelling narratives about research software projects using Google Gemini API.
-
-#### Audience Types
-
-| Audience | Description | Output |
-|----------|-------------|--------|
-| **Communications** | General public and media | Accessible, impact-focused storytelling (800-1200 words) |
-| **Academic** | Scholarly audiences | Rigorous, methodology-focused content (1500-2000 words) |
-| **Internal Review** | Leadership and committees | Analytical, metrics-driven assessment (1000-1500 words) |
-| **One Pager** | Executive summary | Ultra-concise, scannable format (<300 words) |
-
-#### Context Enrichment
-
-- **Related Software**: Fetch and select related software from the Research Software Directory API to provide additional context
-- **File Upload**: Drag-and-drop PDF or text files to include supplementary documentation
-
-#### Story Export
-
-- **Markdown**: Download as `.md` file for further editing
-- **PDF**: Generate formatted PDF documents
-- **Copy**: Quick copy to clipboard
-
-### Settings Panel
-
-Configure the AI story generator via the settings panel (gear icon):
-
-- **API Key**: Google Gemini API key (stored in localStorage)
-- **Model Selection**: Choose from available Gemini models:
-  - Gemini 3 Flash Preview (Latest)
-  - Gemini 2.5 Flash
-  - Gemini 2.0 Flash
-  - Gemini 1.5 Pro
-- **Temperature**: Control creativity (0.0 - 2.0)
-- **Max Tokens**: Limit response length
-- **Custom Prompts**: Override default prompts per audience type
+See the full [feature list](../FEATURES.md) for all implemented and planned features.
 
 ## Tech Stack
 

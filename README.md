@@ -43,16 +43,13 @@ The [`webapp/`](./webapp/) directory contains an interactive 3D visualization pl
 
 ### Key Features
 
-- **3D Domain Exploration**: Navigate through four research domains (Life Sciences, Environment, Social Sciences, Engineering) with unique 3D visualizations
-- **AI Story Generator**: Generate audience-specific narratives using Google Gemini:
-  - Communications (general public)
-  - Academic (scholarly)
-  - Internal Review (leadership)
-  - One Pager (executive summary)
+- **3D Domain Exploration**: Navigate through four research domains with unique 3D visualizations
+- **Software Catalog Search**: Search the full RSD software catalog beyond pre-loaded domain items
+- **AI Story Generator**: Generate audience-specific narratives using Google Gemini
 - **Context Enrichment**: Include related software and uploaded documents for richer stories
 - **Export Options**: Download stories as Markdown or PDF
 
-See the [webapp README](./webapp/README.md) for setup and usage instructions.
+See the full [feature list](./FEATURES.md) and [webapp README](./webapp/README.md) for details.
 
 
 ## Awesome Resources
