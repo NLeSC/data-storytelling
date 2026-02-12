@@ -20,13 +20,13 @@ export const AUDIENCE_DESCRIPTIONS: Record<AudienceType, string> = {
 	'course-material': 'Educational content - tutorials, exercises, and learning materials based on the project'
 };
 
-export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-flash' | 'gemini-2.0-flash' | 'gemini-1.5-pro';
+export type GeminiModel = 'gemini-3-flash-preview' | 'gemini-2.5-pro' | 'gemini-2.5-flash' | 'gemini-2.5-flash-lite';
 
 export const MODEL_LABELS: Record<GeminiModel, string> = {
-	'gemini-3-flash-preview': 'Gemini 3 Flash Preview (Latest)',
+	'gemini-3-flash-preview': 'Gemini 3 Flash (Latest)',
+	'gemini-2.5-pro': 'Gemini 2.5 Pro',
 	'gemini-2.5-flash': 'Gemini 2.5 Flash',
-	'gemini-2.0-flash': 'Gemini 2.0 Flash',
-	'gemini-1.5-pro': 'Gemini 1.5 Pro'
+	'gemini-2.5-flash-lite': 'Gemini 2.5 Flash Lite'
 };
 
 export interface StorySettings {

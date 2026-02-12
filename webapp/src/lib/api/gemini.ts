@@ -189,7 +189,7 @@ export async function* generateStoryStream(
  * Test if the API key is valid by making a minimal request
  */
 export async function testApiKey(apiKey: string): Promise<boolean> {
-	const url = `${GEMINI_API_BASE}/gemini-2.0-flash:generateContent?key=${apiKey}`;
+	const url = `${GEMINI_API_BASE}/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
 
 	try {
 		const response = await fetch(url, {
