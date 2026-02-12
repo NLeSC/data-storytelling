@@ -1,6 +1,23 @@
 # Changelog
 
 
+## [0.11.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.11.0) - 2026-02-12
+
+## What's Changed
+
+### ✨ Features
+- feat: add writing style rules to enhance system prompt generation (ae91ed5)
+- feat: implement enriched metadata fetching and integrate into story generation process (ad607ad)
+- feat: add RSD project search functionality and enhance project modal for RSD projects (a1ba042)
+- feat: create comprehensive features list for 3D visualization, search, and AI story generation (642a840)
+- feat: implement searchSoftwareFull function and enhance project search with software results (84f3c00)
+- feat: update Gemini API model references to version 2.5 and adjust labels accordingly (95374cb)
+
+### 🐛 Bug Fixes
+- fix: update onOpenSettings handlers in ProjectModal and CustomStoryModal for proper closure (dbc170f)
+
+
+
 ## [0.10.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.10.0) - 2026-02-10
 
 ## What's Changed
