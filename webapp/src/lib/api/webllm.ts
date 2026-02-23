@@ -103,6 +103,30 @@ export function getLoadedModelId(): string | null {
 }
 
 /**
+ * Detect if the model is stuck in a repetition loop.
+ * Checks whether a short substring repeats 4+ times in the last 200 characters.
+ */
+function detectRepetition(text: string): boolean {
+	if (text.length < 200) return false;
+	const tail = text.slice(-200);
+	const maxPatLen = Math.min(60, Math.floor(tail.length / 4));
+
+	for (let len = 10; len <= maxPatLen; len++) {
+		const pattern = tail.slice(-len);
+		let count = 0;
+		let pos = 0;
+		while (true) {
+			const idx = tail.indexOf(pattern, pos);
+			if (idx === -1) break;
+			count++;
+			pos = idx + 1;
+		}
+		if (count >= 4) return true;
+	}
+	return false;
+}
+
+/**
  * Generate a story using the local WebLLM engine with streaming.
  * Yields text chunks as they arrive.
  */
@@ -124,13 +148,29 @@ export async function* generateStoryStreamLocal(
 		],
 		temperature: settings.temperature,
 		max_tokens: settings.maxTokens,
+		frequency_penalty: 0.7,
+		presence_penalty: 0.3,
 		stream: true
 	});
+
+	let output = '';
+	let chunkCount = 0;
 
 	for await (const chunk of completion) {
 		const delta = chunk.choices[0]?.delta?.content;
 		if (delta) {
+			output += delta;
 			yield delta;
+
+			// Check for repetition every 20 chunks once we have enough text
+			chunkCount++;
+			if (chunkCount >= 20 && output.length > 200) {
+				chunkCount = 0;
+				if (detectRepetition(output)) {
+					console.warn('Repetition loop detected, stopping generation');
+					break;
+				}
+			}
 		}
 	}
 }
