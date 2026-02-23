@@ -408,6 +408,7 @@
 
 	.metadata-status {
 		min-height: 1.75rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.metadata-loading {
