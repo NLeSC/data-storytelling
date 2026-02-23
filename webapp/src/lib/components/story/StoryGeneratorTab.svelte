@@ -5,9 +5,13 @@
 	import RelatedSoftwareSelector from './RelatedSoftwareSelector.svelte';
 	import FileUploader from './FileUploader.svelte';
 	import StoryDisplay from './StoryDisplay.svelte';
-	import { settingsStore, initSettings, hasApiKey } from '$lib/stores/settings.svelte';
-	import { generateStoryStream } from '$lib/api/gemini';
-	import { fetchSoftwareInOrganisation, fetchEnrichedMetadata, type EnrichedMetadata } from '$lib/api/rsd-software';
+	import { settingsStore, initSettings, canGenerate } from '$lib/stores/settings.svelte';
+	import { generateStoryStream } from '$lib/api/llm';
+	import {
+		fetchSoftwareInOrganisation,
+		fetchEnrichedMetadata,
+		type EnrichedMetadata
+	} from '$lib/api/rsd-software';
 	import { RSD_PROJECT_DOMAIN, type ProjectWithDomain } from '$lib/types/project';
 	import type { AudienceType } from '$lib/types/settings';
 	import type { RelatedSoftware, UploadedFile, StoryGenerationRequest } from '$lib/types/story';
@@ -56,11 +60,7 @@
 		loadingSoftware = true;
 		try {
 			// Fetch software from the same organisation/domain
-			const software = await fetchSoftwareInOrganisation(
-				project.domain.id,
-				project.id,
-				15
-			);
+			const software = await fetchSoftwareInOrganisation(project.domain.id, project.id, 15);
 			relatedSoftware = software;
 		} catch (e) {
 			console.error('Failed to load related software:', e);
@@ -82,8 +82,12 @@
 	}
 
 	async function generateStory() {
-		if (!hasApiKey()) {
-			error = 'Please configure your Gemini API key in Settings first.';
+		if (!canGenerate()) {
+			if (settingsStore.current.provider === 'local') {
+				error = 'Please load a local model first.';
+			} else {
+				error = 'Please configure your Gemini API key in Settings first.';
+			}
 			return;
 		}
 
@@ -92,9 +96,7 @@
 		generatedContent = '';
 
 		// Build the request
-		const selectedSoftware = relatedSoftware.filter((sw) =>
-			selectedSoftwareIds.includes(sw.id)
-		);
+		const selectedSoftware = relatedSoftware.filter((sw) => selectedSoftwareIds.includes(sw.id));
 
 		const additionalContext = uploadedFiles
 			.map((f) => `--- ${f.name} ---\n${f.extractedText}`)
@@ -130,38 +132,54 @@
 		}
 	}
 
-	const canGenerate = $derived(hasApiKey() && !isGenerating);
+	const canGenerateNow = $derived(canGenerate() && !isGenerating);
 
 	const metadataSummary = $derived.by(() => {
 		if (!enrichedMetadata) return [];
 		const parts: string[] = [];
 		if (enrichedMetadata.team.length > 0) parts.push(`${enrichedMetadata.team.length} team`);
-		if (enrichedMetadata.keywords.length > 0) parts.push(`${enrichedMetadata.keywords.length} keywords`);
-		if (enrichedMetadata.mentions.length > 0) parts.push(`${enrichedMetadata.mentions.length} publications`);
+		if (enrichedMetadata.keywords.length > 0)
+			parts.push(`${enrichedMetadata.keywords.length} keywords`);
+		if (enrichedMetadata.mentions.length > 0)
+			parts.push(`${enrichedMetadata.mentions.length} publications`);
 		if (enrichedMetadata.licenses.length > 0) {
 			const name = enrichedMetadata.licenses[0].name || enrichedMetadata.licenses[0].license;
 			parts.push(name);
 		}
-		if (enrichedMetadata.packages.length > 0) parts.push(`${enrichedMetadata.packages.length} packages`);
+		if (enrichedMetadata.packages.length > 0)
+			parts.push(`${enrichedMetadata.packages.length} packages`);
 		if (enrichedMetadata.urls.length > 0) parts.push(`${enrichedMetadata.urls.length} links`);
-		if (enrichedMetadata.researchDomains.length > 0) parts.push(`${enrichedMetadata.researchDomains.length} domains`);
+		if (enrichedMetadata.researchDomains.length > 0)
+			parts.push(`${enrichedMetadata.researchDomains.length} domains`);
 		return parts;
 	});
 </script>
 
 <div class="story-generator-tab">
-	{#if !hasApiKey()}
+	{#if !canGenerate()}
 		<div class="api-key-warning">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-				<line x1="12" y1="9" x2="12" y2="13"/>
-				<line x1="12" y1="17" x2="12.01" y2="17"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<path
+					d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+				/>
+				<line x1="12" y1="9" x2="12" y2="13" />
+				<line x1="12" y1="17" x2="12.01" y2="17" />
 			</svg>
 			<div class="warning-content">
-				<p>Gemini API key not configured</p>
-				<button class="configure-button" onclick={onOpenSettings}>
-					Configure in Settings
-				</button>
+				{#if settingsStore.current.provider === 'local'}
+					<p>No local model loaded</p>
+				{:else}
+					<p>Gemini API key not configured</p>
+				{/if}
+				<button class="configure-button" onclick={onOpenSettings}> Configure in Settings </button>
 			</div>
 		</div>
 	{/if}
@@ -196,17 +214,21 @@
 
 			<ModelSelector />
 
-			<button
-				class="generate-button"
-				onclick={generateStory}
-				disabled={!canGenerate}
-			>
+			<button class="generate-button" onclick={generateStory} disabled={!canGenerateNow}>
 				{#if isGenerating}
 					<div class="spinner"></div>
 					Generating...
 				{:else}
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
 					</svg>
 					Generate Story
 				{/if}
@@ -214,10 +236,18 @@
 
 			{#if error}
 				<div class="error-message">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<circle cx="12" cy="12" r="10"/>
-						<line x1="12" y1="8" x2="12" y2="12"/>
-						<line x1="12" y1="16" x2="12.01" y2="16"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<circle cx="12" cy="12" r="10" />
+						<line x1="12" y1="8" x2="12" y2="12" />
+						<line x1="12" y1="16" x2="12.01" y2="16" />
 					</svg>
 					{error}
 				</div>
@@ -225,7 +255,12 @@
 		</div>
 
 		<div class="output-panel">
-			<StoryDisplay content={generatedContent} isStreaming={isGenerating} projectName={project.brand_name} {audience} />
+			<StoryDisplay
+				content={generatedContent}
+				isStreaming={isGenerating}
+				projectName={project.brand_name}
+				{audience}
+			/>
 		</div>
 	</div>
 </div>

@@ -43,6 +43,7 @@
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.4",
+		"@mlc-ai/web-llm": "^0.2.78",
 		"@threlte/core": "^8.1.5",
 		"@threlte/extras": "^9.5.4",
 		"three": "^0.180.0"

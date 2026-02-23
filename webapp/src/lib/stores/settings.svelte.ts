@@ -2,10 +2,17 @@
  * Settings store with localStorage persistence
  */
 
-import type { StorySettings, AudienceType, GeminiModel } from '$lib/types/settings';
+import type {
+	StorySettings,
+	AudienceType,
+	GeminiModel,
+	LLMProvider,
+	LocalModelId
+} from '$lib/types/settings';
 import { DEFAULT_SETTINGS } from '$lib/types/settings';
 import { STORAGE_KEYS } from '$lib/types/story';
 import { getFromStorage, saveToStorage } from '$lib/utils/storage';
+import { webllmStore } from '$lib/stores/webllm.svelte';
 
 // Create a reactive settings state
 let settings = $state<StorySettings>(DEFAULT_SETTINGS);
@@ -80,6 +87,32 @@ export function setMaxTokens(tokens: number): void {
  */
 export function setModel(model: GeminiModel): void {
 	updateSettings({ model });
+}
+
+/**
+ * Set LLM provider
+ */
+export function setProvider(provider: LLMProvider): void {
+	updateSettings({ provider });
+}
+
+/**
+ * Set local model
+ */
+export function setLocalModel(model: LocalModelId): void {
+	updateSettings({ localModel: model });
+}
+
+/**
+ * Check if the current provider is ready to generate.
+ * For Gemini: API key must be set.
+ * For local: a model must be loaded.
+ */
+export function canGenerate(): boolean {
+	if (settings.provider === 'local') {
+		return webllmStore.isReady;
+	}
+	return settings.geminiApiKey.trim().length > 0;
 }
 
 /**

@@ -8,15 +8,23 @@
 		setTemperature,
 		setMaxTokens,
 		setModel,
+		setProvider,
+		setLocalModel,
 		resetSettings
 	} from '$lib/stores/settings.svelte';
 	import {
 		AUDIENCE_LABELS,
 		AUDIENCE_DESCRIPTIONS,
 		MODEL_LABELS,
+		LOCAL_MODELS,
+		LOCAL_MODEL_INFO,
 		type AudienceType,
-		type GeminiModel
+		type GeminiModel,
+		type LLMProvider,
+		type LocalModelId
 	} from '$lib/types/settings';
+	import { webllmStore, startLoadModel, startUnloadModel } from '$lib/stores/webllm.svelte';
+	import { isWebGPUSupported } from '$lib/api/webllm';
 	import { onMount } from 'svelte';
 
 	interface Props {
@@ -28,11 +36,16 @@
 
 	let showApiKey = $state(false);
 	let apiKeyInput = $state('');
+	let webgpuSupported = $state(true);
+
+	let currentProvider = $derived(settingsStore.current.provider ?? 'gemini');
+	let currentLocalModel = $derived(settingsStore.current.localModel);
 
 	// Initialize settings on mount
 	onMount(() => {
 		initSettings();
 		apiKeyInput = settingsStore.current.geminiApiKey;
+		webgpuSupported = isWebGPUSupported();
 	});
 
 	// Sync API key input when settings change
@@ -51,9 +64,26 @@
 		setDefaultAudience(target.value as AudienceType);
 	}
 
+	function handleProviderChange(provider: LLMProvider) {
+		setProvider(provider);
+	}
+
 	function handleModelChange(e: Event) {
 		const target = e.target as HTMLSelectElement;
 		setModel(target.value as GeminiModel);
+	}
+
+	function handleLocalModelChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		setLocalModel(target.value as LocalModelId);
+	}
+
+	async function handleLoadModel() {
+		await startLoadModel(currentLocalModel);
+	}
+
+	async function handleUnloadModel() {
+		await startUnloadModel();
 	}
 
 	function handleTemperatureChange(e: Event) {
@@ -132,89 +162,194 @@
 			</div>
 
 			<div class="panel-content">
-				<!-- API Key Section -->
+				<!-- Provider Section -->
 				<section class="settings-section">
-					<h3>Gemini API Key</h3>
-					<p class="section-description">
-						Enter your Google Gemini API key. Get one from
-						<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
-							Google AI Studio
-						</a>.
-					</p>
-					<div class="api-key-input">
-						<input
-							type={showApiKey ? 'text' : 'password'}
-							bind:value={apiKeyInput}
-							onchange={handleApiKeyChange}
-							onblur={handleApiKeyChange}
-							placeholder="AIza..."
-							class="input"
-						/>
+					<h3>Provider</h3>
+					<div class="provider-toggle">
 						<button
-							class="toggle-visibility"
-							onclick={() => (showApiKey = !showApiKey)}
-							aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
+							class="provider-btn"
+							class:active={currentProvider === 'gemini'}
+							onclick={() => handleProviderChange('gemini')}
 						>
-							{#if showApiKey}
+							Gemini (Cloud)
+						</button>
+						<button
+							class="provider-btn"
+							class:active={currentProvider === 'local'}
+							onclick={() => handleProviderChange('local')}
+						>
+							Local (WebLLM)
+						</button>
+					</div>
+					<p class="section-description">
+						{#if currentProvider === 'gemini'}
+							Uses Google's Gemini API. Requires an API key.
+						{:else}
+							Runs entirely in your browser via WebGPU. No API key needed.
+						{/if}
+					</p>
+				</section>
+
+				{#if currentProvider === 'gemini'}
+					<!-- API Key Section -->
+					<section class="settings-section">
+						<h3>Gemini API Key</h3>
+						<p class="section-description">
+							Enter your Google Gemini API key. Get one from
+							<a
+								href="https://aistudio.google.com/apikey"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Google AI Studio
+							</a>.
+						</p>
+						<div class="api-key-input">
+							<input
+								type={showApiKey ? 'text' : 'password'}
+								bind:value={apiKeyInput}
+								onchange={handleApiKeyChange}
+								onblur={handleApiKeyChange}
+								placeholder="AIza..."
+								class="input"
+							/>
+							<button
+								class="toggle-visibility"
+								onclick={() => (showApiKey = !showApiKey)}
+								aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
+							>
+								{#if showApiKey}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="20"
+										height="20"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
+										<path
+											d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+										/>
+										<line x1="1" y1="1" x2="23" y2="23" />
+									</svg>
+								{:else}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="20"
+										height="20"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
+										<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+										<circle cx="12" cy="12" r="3" />
+									</svg>
+								{/if}
+							</button>
+						</div>
+						<p class="warning">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<path
+									d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+								/>
+								<line x1="12" y1="9" x2="12" y2="13" />
+								<line x1="12" y1="17" x2="12.01" y2="17" />
+							</svg>
+							API key is stored in your browser's localStorage only.
+						</p>
+					</section>
+
+					<!-- Model Selection (Gemini) -->
+					<section class="settings-section">
+						<h3>Model</h3>
+						<select class="select" value={settingsStore.current.model} onchange={handleModelChange}>
+							{#each Object.entries(MODEL_LABELS) as [value, label]}
+								<option {value}>{label}</option>
+							{/each}
+						</select>
+					</section>
+				{:else}
+					<!-- Local Model Section -->
+					<section class="settings-section">
+						<h3>Local Model</h3>
+						{#if !webgpuSupported}
+							<div class="webgpu-warning">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
+									width="16"
+									height="16"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
 									stroke-width="2"
 								>
 									<path
-										d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+										d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
 									/>
-									<line x1="1" y1="1" x2="23" y2="23" />
+									<line x1="12" y1="9" x2="12" y2="13" />
+									<line x1="12" y1="17" x2="12.01" y2="17" />
 								</svg>
-							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-								>
-									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-									<circle cx="12" cy="12" r="3" />
-								</svg>
-							{/if}
-						</button>
-					</div>
-					<p class="warning">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="14"
-							height="14"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
+								<span>WebGPU is not supported in this browser. Try Chrome or Edge.</span>
+							</div>
+						{/if}
+						<select
+							class="select"
+							value={currentLocalModel}
+							onchange={handleLocalModelChange}
+							disabled={webllmStore.status === 'loading'}
 						>
-							<path
-								d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-							/>
-							<line x1="12" y1="9" x2="12" y2="13" />
-							<line x1="12" y1="17" x2="12.01" y2="17" />
-						</svg>
-						API key is stored in your browser's localStorage only.
-					</p>
-				</section>
+							{#each LOCAL_MODELS as modelId}
+								<option value={modelId}>
+									{LOCAL_MODEL_INFO[modelId].label} ({LOCAL_MODEL_INFO[modelId].size})
+								</option>
+							{/each}
+						</select>
 
-				<!-- Model Selection -->
-				<section class="settings-section">
-					<h3>Model</h3>
-					<select class="select" value={settingsStore.current.model} onchange={handleModelChange}>
-						{#each Object.entries(MODEL_LABELS) as [value, label]}
-							<option {value}>{label}</option>
-						{/each}
-					</select>
-				</section>
+						<div class="local-model-controls">
+							{#if webllmStore.status === 'idle'}
+								<button
+									class="load-model-btn"
+									onclick={handleLoadModel}
+									disabled={!webgpuSupported}
+								>
+									Load Model
+								</button>
+							{:else if webllmStore.status === 'loading'}
+								<div class="loading-progress">
+									<div class="progress-bar">
+										<div class="progress-fill" style="width: {webllmStore.progress * 100}%"></div>
+									</div>
+									<p class="progress-text">{webllmStore.statusText}</p>
+								</div>
+							{:else if webllmStore.status === 'ready'}
+								<div class="model-ready">
+									<span class="ready-badge">Model loaded</span>
+									<button class="unload-model-btn" onclick={handleUnloadModel}>Unload</button>
+								</div>
+							{:else if webllmStore.status === 'error'}
+								<div class="model-error">
+									<p class="error-text">{webllmStore.error}</p>
+									<button class="load-model-btn" onclick={handleLoadModel}>Retry</button>
+								</div>
+							{/if}
+						</div>
+
+						<p class="section-description">
+							Models run entirely on your device using WebGPU. Larger models produce better results
+							but need more memory.
+						</p>
+					</section>
+				{/if}
 
 				<!-- Default Audience -->
 				<section class="settings-section">
@@ -292,11 +427,7 @@
 		width: 100%;
 		max-width: 420px;
 		height: 100%;
-		background: linear-gradient(
-			180deg,
-			rgba(10, 10, 10, 0.98) 0%,
-			rgba(20, 15, 30, 0.98) 100%
-		);
+		background: linear-gradient(180deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 15, 30, 0.98) 100%);
 		border-left: 1px solid rgba(123, 175, 212, 0.3);
 		overflow-y: auto;
 		display: flex;
@@ -376,6 +507,42 @@
 		text-decoration: underline;
 	}
 
+	/* Provider toggle */
+	.provider-toggle {
+		display: flex;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 0.5rem;
+		padding: 3px;
+		gap: 3px;
+	}
+
+	.provider-btn {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		padding: 0.5rem 0.75rem;
+		background: transparent;
+		border: none;
+		border-radius: 0.375rem;
+		color: #888;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.provider-btn.active {
+		background: rgba(123, 175, 212, 0.2);
+		color: #7bafd4;
+	}
+
+	.provider-btn:hover:not(.active) {
+		color: #bbb;
+	}
+
 	.api-key-input {
 		display: flex;
 		gap: 0.5rem;
@@ -446,6 +613,124 @@
 	.select:focus {
 		outline: none;
 		border-color: #7bafd4;
+	}
+
+	.select:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Local model controls */
+	.webgpu-warning {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: rgba(244, 184, 65, 0.1);
+		border: 1px solid rgba(244, 184, 65, 0.3);
+		border-radius: 0.5rem;
+		color: #f4b841;
+		font-size: 0.8rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.local-model-controls {
+		margin-top: 0.75rem;
+	}
+
+	.load-model-btn {
+		width: 100%;
+		padding: 0.625rem 1rem;
+		background: rgba(123, 175, 212, 0.15);
+		border: 1px solid rgba(123, 175, 212, 0.3);
+		border-radius: 0.5rem;
+		color: #7bafd4;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.load-model-btn:hover:not(:disabled) {
+		background: rgba(123, 175, 212, 0.25);
+		border-color: #7bafd4;
+	}
+
+	.load-model-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.loading-progress {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+	}
+
+	.progress-bar {
+		height: 6px;
+		background: rgba(123, 175, 212, 0.15);
+		border-radius: 3px;
+		overflow: hidden;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: #7bafd4;
+		border-radius: 3px;
+		transition: width 0.3s ease;
+	}
+
+	.progress-text {
+		font-size: 0.75rem;
+		color: #888;
+		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.model-ready {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.ready-badge {
+		padding: 0.25rem 0.75rem;
+		background: rgba(76, 175, 80, 0.15);
+		color: #4caf50;
+		border: 1px solid rgba(76, 175, 80, 0.3);
+		border-radius: 9999px;
+		font-size: 0.8rem;
+		font-weight: 500;
+	}
+
+	.unload-model-btn {
+		padding: 0.375rem 0.75rem;
+		background: rgba(244, 67, 54, 0.1);
+		border: 1px solid rgba(244, 67, 54, 0.3);
+		border-radius: 0.375rem;
+		color: #f44336;
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.unload-model-btn:hover {
+		background: rgba(244, 67, 54, 0.2);
+	}
+
+	.model-error {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.error-text {
+		font-size: 0.8rem;
+		color: #f44336;
+		margin: 0;
 	}
 
 	.slider-group {
