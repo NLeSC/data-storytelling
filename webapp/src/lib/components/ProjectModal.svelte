@@ -181,7 +181,7 @@
 			<div class="project-description">
 				<h3 class="section-title">About</h3>
 				<div class="description-content">
-					{@html project.description.replace(/\n/g, '<br />')}
+					{@html (project.description ?? '').replace(/\n/g, '<br />')}
 				</div>
 			</div>
 

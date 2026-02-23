@@ -44,7 +44,14 @@ async function fetchProjectById(projectId: string): Promise<Project | null> {
 	}
 
 	const projects = await response.json();
-	return projects[0] || null;
+	const raw = projects[0];
+	if (!raw) return null;
+	return {
+		...raw,
+		description: raw.description ?? '',
+		short_statement: raw.short_statement ?? '',
+		get_started_url: raw.get_started_url ?? ''
+	};
 }
 
 /**

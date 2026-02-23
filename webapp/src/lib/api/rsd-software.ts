@@ -129,6 +129,29 @@ export async function searchSoftware(query: string, limit = 10): Promise<Related
 }
 
 /**
+ * Normalize a raw software API response into a safe Project object.
+ * The RSD API can return null for fields like description and short_statement.
+ */
+function normalizeSoftware(raw: Record<string, unknown>): Project {
+	return {
+		id: raw.id as string,
+		slug: raw.slug as string,
+		brand_name: raw.brand_name as string,
+		short_statement: (raw.short_statement as string) ?? '',
+		description: (raw.description as string) ?? '',
+		concept_doi: (raw.concept_doi as string) ?? null,
+		description_url: (raw.description_url as string) ?? null,
+		description_type: (raw.description_type as string) ?? 'markdown',
+		get_started_url: (raw.get_started_url as string) ?? '',
+		is_published: (raw.is_published as boolean) ?? true,
+		created_at: raw.created_at as string,
+		updated_at: raw.updated_at as string,
+		image_id: (raw.image_id as string) ?? null,
+		closed_source: (raw.closed_source as boolean) ?? false
+	};
+}
+
+/**
  * Search for software returning full Project-compatible objects.
  * Searches both brand_name and short_statement fields.
  */
@@ -146,7 +169,8 @@ export async function searchSoftwareFull(query: string, limit = 10): Promise<Pro
 			return [];
 		}
 
-		return (await response.json()) as Project[];
+		const raw = (await response.json()) as Record<string, unknown>[];
+		return raw.map(normalizeSoftware);
 	} catch (error) {
 		console.error('Error searching software:', error);
 		return [];
