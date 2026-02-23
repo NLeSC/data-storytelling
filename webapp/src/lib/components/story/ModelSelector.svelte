@@ -152,11 +152,12 @@
 			>
 				{#each LOCAL_MODELS as modelId}
 					<option value={modelId}>
-						{LOCAL_MODEL_INFO[modelId].label} ({LOCAL_MODEL_INFO[modelId].size})
+						{LOCAL_MODEL_INFO[modelId].label} ({LOCAL_MODEL_INFO[modelId].size}) — {LOCAL_MODEL_INFO[modelId].tag}
 					</option>
 				{/each}
 			</select>
 		</div>
+		<p class="model-description">{LOCAL_MODEL_INFO[currentLocalModel].description}</p>
 
 		<!-- Status + Load/Unload -->
 		<div class="local-controls">
@@ -272,6 +273,14 @@
 	.model-select:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
+	}
+
+	.model-description {
+		margin: 0;
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.45);
+		line-height: 1.3;
+		padding-left: 0.25rem;
 	}
 
 	.webgpu-warning {

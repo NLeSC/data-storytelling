@@ -5,6 +5,7 @@
 	import FileUploader from '../story/FileUploader.svelte';
 	import StoryDisplay from '../story/StoryDisplay.svelte';
 	import UrlReferencesInput from './UrlReferencesInput.svelte';
+	import InlineModelLoader from '../story/InlineModelLoader.svelte';
 	import { settingsStore, initSettings, canGenerate } from '$lib/stores/settings.svelte';
 	import { generateStoryStream } from '$lib/api/llm';
 	import type { AudienceType } from '$lib/types/settings';
@@ -119,10 +120,13 @@
 			<div class="warning-content">
 				{#if settingsStore.current.provider === 'local'}
 					<p>No local model loaded</p>
+					<InlineModelLoader />
 				{:else}
 					<p>Gemini API key not configured</p>
+					<button class="configure-button" onclick={onOpenSettings}>
+						Configure in Settings
+					</button>
 				{/if}
-				<button class="configure-button" onclick={onOpenSettings}> Configure in Settings </button>
 			</div>
 		</div>
 	{/if}
@@ -157,44 +161,46 @@
 
 			<ModelSelector />
 
-			<button class="generate-button" onclick={generateStory} disabled={!canGenerateNow}>
-				{#if isGenerating}
-					<div class="spinner"></div>
-					Generating...
-				{:else}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-					</svg>
-					Generate Story
+			<div class="generate-footer">
+				{#if error}
+					<div class="error-message">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<circle cx="12" cy="12" r="10" />
+							<line x1="12" y1="8" x2="12" y2="12" />
+							<line x1="12" y1="16" x2="12.01" y2="16" />
+						</svg>
+						{error}
+					</div>
 				{/if}
-			</button>
 
-			{#if error}
-				<div class="error-message">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<circle cx="12" cy="12" r="10" />
-						<line x1="12" y1="8" x2="12" y2="12" />
-						<line x1="12" y1="16" x2="12.01" y2="16" />
-					</svg>
-					{error}
-				</div>
-			{/if}
+				<button class="generate-button" onclick={generateStory} disabled={!canGenerateNow}>
+					{#if isGenerating}
+						<div class="spinner"></div>
+						Generating...
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+						</svg>
+						Generate Story
+					{/if}
+				</button>
+			</div>
 		</div>
 
 		<div class="output-panel">
@@ -337,6 +343,18 @@
 		border-color: #7bafd4;
 	}
 
+	.generate-footer {
+		position: sticky;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding-top: 0.75rem;
+		padding-bottom: 0.25rem;
+		margin-top: auto;
+		z-index: 1;
+	}
+
 	.generate-button {
 		display: flex;
 		align-items: center;
@@ -385,7 +403,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin-top: 0.75rem;
 		padding: 0.75rem 1rem;
 		background: rgba(244, 67, 54, 0.1);
 		border: 1px solid rgba(244, 67, 54, 0.3);
