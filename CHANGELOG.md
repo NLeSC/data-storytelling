@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [0.13.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.13.0) - 2026-02-23
+
+## What's Changed
+
+### ✨ Features
+- feat: Add abort signal support for story generation streams to enable cancellation (22dfacc)
+- feat: Add margin to metadata status for improved layout (04d5a6f)
+- feat: Add repetition detection to story generation to prevent loops (ea3ce14)
+- feat: Enhance story generation and display by adding thinking blocks and cleaning content (72d9c6a)
+- feat: Add InlineModelLoader component and enhance model selection with descriptions (1eceda1)
+- feat: Enhance model selection and loading for local and Gemini providers (f24f1d3)
+- feat: add new GIFs for video cards and generating processes (a63fff0)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (995a960)
+
+
+
 ## [0.12.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.12.0) - 2026-02-13
 
 ## What's Changed
