@@ -26,6 +26,7 @@
 	let isGenerating = $state(false);
 	let generatedContent = $state('');
 	let error = $state<string | null>(null);
+	let abortController: AbortController | null = null;
 
 	onMount(() => {
 		initSettings();
@@ -62,6 +63,7 @@
 		error = null;
 		isGenerating = true;
 		generatedContent = '';
+		abortController = new AbortController();
 
 		const additionalContext = uploadedFiles
 			.map((f) => `--- ${f.name} ---\n${f.extractedText}`)
@@ -83,17 +85,26 @@
 		};
 
 		try {
-			const stream = generateStoryStream(request, settingsStore.current);
+			const stream = generateStoryStream(request, settingsStore.current, abortController.signal);
 
 			for await (const chunk of stream) {
 				generatedContent += chunk;
 			}
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to generate story';
-			console.error('Generation error:', e);
+			if (e instanceof DOMException && e.name === 'AbortError') {
+				// User stopped generation — not an error
+			} else {
+				error = e instanceof Error ? e.message : 'Failed to generate story';
+				console.error('Generation error:', e);
+			}
 		} finally {
 			isGenerating = false;
+			abortController = null;
 		}
+	}
+
+	function stopGeneration() {
+		abortController?.abort();
 	}
 
 	const canGenerateNow = $derived(canGenerate() && !isGenerating && projectTitle.trim().length > 0);
@@ -181,11 +192,15 @@
 					</div>
 				{/if}
 
-				<button class="generate-button" onclick={generateStory} disabled={!canGenerateNow}>
-					{#if isGenerating}
-						<div class="spinner"></div>
-						Generating...
-					{:else}
+				{#if isGenerating}
+					<button class="generate-button stop" onclick={stopGeneration}>
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+							<rect x="6" y="6" width="12" height="12" rx="2" />
+						</svg>
+						Stop
+					</button>
+				{:else}
+					<button class="generate-button" onclick={generateStory} disabled={!canGenerateNow}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="20"
@@ -198,8 +213,8 @@
 							<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
 						</svg>
 						Generate Story
-					{/if}
-				</button>
+					</button>
+				{/if}
 			</div>
 		</div>
 
@@ -377,26 +392,19 @@
 		box-shadow: 0 8px 20px rgba(123, 175, 212, 0.4);
 	}
 
+	.generate-button.stop {
+		background: linear-gradient(135deg, #e05555, #c03030);
+	}
+
+	.generate-button.stop:hover {
+		box-shadow: 0 8px 20px rgba(224, 85, 85, 0.4);
+	}
+
 	.generate-button:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 		transform: none;
 		box-shadow: none;
-	}
-
-	.spinner {
-		width: 18px;
-		height: 18px;
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		border-top-color: white;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.error-message {

@@ -9,16 +9,17 @@ import { generateStoryStream as generateStoryStreamGemini } from './gemini';
 
 /**
  * Generate a story using the configured provider with streaming.
- * Yields text chunks as they arrive.
+ * Yields text chunks as they arrive. Pass an AbortSignal to allow cancellation.
  */
 export async function* generateStoryStream(
 	request: StoryGenerationRequest,
-	settings: StorySettings
+	settings: StorySettings,
+	signal?: AbortSignal
 ): AsyncGenerator<string, void, unknown> {
 	if (settings.provider === 'local') {
 		const { generateStoryStreamLocal } = await import('./webllm');
-		yield* generateStoryStreamLocal(request, settings);
+		yield* generateStoryStreamLocal(request, settings, signal);
 	} else {
-		yield* generateStoryStreamGemini(request, settings);
+		yield* generateStoryStreamGemini(request, settings, signal);
 	}
 }

@@ -96,7 +96,8 @@ export async function generateStory(
  */
 export async function* generateStoryStream(
 	request: StoryGenerationRequest,
-	settings: StorySettings
+	settings: StorySettings,
+	signal?: AbortSignal
 ): AsyncGenerator<string, void, unknown> {
 	if (!settings.geminiApiKey) {
 		throw new Error('Gemini API key is not configured. Please set it in Settings.');
@@ -114,6 +115,7 @@ export async function* generateStoryStream(
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		signal,
 		body: JSON.stringify({
 			contents: [
 				{
@@ -152,6 +154,7 @@ export async function* generateStoryStream(
 
 	try {
 		while (true) {
+			if (signal?.aborted) break;
 			const { done, value } = await reader.read();
 			if (done) break;
 

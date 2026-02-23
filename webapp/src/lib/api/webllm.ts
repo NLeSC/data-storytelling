@@ -132,7 +132,8 @@ function detectRepetition(text: string): boolean {
  */
 export async function* generateStoryStreamLocal(
 	request: StoryGenerationRequest,
-	settings: StorySettings
+	settings: StorySettings,
+	signal?: AbortSignal
 ): AsyncGenerator<string, void, unknown> {
 	if (!engine || !currentModelId) {
 		throw new Error('No local model loaded. Please load a model first.');
@@ -157,6 +158,8 @@ export async function* generateStoryStreamLocal(
 	let chunkCount = 0;
 
 	for await (const chunk of completion) {
+		if (signal?.aborted) break;
+
 		const delta = chunk.choices[0]?.delta?.content;
 		if (delta) {
 			output += delta;
