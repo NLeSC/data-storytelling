@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.12.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.12.0) - 2026-02-13
+
+## What's Changed
+
+### ✨ Features
+- feat: add initial blog post on AI-powered storytelling for scientific communication (b1812db)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (1cdcea1)
+
+
+
 ## [0.11.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.11.0) - 2026-02-12
 
 ## What's Changed
