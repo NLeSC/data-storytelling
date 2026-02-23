@@ -13,7 +13,7 @@
 		fetchEnrichedMetadata,
 		type EnrichedMetadata
 	} from '$lib/api/rsd-software';
-	import { RSD_PROJECT_DOMAIN, type ProjectWithDomain } from '$lib/types/project';
+	import { SOFTWARE_DOMAIN, RSD_PROJECT_DOMAIN, type ProjectWithDomain } from '$lib/types/project';
 	import type { AudienceType } from '$lib/types/settings';
 	import type { RelatedSoftware, UploadedFile, StoryGenerationRequest } from '$lib/types/story';
 
@@ -59,6 +59,10 @@
 
 	// Load related software when project changes
 	async function loadRelatedSoftware() {
+		// Skip for search results — synthetic domains don't have real organisation IDs
+		if (project.domain.id === SOFTWARE_DOMAIN.id || project.domain.id === RSD_PROJECT_DOMAIN.id) {
+			return;
+		}
 		loadingSoftware = true;
 		try {
 			// Fetch software from the same organisation/domain

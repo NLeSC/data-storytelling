@@ -127,6 +127,15 @@ function detectRepetition(text: string): boolean {
 }
 
 /**
+ * Interrupt any in-flight generation on the WebLLM engine.
+ */
+export function interruptGeneration(): void {
+	if (engine) {
+		engine.interruptGenerate();
+	}
+}
+
+/**
  * Generate a story using the local WebLLM engine with streaming.
  * Yields text chunks as they arrive.
  */
@@ -141,6 +150,9 @@ export async function* generateStoryStreamLocal(
 
 	const systemPrompt = getSystemPrompt(request.audience, settings.customPrompts[request.audience]);
 	const userPrompt = buildUserPrompt(request);
+
+	// Interrupt any leftover generation from a previous aborted run
+	engine.interruptGenerate();
 
 	const completion = await engine.chat.completions.create({
 		messages: [
@@ -157,23 +169,29 @@ export async function* generateStoryStreamLocal(
 	let output = '';
 	let chunkCount = 0;
 
-	for await (const chunk of completion) {
-		if (signal?.aborted) break;
+	try {
+		for await (const chunk of completion) {
+			if (signal?.aborted) break;
 
-		const delta = chunk.choices[0]?.delta?.content;
-		if (delta) {
-			output += delta;
-			yield delta;
+			const delta = chunk.choices[0]?.delta?.content;
+			if (delta) {
+				output += delta;
+				yield delta;
 
-			// Check for repetition every 20 chunks once we have enough text
-			chunkCount++;
-			if (chunkCount >= 20 && output.length > 200) {
-				chunkCount = 0;
-				if (detectRepetition(output)) {
-					console.warn('Repetition loop detected, stopping generation');
-					break;
+				// Check for repetition every 20 chunks once we have enough text
+				chunkCount++;
+				if (chunkCount >= 20 && output.length > 200) {
+					chunkCount = 0;
+					if (detectRepetition(output)) {
+						console.warn('Repetition loop detected, stopping generation');
+						break;
+					}
 				}
 			}
+		}
+	} finally {
+		if (signal?.aborted) {
+			engine.interruptGenerate();
 		}
 	}
 }
