@@ -17,7 +17,6 @@
 	import CustomStoryFab from '$lib/components/custom/CustomStoryFab.svelte';
 	import CustomStoryModal from '$lib/components/custom/CustomStoryModal.svelte';
 	import { fetchAllProjects } from '$lib/api/projects';
-	import { autoLoadModel } from '$lib/stores/webllm.svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { onMount } from 'svelte';
 
@@ -54,7 +53,7 @@
 	);
 	const lifeSciencesProjects = $derived(projects.filter((p) => p.domain.slug === 'life-sciences'));
 
-	// Load projects and auto-load local model on mount
+	// Load projects on mount
 	onMount(async () => {
 		try {
 			projects = await fetchAllProjects();
@@ -62,9 +61,6 @@
 		} catch (error) {
 			console.error('Error loading projects:', error);
 		}
-
-		// Auto-load local model if provider is 'local' (uses browser cache, so fast after first download)
-		autoLoadModel();
 	});
 
 	function handleProjectClick(project: ProjectWithDomain) {

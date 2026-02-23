@@ -48,6 +48,8 @@ export const MODEL_LABELS: Record<GeminiModel, string> = {
 };
 
 export type LocalModelId =
+	| 'SmolLM2-360M-Instruct-q4f16_1-MLC'
+	| 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC'
 	| 'SmolLM2-1.7B-Instruct-q4f16_1-MLC'
 	| 'Qwen3-1.7B-q4f16_1-MLC'
 	| 'Qwen3-4B-q4f16_1-MLC'
@@ -57,6 +59,8 @@ export type LocalModelId =
 	| 'Mistral-7B-Instruct-v0.3-q4f16_1-MLC';
 
 export const LOCAL_MODELS: LocalModelId[] = [
+	'SmolLM2-360M-Instruct-q4f16_1-MLC',
+	'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
 	'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
 	'Qwen3-1.7B-q4f16_1-MLC',
 	'Qwen3-4B-q4f16_1-MLC',
@@ -76,6 +80,22 @@ export interface LocalModelMeta {
 }
 
 export const LOCAL_MODEL_INFO: Record<LocalModelId, LocalModelMeta> = {
+	'SmolLM2-360M-Instruct-q4f16_1-MLC': {
+		label: 'SmolLM2 360M',
+		size: '~207 MB',
+		vram: '~376 MB',
+		tier: 'lightweight',
+		tag: 'Tiny',
+		description: 'Ultra-small model. Quick drafts on any device, limited quality.'
+	},
+	'Qwen2.5-0.5B-Instruct-q4f16_1-MLC': {
+		label: 'Qwen2.5 0.5B',
+		size: '~290 MB',
+		vram: '~945 MB',
+		tier: 'lightweight',
+		tag: 'Compact',
+		description: 'Small but capable. Good quality for its size, fast responses.'
+	},
 	'SmolLM2-1.7B-Instruct-q4f16_1-MLC': {
 		label: 'SmolLM2 1.7B',
 		size: '~1.0 GB',

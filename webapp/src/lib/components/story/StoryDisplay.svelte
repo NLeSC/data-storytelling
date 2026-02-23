@@ -13,11 +13,22 @@
 
 	let copied = $state(false);
 
-	const exportDisabled = $derived(!content || isStreaming);
+	/** Strip <think>...</think> blocks (including unclosed tags during streaming) */
+	function stripThinking(text: string): string {
+		return text
+			.replace(/<think>[\s\S]*?<\/think>/g, '')
+			.replace(/<think>[\s\S]*$/, '')
+			.trim();
+	}
+
+	/** The actual story content without thinking blocks */
+	const cleanContent = $derived(stripThinking(content));
+
+	const exportDisabled = $derived(!cleanContent || isStreaming);
 
 	async function copyToClipboard() {
 		try {
-			await navigator.clipboard.writeText(content);
+			await navigator.clipboard.writeText(cleanContent);
 			copied = true;
 			setTimeout(() => {
 				copied = false;
@@ -53,7 +64,7 @@ audience: ${audience}
 ---
 
 `;
-		const fullContent = header + content;
+		const fullContent = header + cleanContent;
 		const blob = new Blob([fullContent], { type: 'text/markdown' });
 		downloadFile(blob, filename);
 	}
@@ -106,7 +117,7 @@ audience: ${audience}
 		<strong>Audience:</strong> ${AUDIENCE_LABELS[audience]} |
 		<strong>Generated:</strong> ${timestamp}
 	</div>
-	${markdownToHtml(content)}
+	${markdownToHtml(cleanContent)}
 </body>
 </html>`;
 
@@ -139,8 +150,51 @@ audience: ${audience}
 			});
 	}
 
-	// Simple markdown to HTML conversion for display
-	function renderMarkdown(md: string): string {
+	/** Split text into thinking and content segments */
+	function splitThinking(text: string): Array<{ text: string; isThinking: boolean }> {
+		const segments: Array<{ text: string; isThinking: boolean }> = [];
+		let remaining = text;
+
+		while (remaining.length > 0) {
+			const thinkStart = remaining.indexOf('<think>');
+
+			if (thinkStart === -1) {
+				if (remaining.trim()) {
+					segments.push({ text: remaining, isThinking: false });
+				}
+				break;
+			}
+
+			if (thinkStart > 0) {
+				const before = remaining.slice(0, thinkStart);
+				if (before.trim()) {
+					segments.push({ text: before, isThinking: false });
+				}
+			}
+
+			const thinkEnd = remaining.indexOf('</think>', thinkStart + 7);
+
+			if (thinkEnd === -1) {
+				// Unclosed <think> tag — still streaming thinking
+				const thinkContent = remaining.slice(thinkStart + 7);
+				if (thinkContent.trim()) {
+					segments.push({ text: thinkContent, isThinking: true });
+				}
+				break;
+			}
+
+			const thinkContent = remaining.slice(thinkStart + 7, thinkEnd);
+			if (thinkContent.trim()) {
+				segments.push({ text: thinkContent, isThinking: true });
+			}
+			remaining = remaining.slice(thinkEnd + 8);
+		}
+
+		return segments;
+	}
+
+	/** Convert a markdown string to HTML */
+	function renderMarkdownSegment(md: string): string {
 		if (!md) return '';
 
 		let html = md
@@ -158,7 +212,10 @@ audience: ${audience}
 			// Line breaks for paragraphs
 			.replace(/\n\n/g, '</p><p>')
 			// Links
-			.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+			.replace(
+				/\[(.*?)\]\((.*?)\)/g,
+				'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+			);
 
 		// Wrap in paragraph tags
 		html = '<p>' + html + '</p>';
@@ -168,6 +225,23 @@ audience: ${audience}
 		html = html.replace(/<\/li><p>/g, '</li></ul><p>');
 
 		return html;
+	}
+
+	/** Render full content with thinking blocks styled separately */
+	function renderMarkdown(md: string): string {
+		if (!md) return '';
+
+		const segments = splitThinking(md);
+
+		return segments
+			.map((seg) => {
+				if (seg.isThinking) {
+					const thinkHtml = seg.text.replace(/\n/g, '<br>');
+					return `<div class="thinking-block"><div class="thinking-label">Thinking</div><div class="thinking-text">${thinkHtml}</div></div>`;
+				}
+				return renderMarkdownSegment(seg.text);
+			})
+			.join('');
 	}
 </script>
 
@@ -193,7 +267,7 @@ audience: ${audience}
 				</svg>
 				PDF
 			</button>
-			<button class="action-button" onclick={copyToClipboard} disabled={!content || isStreaming}>
+			<button class="action-button" onclick={copyToClipboard} disabled={!cleanContent || isStreaming}>
 				{#if copied}
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<polyline points="20 6 9 17 4 12"/>
@@ -344,6 +418,29 @@ audience: ${audience}
 
 	.story-content :global(a:hover) {
 		text-decoration: underline;
+	}
+
+	.story-content :global(.thinking-block) {
+		border-left: 2px solid rgba(123, 175, 212, 0.25);
+		padding-left: 1rem;
+		margin-bottom: 1rem;
+		opacity: 0.45;
+	}
+
+	.story-content :global(.thinking-label) {
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: rgba(123, 175, 212, 0.6);
+		margin-bottom: 0.375rem;
+	}
+
+	.story-content :global(.thinking-text) {
+		font-style: italic;
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: #b0b0b0;
 	}
 
 	.placeholder {

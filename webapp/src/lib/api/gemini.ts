@@ -19,7 +19,7 @@ export interface GeminiError {
 export interface GeminiResponse {
 	candidates: Array<{
 		content: {
-			parts: Array<{ text: string }>;
+			parts: Array<{ text: string; thought?: boolean }>;
 			role: string;
 		};
 		finishReason: string;
@@ -148,6 +148,7 @@ export async function* generateStoryStream(
 
 	const decoder = new TextDecoder();
 	let buffer = '';
+	let inThought = false;
 
 	try {
 		while (true) {
@@ -168,9 +169,20 @@ export async function* generateStoryStream(
 					if (jsonStr && jsonStr !== '[DONE]') {
 						try {
 							const data = JSON.parse(jsonStr) as GeminiResponse;
-							const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-							if (text) {
-								yield text;
+							const parts = data.candidates?.[0]?.content?.parts;
+							if (parts) {
+								for (const part of parts) {
+									if (part.thought && !inThought) {
+										yield '<think>';
+										inThought = true;
+									} else if (!part.thought && inThought) {
+										yield '</think>';
+										inThought = false;
+									}
+									if (part.text) {
+										yield part.text;
+									}
+								}
 							}
 						} catch {
 							// Skip malformed JSON chunks
@@ -179,6 +191,11 @@ export async function* generateStoryStream(
 					}
 				}
 			}
+		}
+
+		// Close any open thought tag
+		if (inThought) {
+			yield '</think>';
 		}
 	} finally {
 		reader.releaseLock();

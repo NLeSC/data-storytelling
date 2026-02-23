@@ -8,12 +8,8 @@ import {
 	unloadModel,
 	isModelLoaded,
 	isModelLoading,
-	isWebGPUSupported,
 	setProgressCallback
 } from '$lib/api/webllm';
-import { getFromStorage } from '$lib/utils/storage';
-import { STORAGE_KEYS } from '$lib/types/story';
-import { DEFAULT_SETTINGS, type StorySettings } from '$lib/types/settings';
 
 export type WebLLMStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -70,27 +66,6 @@ export async function startUnloadModel(): Promise<void> {
 	statusText = '';
 	error = null;
 	loadedModelId = null;
-}
-
-/**
- * Auto-load the local model on startup if provider is 'local'.
- * WebLLM caches downloaded weights in the browser Cache API,
- * so subsequent loads are fast (no re-download).
- * Call this once from a top-level component's onMount.
- */
-let autoLoadAttempted = false;
-export async function autoLoadModel(): Promise<void> {
-	if (autoLoadAttempted) return;
-	autoLoadAttempted = true;
-
-	if (typeof navigator === 'undefined' || !isWebGPUSupported()) return;
-	if (isModelLoaded() || isModelLoading()) return;
-
-	const stored = getFromStorage<StorySettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
-	if (stored.provider !== 'local') return;
-
-	const modelId = stored.localModel ?? DEFAULT_SETTINGS.localModel;
-	await startLoadModel(modelId);
 }
 
 /**
