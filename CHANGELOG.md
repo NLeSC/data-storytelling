@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.14.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.14.0) - 2026-02-23
+
+## What's Changed
+
+### ✨ Features
+- feat: Enhance project data handling by normalizing API responses and ensuring safe access to description fields (02e11bb)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (997d982)
+
+
+
 ## [0.13.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.13.0) - 2026-02-23
 
 ## What's Changed
