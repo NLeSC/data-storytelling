@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.15.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.15.0) - 2026-02-23
+
+## What's Changed
+
+### ✨ Features
+- feat: Add interrupt functionality for in-flight story generation and improve software loading logic (1031b0c)
+
+
+
 ## [0.14.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.14.0) - 2026-02-23
 
 ## What's Changed
