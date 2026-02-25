@@ -7,14 +7,36 @@
 		type LLMProvider,
 		type LocalModelId
 	} from '$lib/types/settings';
-	import { settingsStore, setModel, setProvider, setLocalModel } from '$lib/stores/settings.svelte';
+	import {
+		settingsStore,
+		setModel,
+		setProvider,
+		setLocalModel,
+		setApiKey,
+		setCustomServerUrl,
+		setCustomServerApiKey,
+		setCustomServerModel
+	} from '$lib/stores/settings.svelte';
 	import { webllmStore, startLoadModel, startUnloadModel } from '$lib/stores/webllm.svelte';
 	import { isWebGPUSupported } from '$lib/api/webllm';
+	import { testConnection } from '$lib/api/openai-compatible';
 
 	let currentProvider = $derived(settingsStore.current.provider ?? 'gemini');
 	let currentModel = $derived(settingsStore.current.model);
 	let currentLocalModel = $derived(settingsStore.current.localModel);
 	let webgpuSupported = $state(true);
+
+	// Gemini state
+	let showApiKey = $state(false);
+	let apiKeyInput = $state('');
+
+	// Custom server state
+	let showCustomApiKey = $state(false);
+	let customUrlInput = $state('');
+	let customApiKeyInput = $state('');
+	let customModelInput = $state('');
+	let connectionTestResult = $state<{ ok: boolean; message: string } | null>(null);
+	let connectionTesting = $state(false);
 
 	$effect(() => {
 		if (typeof navigator !== 'undefined') {
@@ -22,17 +44,34 @@
 		}
 	});
 
+	// Sync inputs from store
+	$effect(() => {
+		if (settingsStore.initialized) {
+			apiKeyInput = settingsStore.current.geminiApiKey;
+			customUrlInput = settingsStore.current.customServerUrl;
+			customApiKeyInput = settingsStore.current.customServerApiKey;
+			customModelInput = settingsStore.current.customServerModel;
+		}
+	});
+
 	const geminiModels = Object.entries(MODEL_LABELS) as [GeminiModel, string][];
 
 	function handleProviderChange(provider: LLMProvider) {
 		setProvider(provider);
+		connectionTestResult = null;
 	}
 
+	// Gemini handlers
 	function handleGeminiModelChange(e: Event) {
 		const target = e.target as HTMLSelectElement;
 		setModel(target.value as GeminiModel);
 	}
 
+	function handleApiKeyChange() {
+		setApiKey(apiKeyInput);
+	}
+
+	// Local handlers
 	function handleLocalModelChange(e: Event) {
 		const target = e.target as HTMLSelectElement;
 		setLocalModel(target.value as LocalModelId);
@@ -44,6 +83,33 @@
 
 	async function handleUnloadModel() {
 		await startUnloadModel();
+	}
+
+	// Custom server handlers
+	function handleCustomUrlChange() {
+		setCustomServerUrl(customUrlInput);
+		connectionTestResult = null;
+	}
+
+	function handleCustomApiKeyChange() {
+		setCustomServerApiKey(customApiKeyInput);
+		connectionTestResult = null;
+	}
+
+	function handleCustomModelChange() {
+		setCustomServerModel(customModelInput);
+		connectionTestResult = null;
+	}
+
+	async function handleTestConnection() {
+		connectionTesting = true;
+		connectionTestResult = null;
+		connectionTestResult = await testConnection(
+			customUrlInput,
+			customApiKeyInput,
+			customModelInput
+		);
+		connectionTesting = false;
 	}
 </script>
 
@@ -74,24 +140,9 @@
 	</div>
 
 	{#if currentProvider === 'gemini'}
-		<!-- Gemini model selector -->
+		<!-- Gemini config -->
 		<div class="model-row">
-			<label class="model-label" for="model-select">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="M12 2L2 7l10 5 10-5-10-5z" />
-					<path d="M2 17l10 5 10-5" />
-					<path d="M2 12l10 5 10-5" />
-				</svg>
-				Model
-			</label>
+			<label class="model-label" for="model-select">Model</label>
 			<select
 				id="model-select"
 				class="model-select"
@@ -103,53 +154,41 @@
 				{/each}
 			</select>
 		</div>
+
+		<div class="field-group">
+			<label class="field-label" for="gemini-api-key">API Key</label>
+			<div class="input-row">
+				<input
+					id="gemini-api-key"
+					type={showApiKey ? 'text' : 'password'}
+					class="field-input"
+					bind:value={apiKeyInput}
+					onchange={handleApiKeyChange}
+					onblur={handleApiKeyChange}
+					placeholder="AIza..."
+				/>
+				<button
+					class="toggle-visibility"
+					onclick={() => (showApiKey = !showApiKey)}
+					aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
+				>
+					{showApiKey ? 'Hide' : 'Show'}
+				</button>
+			</div>
+			<p class="field-hint">
+				Get a key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>
+			</p>
+		</div>
 	{:else if currentProvider === 'local'}
-		<!-- Local model selector -->
+		<!-- Local model config -->
 		{#if !webgpuSupported}
 			<div class="webgpu-warning">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path
-						d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-					/>
-					<line x1="12" y1="9" x2="12" y2="13" />
-					<line x1="12" y1="17" x2="12.01" y2="17" />
-				</svg>
 				<span>WebGPU not supported in this browser</span>
 			</div>
 		{/if}
 
 		<div class="model-row">
-			<label class="model-label" for="local-model-select">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-					<rect x="9" y="9" width="6" height="6" />
-					<line x1="9" y1="1" x2="9" y2="4" />
-					<line x1="15" y1="1" x2="15" y2="4" />
-					<line x1="9" y1="20" x2="9" y2="23" />
-					<line x1="15" y1="20" x2="15" y2="23" />
-					<line x1="20" y1="9" x2="23" y2="9" />
-					<line x1="20" y1="14" x2="23" y2="14" />
-					<line x1="1" y1="9" x2="4" y2="9" />
-					<line x1="1" y1="14" x2="4" y2="14" />
-				</svg>
-				Model
-			</label>
+			<label class="model-label" for="local-model-select">Model</label>
 			<select
 				id="local-model-select"
 				class="model-select"
@@ -166,10 +205,9 @@
 		</div>
 		<p class="model-description">{LOCAL_MODEL_INFO[currentLocalModel].description}</p>
 
-		<!-- Status + Load/Unload -->
 		<div class="local-controls">
 			{#if webllmStore.status === 'idle'}
-				<button class="load-btn" onclick={handleLoadModel} disabled={!webgpuSupported}>
+				<button class="action-btn" onclick={handleLoadModel} disabled={!webgpuSupported}>
 					Load Model
 				</button>
 			{:else if webllmStore.status === 'loading'}
@@ -182,35 +220,84 @@
 			{:else if webllmStore.status === 'ready'}
 				<div class="ready-state">
 					<span class="status-badge ready">Ready</span>
-					<button class="unload-btn" onclick={handleUnloadModel}> Unload </button>
+					<button class="unload-btn" onclick={handleUnloadModel}>Unload</button>
 				</div>
 			{:else if webllmStore.status === 'error'}
 				<div class="error-state">
 					<span class="status-badge error">Error</span>
 					<span class="error-text">{webllmStore.error}</span>
-					<button class="load-btn" onclick={handleLoadModel}>Retry</button>
+					<button class="action-btn" onclick={handleLoadModel}>Retry</button>
 				</div>
 			{/if}
 		</div>
 	{:else}
-		<!-- Custom server info -->
-		<div class="custom-server-info">
-			<div class="model-row">
-				<span class="model-label">
-					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-						<rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-						<line x1="6" y1="6" x2="6.01" y2="6" />
-						<line x1="6" y1="18" x2="6.01" y2="18" />
-					</svg>
-					Server
-				</span>
-				<span class="server-url">{settingsStore.current.customServerUrl || 'Not configured'}</span>
-			</div>
-			{#if settingsStore.current.customServerModel}
-				<p class="model-description">Model: {settingsStore.current.customServerModel}</p>
-			{/if}
+		<!-- Custom server config -->
+		<div class="field-group">
+			<label class="field-label" for="custom-server-url">Server URL</label>
+			<input
+				id="custom-server-url"
+				type="text"
+				class="field-input"
+				bind:value={customUrlInput}
+				onchange={handleCustomUrlChange}
+				onblur={handleCustomUrlChange}
+				placeholder="http://localhost:8080"
+			/>
 		</div>
+
+		<div class="field-group">
+			<label class="field-label" for="custom-model-name">Model Name</label>
+			<input
+				id="custom-model-name"
+				type="text"
+				class="field-input"
+				bind:value={customModelInput}
+				onchange={handleCustomModelChange}
+				onblur={handleCustomModelChange}
+				placeholder="e.g. llama3, qwen3-8b"
+			/>
+			<p class="field-hint">Some servers ignore this field.</p>
+		</div>
+
+		<div class="field-group">
+			<label class="field-label" for="custom-api-key">API Key (optional)</label>
+			<div class="input-row">
+				<input
+					id="custom-api-key"
+					type={showCustomApiKey ? 'text' : 'password'}
+					class="field-input"
+					bind:value={customApiKeyInput}
+					onchange={handleCustomApiKeyChange}
+					onblur={handleCustomApiKeyChange}
+					placeholder="sk-..."
+				/>
+				<button
+					class="toggle-visibility"
+					onclick={() => (showCustomApiKey = !showCustomApiKey)}
+					aria-label={showCustomApiKey ? 'Hide API key' : 'Show API key'}
+				>
+					{showCustomApiKey ? 'Hide' : 'Show'}
+				</button>
+			</div>
+			<p class="field-hint">Only needed for authenticated endpoints.</p>
+		</div>
+
+		<button
+			class="action-btn"
+			onclick={handleTestConnection}
+			disabled={connectionTesting || !customUrlInput.trim()}
+		>
+			{connectionTesting ? 'Testing...' : 'Test Connection'}
+		</button>
+		{#if connectionTestResult}
+			<div
+				class="connection-result"
+				class:success={connectionTestResult.ok}
+				class:failure={!connectionTestResult.ok}
+			>
+				{connectionTestResult.message}
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -257,6 +344,84 @@
 		color: #bbb;
 	}
 
+	/* Shared field styles */
+	.field-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.field-label {
+		font-size: 0.7rem;
+		font-weight: 500;
+		color: #888;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.field-input {
+		width: 100%;
+		padding: 0.375rem 0.5rem;
+		background: rgba(0, 0, 0, 0.3);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 0.375rem;
+		color: #e0e0e0;
+		font-size: 0.75rem;
+		outline: none;
+		transition: border-color 0.2s ease;
+		box-sizing: border-box;
+	}
+
+	.field-input:focus {
+		border-color: #7bafd4;
+	}
+
+	.field-input::placeholder {
+		color: #555;
+	}
+
+	.field-hint {
+		margin: 0;
+		font-size: 0.65rem;
+		color: rgba(255, 255, 255, 0.35);
+		line-height: 1.3;
+	}
+
+	.field-hint a {
+		color: #7bafd4;
+		text-decoration: none;
+	}
+
+	.field-hint a:hover {
+		text-decoration: underline;
+	}
+
+	.input-row {
+		display: flex;
+		gap: 0.25rem;
+	}
+
+	.input-row .field-input {
+		flex: 1;
+	}
+
+	.toggle-visibility {
+		padding: 0.375rem 0.5rem;
+		background: rgba(123, 175, 212, 0.1);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 0.375rem;
+		color: #7bafd4;
+		font-size: 0.65rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.toggle-visibility:hover {
+		background: rgba(123, 175, 212, 0.2);
+	}
+
+	/* Model row */
 	.model-row {
 		display: flex;
 		align-items: center;
@@ -267,10 +432,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		font-size: 0.75rem;
+		font-size: 0.7rem;
 		font-weight: 500;
 		color: #888;
 		white-space: nowrap;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	.model-select {
@@ -313,6 +480,7 @@
 		padding-left: 0.25rem;
 	}
 
+	/* Local controls */
 	.webgpu-warning {
 		display: flex;
 		align-items: center;
@@ -329,7 +497,7 @@
 		min-height: 2rem;
 	}
 
-	.load-btn {
+	.action-btn {
 		width: 100%;
 		padding: 0.375rem 0.75rem;
 		background: rgba(123, 175, 212, 0.15);
@@ -342,12 +510,12 @@
 		transition: all 0.2s ease;
 	}
 
-	.load-btn:hover:not(:disabled) {
+	.action-btn:hover:not(:disabled) {
 		background: rgba(123, 175, 212, 0.25);
 		border-color: #7bafd4;
 	}
 
-	.load-btn:disabled {
+	.action-btn:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
@@ -439,11 +607,22 @@
 		white-space: nowrap;
 	}
 
-	.server-url {
-		font-size: 0.75rem;
-		color: #e0e0e0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+	/* Connection test */
+	.connection-result {
+		padding: 0.375rem 0.5rem;
+		border-radius: 0.375rem;
+		font-size: 0.7rem;
+	}
+
+	.connection-result.success {
+		background: rgba(76, 175, 80, 0.1);
+		border: 1px solid rgba(76, 175, 80, 0.3);
+		color: #4caf50;
+	}
+
+	.connection-result.failure {
+		background: rgba(244, 67, 54, 0.1);
+		border: 1px solid rgba(244, 67, 54, 0.3);
+		color: #f44336;
 	}
 </style>

@@ -175,22 +175,6 @@
 	<div class="generator-layout">
 		<div class="config-panel">
 			<ModelSelector />
-
-			{#if !canGenerate() && settingsStore.current.provider !== 'local'}
-				<div class="provider-warning">
-					{#if settingsStore.current.provider === 'custom'}
-						<button class="configure-button" onclick={onOpenSettings}>
-							Configure server in Settings
-						</button>
-					{:else}
-						<button class="configure-button" onclick={onOpenSettings}>
-							Configure API key in Settings
-						</button>
-					{/if}
-				</div>
-			{/if}
-
-			<div class="mt-4"></div>
 			<AudienceSelector selected={audience} onchange={handleAudienceChange} />
 
 			<!-- <div id="metadata-status" class="metadata-status">
@@ -288,26 +272,6 @@
 		height: 100%;
 	}
 
-	.provider-warning {
-		margin-bottom: 0.5rem;
-	}
-
-	.configure-button {
-		width: 100%;
-		padding: 0.375rem 0.75rem;
-		background: rgba(244, 184, 65, 0.15);
-		border: 1px solid rgba(244, 184, 65, 0.4);
-		border-radius: 0.375rem;
-		color: #f4b841;
-		font-size: 0.75rem;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.configure-button:hover {
-		background: rgba(244, 184, 65, 0.25);
-	}
-
 	.generator-layout {
 		display: grid;
 		grid-template-columns: 350px 1fr;
@@ -396,42 +360,6 @@
 		font-size: 0.85rem;
 	}
 
-	.metadata-status:not(:empty) {
-		margin-bottom: 0.5rem;
-	}
-
-	.metadata-loading {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.8rem;
-		color: rgba(255, 255, 255, 0.5);
-	}
-
-	.spinner-sm {
-		width: 12px;
-		height: 12px;
-		border: 2px solid rgba(255, 255, 255, 0.15);
-		border-top-color: rgba(255, 255, 255, 0.5);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	.metadata-badges {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.375rem;
-	}
-
-	.metadata-badge {
-		display: inline-block;
-		padding: 0.125rem 0.5rem;
-		background: rgba(123, 175, 212, 0.12);
-		border: 1px solid rgba(123, 175, 212, 0.25);
-		border-radius: 9999px;
-		font-size: 0.7rem;
-		color: rgba(255, 255, 255, 0.65);
-	}
 
 	@media (max-width: 900px) {
 		.generator-layout {
