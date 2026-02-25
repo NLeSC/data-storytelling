@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.16.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.16.0) - 2026-02-25
+
+## What's Changed
+
+### ✨ Features
+- feat: Add support for custom OpenAI-compatible server in settings and story generation (ba1dc60)
+
+
+
 ## [0.15.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.15.0) - 2026-02-23
 
 ## What's Changed
