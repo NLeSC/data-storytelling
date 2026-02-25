@@ -64,6 +64,13 @@
 		>
 			Local
 		</button>
+		<button
+			class="toggle-btn"
+			class:active={currentProvider === 'custom'}
+			onclick={() => handleProviderChange('custom')}
+		>
+			Server
+		</button>
 	</div>
 
 	{#if currentProvider === 'gemini'}
@@ -96,7 +103,7 @@
 				{/each}
 			</select>
 		</div>
-	{:else}
+	{:else if currentProvider === 'local'}
 		<!-- Local model selector -->
 		{#if !webgpuSupported}
 			<div class="webgpu-warning">
@@ -185,6 +192,25 @@
 				</div>
 			{/if}
 		</div>
+	{:else}
+		<!-- Custom server info -->
+		<div class="custom-server-info">
+			<div class="model-row">
+				<span class="model-label">
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+						<rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+						<line x1="6" y1="6" x2="6.01" y2="6" />
+						<line x1="6" y1="18" x2="6.01" y2="18" />
+					</svg>
+					Server
+				</span>
+				<span class="server-url">{settingsStore.current.customServerUrl || 'Not configured'}</span>
+			</div>
+			{#if settingsStore.current.customServerModel}
+				<p class="model-description">Model: {settingsStore.current.customServerModel}</p>
+			{/if}
+		</div>
 	{/if}
 </div>
 
@@ -194,6 +220,10 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		margin-bottom: 0.75rem;
+		padding: 0.75rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(123, 175, 212, 0.15);
+		border-radius: 0.5rem;
 	}
 
 	.provider-toggle {
@@ -404,6 +434,14 @@
 		color: #f44336;
 		flex: 1;
 		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.server-url {
+		font-size: 0.75rem;
+		color: #e0e0e0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;

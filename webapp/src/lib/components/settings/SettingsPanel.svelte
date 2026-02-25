@@ -10,6 +10,9 @@
 		setModel,
 		setProvider,
 		setLocalModel,
+		setCustomServerUrl,
+		setCustomServerApiKey,
+		setCustomServerModel,
 		resetSettings
 	} from '$lib/stores/settings.svelte';
 	import {
@@ -25,6 +28,7 @@
 	} from '$lib/types/settings';
 	import { webllmStore, startLoadModel, startUnloadModel } from '$lib/stores/webllm.svelte';
 	import { isWebGPUSupported } from '$lib/api/webllm';
+	import { testConnection } from '$lib/api/openai-compatible';
 	import { onMount } from 'svelte';
 
 	interface Props {
@@ -38,6 +42,13 @@
 	let apiKeyInput = $state('');
 	let webgpuSupported = $state(true);
 
+	let showCustomApiKey = $state(false);
+	let customUrlInput = $state('');
+	let customApiKeyInput = $state('');
+	let customModelInput = $state('');
+	let connectionTestResult = $state<{ ok: boolean; message: string } | null>(null);
+	let connectionTesting = $state(false);
+
 	let currentProvider = $derived(settingsStore.current.provider ?? 'gemini');
 	let currentLocalModel = $derived(settingsStore.current.localModel);
 
@@ -45,13 +56,19 @@
 	onMount(() => {
 		initSettings();
 		apiKeyInput = settingsStore.current.geminiApiKey;
+		customUrlInput = settingsStore.current.customServerUrl;
+		customApiKeyInput = settingsStore.current.customServerApiKey;
+		customModelInput = settingsStore.current.customServerModel;
 		webgpuSupported = isWebGPUSupported();
 	});
 
-	// Sync API key input when settings change
+	// Sync inputs when settings change
 	$effect(() => {
 		if (settingsStore.initialized) {
 			apiKeyInput = settingsStore.current.geminiApiKey;
+			customUrlInput = settingsStore.current.customServerUrl;
+			customApiKeyInput = settingsStore.current.customServerApiKey;
+			customModelInput = settingsStore.current.customServerModel;
 		}
 	});
 
@@ -76,6 +93,28 @@
 	function handleLocalModelChange(e: Event) {
 		const target = e.target as HTMLSelectElement;
 		setLocalModel(target.value as LocalModelId);
+	}
+
+	function handleCustomUrlChange() {
+		setCustomServerUrl(customUrlInput);
+		connectionTestResult = null;
+	}
+
+	function handleCustomApiKeyChange() {
+		setCustomServerApiKey(customApiKeyInput);
+		connectionTestResult = null;
+	}
+
+	function handleCustomModelChange() {
+		setCustomServerModel(customModelInput);
+		connectionTestResult = null;
+	}
+
+	async function handleTestConnection() {
+		connectionTesting = true;
+		connectionTestResult = null;
+		connectionTestResult = await testConnection(customUrlInput, customApiKeyInput, customModelInput);
+		connectionTesting = false;
 	}
 
 	async function handleLoadModel() {
@@ -180,12 +219,21 @@
 						>
 							Local (WebLLM)
 						</button>
+						<button
+							class="provider-btn"
+							class:active={currentProvider === 'custom'}
+							onclick={() => handleProviderChange('custom')}
+						>
+							Custom Server
+						</button>
 					</div>
 					<p class="section-description">
 						{#if currentProvider === 'gemini'}
 							Uses Google's Gemini API. Requires an API key.
-						{:else}
+						{:else if currentProvider === 'local'}
 							Runs entirely in your browser via WebGPU. No API key needed.
+						{:else}
+							Connect to any OpenAI-compatible server (llama.cpp, Ollama, vLLM, LM Studio).
 						{/if}
 					</p>
 				</section>
@@ -278,7 +326,7 @@
 							{/each}
 						</select>
 					</section>
-				{:else}
+				{:else if currentProvider === 'local'}
 					<!-- Local Model Section -->
 					<section class="settings-section">
 						<h3>Local Model</h3>
@@ -348,6 +396,86 @@
 							Models run entirely on your device using WebGPU. Larger models produce better results
 							but need more memory.
 						</p>
+					</section>
+				{:else}
+					<!-- Custom Server Section -->
+					<section id="custom-server-settings" class="settings-section">
+						<h3>Server URL</h3>
+						<input
+							type="text"
+							class="input"
+							bind:value={customUrlInput}
+							onchange={handleCustomUrlChange}
+							onblur={handleCustomUrlChange}
+							placeholder="http://localhost:8080"
+						/>
+						<p class="section-description">
+							The base URL of your OpenAI-compatible server.
+						</p>
+					</section>
+
+					<section class="settings-section">
+						<h3>API Key (Optional)</h3>
+						<div class="api-key-input">
+							<input
+								type={showCustomApiKey ? 'text' : 'password'}
+								class="input"
+								bind:value={customApiKeyInput}
+								onchange={handleCustomApiKeyChange}
+								onblur={handleCustomApiKeyChange}
+								placeholder="sk-..."
+							/>
+							<button
+								class="toggle-visibility"
+								onclick={() => (showCustomApiKey = !showCustomApiKey)}
+								aria-label={showCustomApiKey ? 'Hide API key' : 'Show API key'}
+							>
+								{#if showCustomApiKey}
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+										<line x1="1" y1="1" x2="23" y2="23" />
+									</svg>
+								{:else}
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+										<circle cx="12" cy="12" r="3" />
+									</svg>
+								{/if}
+							</button>
+						</div>
+						<p class="section-description">
+							Only needed if your server requires authentication. Local servers usually don't.
+						</p>
+					</section>
+
+					<section class="settings-section">
+						<h3>Model Name</h3>
+						<input
+							type="text"
+							class="input"
+							bind:value={customModelInput}
+							onchange={handleCustomModelChange}
+							onblur={handleCustomModelChange}
+							placeholder="e.g. llama3, qwen3-8b"
+						/>
+						<p class="section-description">
+							The model identifier your server expects. Some servers ignore this field.
+						</p>
+					</section>
+
+					<section class="settings-section">
+						<button
+							class="load-model-btn"
+							onclick={handleTestConnection}
+							disabled={connectionTesting || !customUrlInput.trim()}
+						>
+							{connectionTesting ? 'Testing...' : 'Test Connection'}
+						</button>
+						{#if connectionTestResult}
+							<div class="connection-result" class:success={connectionTestResult.ok} class:failure={!connectionTestResult.ok}>
+								<span>{connectionTestResult.message}</span>
+							</div>
+						{/if}
 					</section>
 				{/if}
 
@@ -786,6 +914,26 @@
 	.reset-button:hover {
 		background: rgba(244, 67, 54, 0.2);
 		border-color: #f44336;
+	}
+
+	/* Connection test result */
+	.connection-result {
+		margin-top: 0.75rem;
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.5rem;
+		font-size: 0.8rem;
+	}
+
+	.connection-result.success {
+		background: rgba(76, 175, 80, 0.1);
+		border: 1px solid rgba(76, 175, 80, 0.3);
+		color: #4caf50;
+	}
+
+	.connection-result.failure {
+		background: rgba(244, 67, 54, 0.1);
+		border: 1px solid rgba(244, 67, 54, 0.3);
+		color: #f44336;
 	}
 
 	@media (max-width: 480px) {

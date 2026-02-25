@@ -19,6 +19,9 @@ export async function* generateStoryStream(
 	if (settings.provider === 'local') {
 		const { generateStoryStreamLocal } = await import('./webllm');
 		yield* generateStoryStreamLocal(request, settings, signal);
+	} else if (settings.provider === 'custom') {
+		const { generateStoryStreamCustom } = await import('./openai-compatible');
+		yield* generateStoryStreamCustom(request, settings, signal);
 	} else {
 		yield* generateStoryStreamGemini(request, settings, signal);
 	}

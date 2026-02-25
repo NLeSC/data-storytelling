@@ -2,7 +2,7 @@
  * Story Generator Settings Types
  */
 
-export type LLMProvider = 'gemini' | 'local';
+export type LLMProvider = 'gemini' | 'local' | 'custom';
 
 export type AudienceType =
 	| 'communications'
@@ -162,6 +162,9 @@ export interface StorySettings {
 	maxTokens: number; // default 2048
 	model: GeminiModel;
 	localModel: LocalModelId;
+	customServerUrl: string;
+	customServerApiKey: string;
+	customServerModel: string;
 	customPrompts: Partial<Record<AudienceType, string>>;
 }
 
@@ -173,5 +176,8 @@ export const DEFAULT_SETTINGS: StorySettings = {
 	maxTokens: 8192,
 	model: 'gemini-3-flash-preview',
 	localModel: 'Qwen3-1.7B-q4f16_1-MLC',
+	customServerUrl: 'http://localhost:8080',
+	customServerApiKey: '',
+	customServerModel: '',
 	customPrompts: {}
 };

@@ -104,13 +104,38 @@ export function setLocalModel(model: LocalModelId): void {
 }
 
 /**
+ * Set custom server URL
+ */
+export function setCustomServerUrl(url: string): void {
+	updateSettings({ customServerUrl: url });
+}
+
+/**
+ * Set custom server API key
+ */
+export function setCustomServerApiKey(key: string): void {
+	updateSettings({ customServerApiKey: key });
+}
+
+/**
+ * Set custom server model name
+ */
+export function setCustomServerModel(model: string): void {
+	updateSettings({ customServerModel: model });
+}
+
+/**
  * Check if the current provider is ready to generate.
  * For Gemini: API key must be set.
  * For local: a model must be loaded.
+ * For custom: server URL must be set.
  */
 export function canGenerate(): boolean {
 	if (settings.provider === 'local') {
 		return webllmStore.isReady;
+	}
+	if (settings.provider === 'custom') {
+		return settings.customServerUrl.trim().length > 0;
 	}
 	return settings.geminiApiKey.trim().length > 0;
 }
