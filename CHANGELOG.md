@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.16.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.16.1) - 2026-02-25
+
+## What's Changed
+
+### 🔧 Maintenance
+- Refactor settings panel and model selector components (17e88ff)
+
+
+
 ## [0.16.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.16.0) - 2026-02-25
 
 ## What's Changed
