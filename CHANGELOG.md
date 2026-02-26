@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.18.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.0) - 2026-02-26
+
+## What's Changed
+
+### ✨ Features
+- feat: Add cache management for models in ModelSelector and webllm store (3a9ec42)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (f4bc915)
+
+
+
 ## [0.17.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.17.0) - 2026-02-26
 
 ## What's Changed
