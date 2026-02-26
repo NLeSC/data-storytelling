@@ -121,6 +121,49 @@ export async function* generateStoryStreamCustom(
 }
 
 /**
+ * Fetch available models from an OpenAI-compatible server.
+ * Uses the /v1/models endpoint (supported by Ollama, vLLM, LM Studio, etc.)
+ */
+export async function fetchModels(
+	url: string,
+	apiKey: string
+): Promise<{ ok: boolean; models: string[]; message: string }> {
+	const baseUrl = url.replace(/\/+$/, '');
+
+	const headers: Record<string, string> = {};
+	if (apiKey.trim()) {
+		headers['Authorization'] = `Bearer ${apiKey}`;
+	}
+
+	try {
+		const response = await fetch(`${baseUrl}/v1/models`, {
+			method: 'GET',
+			headers,
+			signal: AbortSignal.timeout(10000)
+		});
+
+		if (!response.ok) {
+			return { ok: false, models: [], message: `Server responded with ${response.status}` };
+		}
+
+		const data = await response.json();
+		const models: string[] = (data.data ?? [])
+			.map((m: { id?: string }) => m.id)
+			.filter(Boolean)
+			.sort();
+
+		if (models.length === 0) {
+			return { ok: true, models: [], message: 'No models found on server' };
+		}
+
+		return { ok: true, models, message: `Found ${models.length} model${models.length === 1 ? '' : 's'}` };
+	} catch (err) {
+		const message = err instanceof Error ? err.message : 'Failed to fetch models';
+		return { ok: false, models: [], message };
+	}
+}
+
+/**
  * Test connectivity to an OpenAI-compatible server.
  * Sends a minimal completion request and returns success/failure with a message.
  */

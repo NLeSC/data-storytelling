@@ -19,7 +19,7 @@
 	} from '$lib/stores/settings.svelte';
 	import { webllmStore, startLoadModel, startUnloadModel } from '$lib/stores/webllm.svelte';
 	import { isWebGPUSupported } from '$lib/api/webllm';
-	import { testConnection } from '$lib/api/openai-compatible';
+	import { testConnection, fetchModels } from '$lib/api/openai-compatible';
 
 	let currentProvider = $derived(settingsStore.current.provider ?? 'gemini');
 	let currentModel = $derived(settingsStore.current.model);
@@ -37,6 +37,12 @@
 	let customModelInput = $state('');
 	let connectionTestResult = $state<{ ok: boolean; message: string } | null>(null);
 	let connectionTesting = $state(false);
+
+	// Remote model fetching state
+	let availableModels = $state<string[]>([]);
+	let fetchingModels = $state(false);
+
+	const OLLAMA_URL = 'http://localhost:11434';
 
 	$effect(() => {
 		if (typeof navigator !== 'undefined') {
@@ -89,6 +95,29 @@
 	function handleCustomUrlChange() {
 		setCustomServerUrl(customUrlInput);
 		connectionTestResult = null;
+		availableModels = [];
+	}
+
+	function applyOllamaPreset() {
+		customUrlInput = OLLAMA_URL;
+		setCustomServerUrl(OLLAMA_URL);
+		customApiKeyInput = '';
+		setCustomServerApiKey('');
+		connectionTestResult = null;
+		handleFetchModels();
+	}
+
+	async function handleFetchModels() {
+		fetchingModels = true;
+		const result = await fetchModels(customUrlInput, customApiKeyInput);
+		availableModels = result.models;
+		fetchingModels = false;
+		if (!result.ok) {
+			connectionTestResult = { ok: false, message: result.message };
+		} else if (result.models.length > 0 && !customModelInput.trim()) {
+			customModelInput = result.models[0];
+			setCustomServerModel(result.models[0]);
+		}
 	}
 
 	function handleCustomApiKeyChange() {
@@ -232,6 +261,17 @@
 		</div>
 	{:else}
 		<!-- Custom server config -->
+		<div class="server-presets">
+			<span class="preset-label">Presets</span>
+			<button
+				class="preset-btn"
+				class:active={customUrlInput === OLLAMA_URL}
+				onclick={applyOllamaPreset}
+			>
+				Ollama
+			</button>
+		</div>
+
 		<div class="field-group">
 			<label class="field-label" for="custom-server-url">Server URL</label>
 			<input
@@ -246,17 +286,39 @@
 		</div>
 
 		<div class="field-group">
-			<label class="field-label" for="custom-model-name">Model Name</label>
-			<input
-				id="custom-model-name"
-				type="text"
-				class="field-input"
-				bind:value={customModelInput}
-				onchange={handleCustomModelChange}
-				onblur={handleCustomModelChange}
-				placeholder="e.g. llama3, qwen3-8b"
-			/>
-			<p class="field-hint">Some servers ignore this field.</p>
+			<label class="field-label" for="custom-model-name">Model</label>
+			<div class="model-fetch-row">
+				{#if availableModels.length > 0}
+					<select
+						id="custom-model-name"
+						class="model-select"
+						bind:value={customModelInput}
+						onchange={handleCustomModelChange}
+					>
+						{#each availableModels as model}
+							<option value={model}>{model}</option>
+						{/each}
+					</select>
+				{:else}
+					<input
+						id="custom-model-name"
+						type="text"
+						class="field-input"
+						bind:value={customModelInput}
+						onchange={handleCustomModelChange}
+						onblur={handleCustomModelChange}
+						placeholder="e.g. llama3, qwen3-8b"
+					/>
+				{/if}
+				<button
+					class="fetch-models-btn"
+					onclick={handleFetchModels}
+					disabled={fetchingModels || !customUrlInput.trim()}
+					title="Fetch available models from server"
+				>
+					{fetchingModels ? '...' : '↻'}
+				</button>
+			</div>
 		</div>
 
 		<div class="field-group">
@@ -605,6 +667,76 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	/* Server presets */
+	.server-presets {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+
+	.preset-label {
+		font-size: 0.65rem;
+		color: #666;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.preset-btn {
+		padding: 0.2rem 0.5rem;
+		background: rgba(123, 175, 212, 0.08);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 9999px;
+		color: #888;
+		font-size: 0.65rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.preset-btn:hover {
+		background: rgba(123, 175, 212, 0.15);
+		color: #7bafd4;
+	}
+
+	.preset-btn.active {
+		background: rgba(123, 175, 212, 0.2);
+		border-color: rgba(123, 175, 212, 0.4);
+		color: #7bafd4;
+	}
+
+	/* Model fetch row */
+	.model-fetch-row {
+		display: flex;
+		gap: 0.25rem;
+	}
+
+	.model-fetch-row .field-input,
+	.model-fetch-row .model-select {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.fetch-models-btn {
+		padding: 0.375rem 0.5rem;
+		background: rgba(123, 175, 212, 0.1);
+		border: 1px solid rgba(123, 175, 212, 0.2);
+		border-radius: 0.375rem;
+		color: #7bafd4;
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		line-height: 1;
+	}
+
+	.fetch-models-btn:hover:not(:disabled) {
+		background: rgba(123, 175, 212, 0.2);
+	}
+
+	.fetch-models-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	/* Connection test */
