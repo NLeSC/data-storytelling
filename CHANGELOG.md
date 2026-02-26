@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.17.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.17.0) - 2026-02-26
+
+## What's Changed
+
+### ✨ Features
+- feat: Implement model fetching from OpenAI-compatible server in ModelSelector (fd481b9)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (c9daf77)
+
+
+
 ## [0.16.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.16.1) - 2026-02-25
 
 ## What's Changed
