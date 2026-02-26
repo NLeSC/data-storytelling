@@ -127,6 +127,35 @@ function detectRepetition(text: string): boolean {
 }
 
 /**
+ * Get list of cached model IDs with their cache status.
+ */
+export async function getCachedModels(
+	modelIds: string[]
+): Promise<{ id: string; cached: boolean }[]> {
+	const { hasModelInCache } = await import('@mlc-ai/web-llm');
+	const results = await Promise.all(
+		modelIds.map(async (id) => ({
+			id,
+			cached: await hasModelInCache(id)
+		}))
+	);
+	return results.filter((m) => m.cached);
+}
+
+/**
+ * Delete a cached model from browser storage.
+ */
+export async function deleteCachedModel(modelId: string): Promise<void> {
+	// Unload first if this model is currently active
+	if (currentModelId === modelId && engine) {
+		await engine.unload();
+		currentModelId = null;
+	}
+	const { deleteModelInCache } = await import('@mlc-ai/web-llm');
+	await deleteModelInCache(modelId);
+}
+
+/**
  * Interrupt any in-flight generation on the WebLLM engine.
  */
 export function interruptGeneration(): void {

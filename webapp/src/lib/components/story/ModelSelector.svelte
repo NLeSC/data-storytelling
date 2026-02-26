@@ -17,7 +17,13 @@
 		setCustomServerApiKey,
 		setCustomServerModel
 	} from '$lib/stores/settings.svelte';
-	import { webllmStore, startLoadModel, startUnloadModel } from '$lib/stores/webllm.svelte';
+	import {
+		webllmStore,
+		startLoadModel,
+		startUnloadModel,
+		scanCachedModels,
+		removeCachedModel
+	} from '$lib/stores/webllm.svelte';
 	import { isWebGPUSupported } from '$lib/api/webllm';
 	import { testConnection, fetchModels } from '$lib/api/openai-compatible';
 
@@ -43,6 +49,23 @@
 	let fetchingModels = $state(false);
 
 	const OLLAMA_URL = 'http://localhost:11434';
+
+	// Cache management state
+	let showCacheManager = $state(false);
+	let removingModel = $state<string | null>(null);
+
+	async function toggleCacheManager() {
+		showCacheManager = !showCacheManager;
+		if (showCacheManager) {
+			await scanCachedModels();
+		}
+	}
+
+	async function handleRemoveCachedModel(modelId: string) {
+		removingModel = modelId;
+		await removeCachedModel(modelId);
+		removingModel = null;
+	}
 
 	$effect(() => {
 		if (typeof navigator !== 'undefined') {
@@ -259,6 +282,38 @@
 				</div>
 			{/if}
 		</div>
+
+		<button class="cache-toggle" onclick={toggleCacheManager}>
+			{showCacheManager ? 'Hide' : 'Manage'} cached models
+		</button>
+
+		{#if showCacheManager}
+			<div class="cache-manager">
+				{#if webllmStore.cacheScanning}
+					<p class="cache-scanning">Scanning cache...</p>
+				{:else if webllmStore.cachedModels.length === 0}
+					<p class="cache-empty">No models cached in browser</p>
+				{:else}
+					<ul class="cache-list">
+						{#each webllmStore.cachedModels as modelId}
+							{@const info = LOCAL_MODEL_INFO[modelId as LocalModelId]}
+							<li class="cache-item">
+								<span class="cache-model-name">{info?.label ?? modelId}</span>
+								<span class="cache-model-size">{info?.size ?? ''}</span>
+								<button
+									class="cache-remove-btn"
+									onclick={() => handleRemoveCachedModel(modelId)}
+									disabled={removingModel === modelId}
+									title="Remove from cache"
+								>
+									{removingModel === modelId ? '...' : '✕'}
+								</button>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
+		{/if}
 	{:else}
 		<!-- Custom server config -->
 		<div class="server-presets">
@@ -667,6 +722,94 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	/* Cache manager */
+	.cache-toggle {
+		background: none;
+		border: none;
+		color: #666;
+		font-size: 0.65rem;
+		cursor: pointer;
+		padding: 0;
+		text-decoration: underline;
+		text-decoration-style: dotted;
+		text-underline-offset: 2px;
+		transition: color 0.2s ease;
+	}
+
+	.cache-toggle:hover {
+		color: #7bafd4;
+	}
+
+	.cache-manager {
+		padding: 0.5rem;
+		background: rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(123, 175, 212, 0.1);
+		border-radius: 0.375rem;
+	}
+
+	.cache-scanning,
+	.cache-empty {
+		margin: 0;
+		font-size: 0.65rem;
+		color: #666;
+		text-align: center;
+	}
+
+	.cache-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.cache-item {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.25rem 0.375rem;
+		background: rgba(0, 0, 0, 0.15);
+		border-radius: 0.25rem;
+	}
+
+	.cache-model-name {
+		flex: 1;
+		font-size: 0.7rem;
+		color: #ccc;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.cache-model-size {
+		font-size: 0.6rem;
+		color: #666;
+		white-space: nowrap;
+	}
+
+	.cache-remove-btn {
+		padding: 0.125rem 0.375rem;
+		background: rgba(244, 67, 54, 0.1);
+		border: 1px solid rgba(244, 67, 54, 0.25);
+		border-radius: 0.25rem;
+		color: #f44336;
+		font-size: 0.65rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		line-height: 1;
+	}
+
+	.cache-remove-btn:hover:not(:disabled) {
+		background: rgba(244, 67, 54, 0.2);
+	}
+
+	.cache-remove-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	/* Server presets */

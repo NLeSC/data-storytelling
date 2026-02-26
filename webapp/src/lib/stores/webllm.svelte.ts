@@ -8,8 +8,11 @@ import {
 	unloadModel,
 	isModelLoaded,
 	isModelLoading,
-	setProgressCallback
+	setProgressCallback,
+	getCachedModels,
+	deleteCachedModel
 } from '$lib/api/webllm';
+import { LOCAL_MODELS } from '$lib/types/settings';
 
 export type WebLLMStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -68,6 +71,40 @@ export async function startUnloadModel(): Promise<void> {
 	loadedModelId = null;
 }
 
+let cachedModels = $state<string[]>([]);
+let cacheScanning = $state(false);
+
+/**
+ * Scan browser cache for downloaded models.
+ */
+export async function scanCachedModels(): Promise<void> {
+	cacheScanning = true;
+	try {
+		const cached = await getCachedModels([...LOCAL_MODELS]);
+		cachedModels = cached.map((m) => m.id);
+	} catch {
+		cachedModels = [];
+	} finally {
+		cacheScanning = false;
+	}
+}
+
+/**
+ * Remove a specific model from browser cache.
+ */
+export async function removeCachedModel(modelId: string): Promise<void> {
+	await deleteCachedModel(modelId);
+	// If we just deleted the loaded model, reset state
+	if (loadedModelId === modelId) {
+		status = 'idle';
+		loadedModelId = null;
+		progress = 0;
+		statusText = '';
+	}
+	// Refresh the list
+	await scanCachedModels();
+}
+
 /**
  * Reactive store for reading WebLLM state in components.
  */
@@ -89,5 +126,11 @@ export const webllmStore = {
 	},
 	get isReady() {
 		return status === 'ready' && isModelLoaded();
+	},
+	get cachedModels() {
+		return cachedModels;
+	},
+	get cacheScanning() {
+		return cacheScanning;
 	}
 };
