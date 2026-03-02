@@ -2,6 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { Text, HTML } from '@threlte/extras';
 	import * as THREE from 'three';
+	import { onDestroy } from 'svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { getProjectImageUrl } from '$lib/types/project';
 
@@ -53,11 +54,9 @@
 						const maxSize = 1.4; // Maximum size
 
 						if (aspectRatio > 1) {
-							// Wider than tall
 							logoWidth = maxSize;
 							logoHeight = maxSize / aspectRatio;
 						} else {
-							// Taller than wide
 							logoHeight = maxSize;
 							logoWidth = maxSize * aspectRatio;
 						}
@@ -69,6 +68,13 @@
 				}
 			);
 		}
+
+		return () => {
+			if (texture) {
+				texture.dispose();
+				texture = null;
+			}
+		};
 	});
 
 	// Floating Y position

@@ -2,6 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import * as THREE from 'three';
 	import { scrollStore } from '$lib/stores/scroll';
+	import { onDestroy } from 'svelte';
 
 	interface Props {
 		scrollProgress?: number;
@@ -121,6 +122,11 @@
 	$effect(() => {
 		if (active) task.start();
 		else task.stop();
+	});
+
+	onDestroy(() => {
+		geometry.dispose();
+		material.dispose();
 	});
 </script>
 

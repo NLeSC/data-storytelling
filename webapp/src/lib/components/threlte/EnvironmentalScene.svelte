@@ -2,6 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { OrbitControls, interactivity } from '@threlte/extras';
 	import * as THREE from 'three';
+	import { onDestroy } from 'svelte';
 	import ProjectCard from './ProjectCard.svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
 	import { zoomLevel } from '$lib/stores/zoom';
@@ -136,6 +137,13 @@
 	$effect(() => {
 		if (active) task.start();
 		else task.stop();
+	});
+
+	onDestroy(() => {
+		globeGeometry.dispose();
+		globeMaterial.dispose();
+		particleGeometry.dispose();
+		particleMaterial.dispose();
 	});
 </script>
 
