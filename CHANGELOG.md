@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.18.2](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.2) - 2026-03-02
+
+## What's Changed
+
+### 🐛 Bug Fixes
+- fix: remove scroll snap properties to improve scrolling behavior (411a2a6)
+- fix: Insane memory usage, block animation rendering for offscreen 3d elements. Fixes #7 (801c18c)
+
+### 📦 Other Changes
+- Merge branch 'main' of https://github.com/NLeSC/data-storytelling (8e67afa)
+
+
+
 ## [0.18.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.1) - 2026-03-02
 
 ## What's Changed
