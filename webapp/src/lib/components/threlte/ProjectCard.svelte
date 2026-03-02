@@ -2,8 +2,8 @@
 	import { T, useTask } from '@threlte/core';
 	import { Text, HTML } from '@threlte/extras';
 	import * as THREE from 'three';
-	import { onDestroy } from 'svelte';
 	import type { ProjectWithDomain } from '$lib/types/project';
+	import { cardBorderGeom, cardFaceGeom, cardGlowGeom, unitPlaneGeom } from './shared-geometry';
 	import { getProjectImageUrl } from '$lib/types/project';
 
 	interface Props {
@@ -126,8 +126,7 @@
 	scale={[scale, scale, scale]}
 >
 	<!-- Card base with border (glows on hover) -->
-	<T.Mesh onclick={handleClick} onpointerover={handlePointerOver} onpointerout={handlePointerOut}>
-		<T.BoxGeometry args={[2.2, 2.8, 0.08]} />
+	<T.Mesh geometry={cardBorderGeom} onclick={handleClick} onpointerover={handlePointerOver} onpointerout={handlePointerOut}>
 		<T.MeshStandardMaterial
 			color={cardColor}
 			metalness={borderMetalness}
@@ -139,8 +138,7 @@
 
 	<!-- Outer glow ring on hover -->
 	{#if hovered}
-		<T.Mesh>
-			<T.BoxGeometry args={[2.4, 3.0, 0.02]} />
+		<T.Mesh geometry={cardGlowGeom}>
 			<T.MeshBasicMaterial
 				color={cardColor}
 				transparent={true}
@@ -152,12 +150,12 @@
 	<!-- FRONT SIDE -->
 	<!-- White card surface (front) - slight tint on hover -->
 	<T.Mesh
+		geometry={cardFaceGeom}
 		position={[0, 0, 0.05]}
 		onclick={handleClick}
 		onpointerover={handlePointerOver}
 		onpointerout={handlePointerOut}
 	>
-		<T.BoxGeometry args={[2, 2.6, 0.01]} />
 		<T.MeshStandardMaterial
 			color={highlightColor}
 			emissive={hovered ? cardColor : '#000000'}
@@ -168,22 +166,24 @@
 	<!-- Logo (front) -->
 	{#if texture}
 		<T.Mesh
+			geometry={unitPlaneGeom}
+			scale={[logoWidth, logoHeight, 1]}
 			position={[0, 0.5, 0.06]}
 			onclick={handleClick}
 			onpointerover={handlePointerOver}
 			onpointerout={handlePointerOut}
 		>
-			<T.PlaneGeometry args={[logoWidth, logoHeight]} />
 			<T.MeshBasicMaterial map={texture} transparent={true} />
 		</T.Mesh>
 	{:else}
 		<T.Mesh
+			geometry={unitPlaneGeom}
+			scale={[1.4, 1.4, 1]}
 			position={[0, 0.5, 0.06]}
 			onclick={handleClick}
 			onpointerover={handlePointerOver}
 			onpointerout={handlePointerOut}
 		>
-			<T.PlaneGeometry args={[1.4, 1.4]} />
 			<T.MeshBasicMaterial color={cardColor} opacity={0.3} transparent={true} />
 		</T.Mesh>
 	{/if}
@@ -219,13 +219,13 @@
 	<!-- BACK SIDE -->
 	<!-- White card surface (back) - slight tint on hover -->
 	<T.Mesh
+		geometry={cardFaceGeom}
 		position={[0, 0, -0.05]}
 		rotation={[0, Math.PI, 0]}
 		onclick={handleClick}
 		onpointerover={handlePointerOver}
 		onpointerout={handlePointerOut}
 	>
-		<T.BoxGeometry args={[2, 2.6, 0.01]} />
 		<T.MeshStandardMaterial
 			color={highlightColor}
 			emissive={hovered ? cardColor : '#000000'}
@@ -236,24 +236,26 @@
 	<!-- Logo (back) -->
 	{#if texture}
 		<T.Mesh
+			geometry={unitPlaneGeom}
+			scale={[logoWidth, logoHeight, 1]}
 			position={[0, 0.5, -0.06]}
 			rotation={[0, Math.PI, 0]}
 			onclick={handleClick}
 			onpointerover={handlePointerOver}
 			onpointerout={handlePointerOut}
 		>
-			<T.PlaneGeometry args={[logoWidth, logoHeight]} />
 			<T.MeshBasicMaterial map={texture} transparent={true} />
 		</T.Mesh>
 	{:else}
 		<T.Mesh
+			geometry={unitPlaneGeom}
+			scale={[1.4, 1.4, 1]}
 			position={[0, 0.5, -0.06]}
 			rotation={[0, Math.PI, 0]}
 			onclick={handleClick}
 			onpointerover={handlePointerOver}
 			onpointerout={handlePointerOut}
 		>
-			<T.PlaneGeometry args={[1.4, 1.4]} />
 			<T.MeshBasicMaterial color={cardColor} opacity={0.3} transparent={true} />
 		</T.Mesh>
 	{/if}
