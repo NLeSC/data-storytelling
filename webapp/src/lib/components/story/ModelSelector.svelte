@@ -719,9 +719,7 @@
 		color: #f44336;
 		flex: 1;
 		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		word-break: break-word;
 	}
 
 	/* Cache manager */
