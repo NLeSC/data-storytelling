@@ -191,5 +191,6 @@
 		position={[x, y, z]}
 		onClick={onProjectClick}
 		selected={selectedProject?.id === project.id}
+		{active}
 	/>
 {/each}

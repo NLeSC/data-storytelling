@@ -81,9 +81,11 @@
 	let globeRef = $state<THREE.Mesh | undefined>(undefined);
 	let particlesRef = $state<THREE.Points | undefined>(undefined);
 	let time = $state(0);
+	let frameCount = 0;
 
 	const task = useTask((delta) => {
 		time += delta;
+		frameCount++;
 
 		// Update camera zoom (preserving rotation direction)
 		if (cameraRef) {
@@ -102,32 +104,31 @@
 		}
 
 		if (particlesRef) {
-			// Rotate particle cloud in opposite direction
+			// Rotate particle cloud in opposite direction (cheap, every frame)
 			particlesRef.rotation.y = -scrollProgress * Math.PI * 2;
 
-			// Animate particles (weather patterns)
-			const positions = particlesRef.geometry.attributes.position;
-			if (positions) {
-				for (let i = 0; i < particleCount; i++) {
-					const i3 = i * 3;
-					let x = positions.getX(i);
-					let y = positions.getY(i);
-					let z = positions.getZ(i);
+			// Per-particle buffer update (expensive, every other frame)
+			if (frameCount % 2 === 0) {
+				const positions = particlesRef.geometry.attributes.position;
+				if (positions) {
+					for (let i = 0; i < particleCount; i++) {
+						let x = positions.getX(i);
+						let y = positions.getY(i);
+						let z = positions.getZ(i);
 
-					// Create flowing effect (wind patterns)
-					const angle = time * 0.5 + i * 0.01;
-					const radius = Math.sqrt(x * x + y * y + z * z);
+						const angle = time * 0.5 + i * 0.01;
+						const radius = Math.sqrt(x * x + y * y + z * z);
 
-					x += Math.sin(angle) * 0.01;
-					z += Math.cos(angle) * 0.01;
+						x += Math.sin(angle) * 0.01;
+						z += Math.cos(angle) * 0.01;
 
-					// Normalize to keep particles at consistent distance
-					const currentRadius = Math.sqrt(x * x + y * y + z * z);
-					const scale = radius / currentRadius;
+						const currentRadius = Math.sqrt(x * x + y * y + z * z);
+						const scale = radius / currentRadius;
 
-					positions.setXYZ(i, x * scale, y, z * scale);
+						positions.setXYZ(i, x * scale, y, z * scale);
+					}
+					positions.needsUpdate = true;
 				}
-				positions.needsUpdate = true;
 			}
 		}
 	}, { autoStart: false });
@@ -166,5 +167,6 @@
 		position={[x, y, z]}
 		onClick={onProjectClick}
 		selected={selectedProject?.id === project.id}
+		{active}
 	/>
 {/each}

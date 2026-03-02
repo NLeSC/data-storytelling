@@ -125,9 +125,14 @@
 	let networkGroupRef = $state<THREE.Group | undefined>(undefined);
 	let flowParticlesRef = $state<THREE.Points | undefined>(undefined);
 	let time = $state(0);
+	let frameCount = 0;
+
+	// Pre-allocate reusable vector to avoid per-frame heap allocations
+	const _tempVec = new THREE.Vector3();
 
 	const task = useTask((delta) => {
 		time += delta;
+		frameCount++;
 
 		// Update camera zoom (preserving rotation direction)
 		if (cameraRef) {
@@ -140,31 +145,25 @@
 		}
 
 		if (networkGroupRef) {
-			// Gentle rotation with scroll
+			// Gentle rotation with scroll (cheap, every frame)
 			networkGroupRef.rotation.y = scrollProgress * Math.PI * 2;
 			networkGroupRef.scale.setScalar(1 + scrollProgress * 0.5);
 		}
 
-		if (flowParticlesRef) {
-			// Animate data flow particles
+		// Per-particle buffer update (every other frame)
+		if (frameCount % 2 === 0 && flowParticlesRef) {
 			const positions = flowParticlesRef.geometry.attributes.position;
 			if (positions) {
 				for (let i = 0; i < flowParticleCount; i++) {
-					const i3 = i * 3;
-					let x = positions.getX(i);
-					let y = positions.getY(i);
-					let z = positions.getZ(i);
-
-					// Move particles along connections
 					const speed = 2;
 					const phase = (time * speed + i * 0.5) % connections.length;
 					const connectionIndex = Math.floor(phase);
 					const progress = phase - connectionIndex;
 
 					const conn = connections[connectionIndex % connections.length];
-					const newPos = conn.start.clone().lerp(conn.end, progress);
+					_tempVec.copy(conn.start).lerp(conn.end, progress);
 
-					positions.setXYZ(i, newPos.x, newPos.y, newPos.z);
+					positions.setXYZ(i, _tempVec.x, _tempVec.y, _tempVec.z);
 				}
 				positions.needsUpdate = true;
 			}
@@ -245,5 +244,6 @@
 		position={[x, y, z]}
 		onClick={onProjectClick}
 		selected={selectedProject?.id === project.id}
+		{active}
 	/>
 {/each}

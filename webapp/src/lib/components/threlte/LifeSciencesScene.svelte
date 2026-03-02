@@ -100,9 +100,11 @@
 	let dnaGroupRef = $state<THREE.Group | undefined>(undefined);
 	let moleculesRef = $state<THREE.Points | undefined>(undefined);
 	let time = $state(0);
+	let frameCount = 0;
 
 	const task = useTask((delta) => {
 		time += delta;
+		frameCount++;
 
 		// Update camera zoom (preserving rotation direction)
 		if (cameraRef) {
@@ -122,29 +124,32 @@
 		}
 
 		if (moleculesRef) {
-			// Gentle rotation
+			// Gentle rotation (cheap, every frame)
 			moleculesRef.rotation.y = -scrollProgress * Math.PI * 2;
 			moleculesRef.rotation.x = Math.sin(time * 0.2) * 0.3;
 
-			// Animate molecules
-			const positions = moleculesRef.geometry.attributes.position;
-			if (positions) {
-				for (let i = 0; i < moleculeCount; i++) {
-					const i3 = i * 3;
-					let x = positions.getX(i);
-					let y = positions.getY(i);
-					let z = positions.getZ(i);
+			// Per-particle buffer update (every other frame)
+			if (frameCount % 2 === 0) {
+				const positions = moleculesRef.geometry.attributes.position;
+				if (positions) {
+					// Small fixed rotation per frame to match other scenes' gentle drift
+					const rotAngle = delta * 0.02;
+					const cosA = Math.cos(rotAngle);
+					const sinA = Math.sin(rotAngle);
 
-					// Orbital motion
-					const radius = Math.sqrt(x * x + y * y + z * z);
-					const angle = time * 0.2 + i * 0.05;
+					for (let i = 0; i < moleculeCount; i++) {
+						let x = positions.getX(i);
+						let y = positions.getY(i);
+						let z = positions.getZ(i);
 
-					const newX = x * Math.cos(angle * 0.1) - z * Math.sin(angle * 0.1);
-					const newZ = x * Math.sin(angle * 0.1) + z * Math.cos(angle * 0.1);
+						// Slow orbital drift (constant speed, not time-compounding)
+						const newX = x * cosA - z * sinA;
+						const newZ = x * sinA + z * cosA;
 
-					positions.setXYZ(i, newX, y + Math.sin(time + i) * 0.02, newZ);
+						positions.setXYZ(i, newX, y + Math.sin(time + i) * 0.005, newZ);
+					}
+					positions.needsUpdate = true;
 				}
-				positions.needsUpdate = true;
 			}
 		}
 	}, { autoStart: false });
@@ -231,5 +236,6 @@
 		position={[x, y, z]}
 		onClick={onProjectClick}
 		selected={selectedProject?.id === project.id}
+		{active}
 	/>
 {/each}

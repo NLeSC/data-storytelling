@@ -63,10 +63,13 @@
 	let pointsRef = $state<THREE.Points | undefined>(undefined);
 	let cameraRef = $state<THREE.PerspectiveCamera | undefined>(undefined);
 	let time = $state(0);
+	let frameCount = 0;
+	let lastFov = 75;
 
 	// Animation loop - paused when not active to save CPU/GPU
 	const task = useTask((delta) => {
 		time += delta;
+		frameCount++;
 
 		// Dynamic camera movement based on scroll velocity
 		if (cameraRef) {
@@ -75,7 +78,12 @@
 
 			cameraRef.position.z += (targetZ - cameraRef.position.z) * 0.1;
 			cameraRef.fov += (targetFov - cameraRef.fov) * 0.1;
-			cameraRef.updateProjectionMatrix();
+
+			// Only rebuild projection matrix when fov actually changed
+			if (Math.abs(cameraRef.fov - lastFov) > 0.01) {
+				cameraRef.updateProjectionMatrix();
+				lastFov = cameraRef.fov;
+			}
 
 			// Subtle camera shake based on velocity
 			cameraRef.position.x = Math.sin(time * 2) * Math.abs(velocity) * 0.5;
@@ -83,7 +91,7 @@
 		}
 
 		if (pointsRef) {
-			// Rotate based on scroll with velocity influence
+			// Rotate based on scroll with velocity influence (cheap, every frame)
 			pointsRef.rotation.y = scrollProgress * Math.PI * 2 + velocity * 0.1;
 			pointsRef.rotation.x = Math.sin(time * 0.3) * 0.2 + velocity * 0.05;
 			pointsRef.rotation.z = Math.cos(time * 0.2) * 0.1;
@@ -94,19 +102,18 @@
 			pointsRef.scale.y += (targetScale - pointsRef.scale.y) * 0.1;
 			pointsRef.scale.z += (targetScale - pointsRef.scale.z) * 0.1;
 
-			// Animate particles
-			const positions = pointsRef.geometry.attributes.position;
-			if (positions) {
-				for (let i = 0; i < particleCount; i++) {
-					const i3 = i * 3;
-					const x = positions.getX(i);
-					const y = positions.getY(i);
-					const z = positions.getZ(i);
+			// Per-particle buffer update (expensive, every other frame)
+			if (frameCount % 2 === 0) {
+				const positions = pointsRef.geometry.attributes.position;
+				if (positions) {
+					for (let i = 0; i < particleCount; i++) {
+						const x = positions.getX(i);
+						const y = positions.getY(i);
 
-					// Wave effect with velocity influence
-					positions.setY(i, y + Math.sin(time + x * 0.5) * (0.01 + Math.abs(velocity) * 0.005));
+						positions.setY(i, y + Math.sin(time + x * 0.5) * (0.01 + Math.abs(velocity) * 0.005));
+					}
+					positions.needsUpdate = true;
 				}
-				positions.needsUpdate = true;
 			}
 		}
 	}, { autoStart: false });

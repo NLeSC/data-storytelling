@@ -23,17 +23,19 @@ function createScrollStore() {
 	if (browser) {
 		let lastScrollY = 0;
 		let lastTime = performance.now();
+		let rafId: number | null = null;
+		let cachedDocumentHeight = document.documentElement.scrollHeight;
+		let cachedWindowHeight = window.innerHeight;
 
-		const updateScroll = () => {
+		const commitUpdate = () => {
+			rafId = null;
 			const now = performance.now();
-			const deltaTime = (now - lastTime) / 1000; // seconds
+			const deltaTime = (now - lastTime) / 1000;
 			const scrollY = window.scrollY;
-			const windowHeight = window.innerHeight;
-			const documentHeight = document.documentElement.scrollHeight;
-			const scrollProgress = scrollY / (documentHeight - windowHeight);
+			const scrollProgress = scrollY / (cachedDocumentHeight - cachedWindowHeight);
 
 			const rawVelocity = deltaTime > 0 ? (scrollY - lastScrollY) / deltaTime / 1000 : 0;
-			const velocity = Math.max(-5, Math.min(5, rawVelocity)); // clamp to prevent spikes
+			const velocity = Math.max(-5, Math.min(5, rawVelocity));
 			const direction = scrollY >= lastScrollY ? 1 : -1;
 
 			lastScrollY = scrollY;
@@ -42,16 +44,28 @@ function createScrollStore() {
 			set({
 				scrollY,
 				scrollProgress: Math.max(0, Math.min(1, scrollProgress)),
-				windowHeight,
-				documentHeight,
+				windowHeight: cachedWindowHeight,
+				documentHeight: cachedDocumentHeight,
 				velocity,
 				direction: direction as 1 | -1
 			});
 		};
 
-		window.addEventListener('scroll', updateScroll, { passive: true });
-		window.addEventListener('resize', updateScroll);
-		updateScroll(); // initial call
+		const onScroll = () => {
+			if (rafId === null) {
+				rafId = requestAnimationFrame(commitUpdate);
+			}
+		};
+
+		const onResize = () => {
+			cachedDocumentHeight = document.documentElement.scrollHeight;
+			cachedWindowHeight = window.innerHeight;
+			if (rafId === null) rafId = requestAnimationFrame(commitUpdate);
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onResize);
+		commitUpdate();
 	}
 
 	return {

@@ -10,9 +10,10 @@
 		position: [number, number, number];
 		onClick?: (project: ProjectWithDomain) => void;
 		selected?: boolean;
+		active?: boolean;
 	}
 
-	let { project, position, onClick, selected = false }: Props = $props();
+	let { project, position, onClick, selected = false, active = true }: Props = $props();
 
 	// State
 	let meshRef = $state<THREE.Group | undefined>(undefined);
@@ -73,19 +74,22 @@
 	// Floating Y position
 	let floatY = $state(0);
 
-	// Animation
+	// Animation - paused when parent scene is not active
 	let elapsedTime = $state(0);
-	useTask((delta) => {
+	const cardTask = useTask((delta) => {
 		elapsedTime += delta;
 		if (meshRef) {
-			// Gentle rotation
 			rotation += rotationSpeed;
 			meshRef.rotation.y = rotation;
 
-			// Floating animation
 			const time = elapsedTime + floatOffset;
 			floatY = Math.sin(time * 0.5) * 0.3;
 		}
+	}, { autoStart: false });
+
+	$effect(() => {
+		if (active) cardTask.start();
+		else cardTask.stop();
 	});
 
 	// Event handlers

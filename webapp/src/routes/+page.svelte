@@ -340,24 +340,21 @@
 		animation: gradientShift 20s ease-in-out infinite;
 		pointer-events: none;
 		z-index: 0;
+		will-change: opacity;
 	}
 
 	@keyframes gradientShift {
 		0%,
 		100% {
-			background-position: 0% 50%;
 			opacity: 0.8;
 		}
 		25% {
-			background-position: 100% 50%;
 			opacity: 1;
 		}
 		50% {
-			background-position: 50% 100%;
 			opacity: 0.6;
 		}
 		75% {
-			background-position: 0% 0%;
 			opacity: 0.9;
 		}
 	}
