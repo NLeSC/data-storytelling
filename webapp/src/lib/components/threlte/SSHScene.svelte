@@ -14,9 +14,10 @@
 		projects?: ProjectWithDomain[];
 		onProjectClick?: (project: ProjectWithDomain) => void;
 		selectedProject?: ProjectWithDomain | null;
+		active?: boolean;
 	}
 
-	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject }: Props = $props();
+	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject, active = true }: Props = $props();
 
 	const baseZoom = 35;
 	let cameraRef = $state<THREE.PerspectiveCamera | undefined>(undefined);
@@ -125,8 +126,7 @@
 	let flowParticlesRef = $state<THREE.Points | undefined>(undefined);
 	let time = $state(0);
 
-	// Animation loop
-	useTask((delta) => {
+	const task = useTask((delta) => {
 		time += delta;
 
 		// Update camera zoom (preserving rotation direction)
@@ -169,6 +169,11 @@
 				positions.needsUpdate = true;
 			}
 		}
+	}, { autoStart: false });
+
+	$effect(() => {
+		if (active) task.start();
+		else task.stop();
 	});
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { Canvas } from '@threlte/core';
-	import { scrollStore, getSectionProgress } from '$lib/stores/scroll';
+	import { getSectionProgress } from '$lib/stores/scroll';
 	import HeroScene from '$lib/components/threlte/HeroScene.svelte';
 	import EnvironmentalScene from '$lib/components/threlte/EnvironmentalScene.svelte';
 	import EngineeringScene from '$lib/components/threlte/EngineeringScene.svelte';
@@ -27,11 +27,18 @@
 	const sshProgress = getSectionProgress(3, 5);
 	const lifeProgress = getSectionProgress(4, 5);
 
-	let currentSection = $state(0);
 	let projects = $state<ProjectWithDomain[]>([]);
 	let selectedProject = $state<ProjectWithDomain | null>(null);
 	let isSettingsOpen = $state(false);
 	let isCustomStoryOpen = $state(false);
+
+	// Track which sections are visible for pausing off-screen 3D animations
+	let visibleSections = $state<Set<string>>(new Set());
+	const isAnyModalOpen = $derived(!!selectedProject || isSettingsOpen || isCustomStoryOpen);
+
+	function isSectionActive(id: string): boolean {
+		return visibleSections.has(id) && !isAnyModalOpen;
+	}
 
 	function openSettings() {
 		isSettingsOpen = true;
@@ -53,14 +60,37 @@
 	);
 	const lifeSciencesProjects = $derived(projects.filter((p) => p.domain.slug === 'life-sciences'));
 
-	// Load projects on mount
-	onMount(async () => {
-		try {
-			projects = await fetchAllProjects();
-			console.log(`Loaded ${projects.length} projects`);
-		} catch (error) {
-			console.error('Error loading projects:', error);
-		}
+	// Load projects and set up visibility tracking on mount
+	onMount(() => {
+		fetchAllProjects()
+			.then((data) => {
+				projects = data;
+				console.log(`Loaded ${data.length} projects`);
+			})
+			.catch((error) => {
+				console.error('Error loading projects:', error);
+			});
+
+		// IntersectionObserver to pause off-screen 3D animations
+		const sections = document.querySelectorAll<HTMLElement>('.section-container[id]');
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const id = entry.target.id;
+					if (entry.isIntersecting) {
+						visibleSections.add(id);
+					} else {
+						visibleSections.delete(id);
+					}
+				}
+				visibleSections = new Set(visibleSections);
+			},
+			{ threshold: 0.1 }
+		);
+
+		sections.forEach((section) => observer.observe(section));
+
+		return () => observer.disconnect();
 	});
 
 	function handleProjectClick(project: ProjectWithDomain) {
@@ -75,11 +105,6 @@
 		selectedProject = project;
 	}
 
-	// Determine which section is currently in view
-	$effect(() => {
-		const progress = $scrollStore.scrollProgress;
-		currentSection = Math.floor(progress * 5);
-	});
 
 </script>
 
@@ -151,7 +176,7 @@
 	<section id="hero" class="section-container">
 		<div class="canvas-background">
 			<Canvas>
-				<HeroScene scrollProgress={$heroProgress} />
+				<HeroScene scrollProgress={$heroProgress} active={isSectionActive('hero')} />
 			</Canvas>
 		</div>
 		<div class="content-overlay">
@@ -179,6 +204,7 @@
 					projects={environmentalProjects}
 					onProjectClick={handleProjectClick}
 					{selectedProject}
+					active={isSectionActive('environmental')}
 				/>
 			</Canvas>
 		</div>
@@ -196,6 +222,7 @@
 					projects={engineeringProjects}
 					onProjectClick={handleProjectClick}
 					{selectedProject}
+					active={isSectionActive('engineering')}
 				/>
 			</Canvas>
 		</div>
@@ -213,6 +240,7 @@
 					projects={sshProjects}
 					onProjectClick={handleProjectClick}
 					{selectedProject}
+					active={isSectionActive('ssh')}
 				/>
 			</Canvas>
 		</div>
@@ -230,6 +258,7 @@
 					projects={lifeSciencesProjects}
 					onProjectClick={handleProjectClick}
 					{selectedProject}
+					active={isSectionActive('life-sciences')}
 				/>
 			</Canvas>
 		</div>

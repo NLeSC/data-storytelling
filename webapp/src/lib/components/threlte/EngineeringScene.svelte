@@ -14,9 +14,10 @@
 		projects?: ProjectWithDomain[];
 		onProjectClick?: (project: ProjectWithDomain) => void;
 		selectedProject?: ProjectWithDomain | null;
+		active?: boolean;
 	}
 
-	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject }: Props = $props();
+	let { scrollProgress = 0, projects = [], onProjectClick, selectedProject, active = true }: Props = $props();
 
 	const baseZoom = 35;
 	let cameraRef = $state<THREE.PerspectiveCamera | undefined>(undefined);
@@ -90,8 +91,7 @@
 	let torusRef = $state<THREE.LineSegments | undefined>(undefined);
 	let time = $state(0);
 
-	// Animation loop
-	useTask((delta) => {
+	const task = useTask((delta) => {
 		time += delta;
 
 		// Update camera zoom (preserving rotation direction)
@@ -119,6 +119,11 @@
 			torusRef.rotation.x = Math.PI / 2 + time * 0.1;
 			torusRef.rotation.z = time * 0.2;
 		}
+	}, { autoStart: false });
+
+	$effect(() => {
+		if (active) task.start();
+		else task.stop();
 	});
 </script>
 

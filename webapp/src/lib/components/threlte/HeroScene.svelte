@@ -5,9 +5,10 @@
 
 	interface Props {
 		scrollProgress?: number;
+		active?: boolean;
 	}
 
-	let { scrollProgress = 0 }: Props = $props();
+	let { scrollProgress = 0, active = true }: Props = $props();
 	let velocity = $derived($scrollStore.velocity);
 
 	// Create particle system
@@ -63,8 +64,8 @@
 	let cameraRef = $state<THREE.PerspectiveCamera | undefined>(undefined);
 	let time = $state(0);
 
-	// Animation loop
-	useTask((delta) => {
+	// Animation loop - paused when not active to save CPU/GPU
+	const task = useTask((delta) => {
 		time += delta;
 
 		// Dynamic camera movement based on scroll velocity
@@ -108,6 +109,11 @@
 				positions.needsUpdate = true;
 			}
 		}
+	}, { autoStart: false });
+
+	$effect(() => {
+		if (active) task.start();
+		else task.stop();
 	});
 </script>
 
