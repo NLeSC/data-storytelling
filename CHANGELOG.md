@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.18.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.1) - 2026-03-02
+
+## What's Changed
+
+### 🐛 Bug Fixes
+- fix: Scrolling is broken in Firefox Fixes #6 (ef92581)
+- fix Cannot see full error message Fixes #8 (f936b09)
+
+
+
 ## [0.18.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.0) - 2026-02-26
 
 ## What's Changed
