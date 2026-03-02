@@ -284,7 +284,7 @@
 
 	:global(html) {
 		scroll-behavior: smooth;
-		scroll-snap-type: y mandatory;
+		scroll-snap-type: y proximity;
 	}
 
 	.landing-container {
@@ -298,7 +298,6 @@
 		height: 100vh;
 		overflow: hidden;
 		scroll-snap-align: start;
-		scroll-snap-stop: always;
 	}
 
 	.section-container::before {
@@ -520,7 +519,6 @@
 		align-items: center;
 		justify-content: center;
 		scroll-snap-align: start;
-		scroll-snap-stop: always;
 	}
 
 	.footer-content {
