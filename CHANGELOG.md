@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.19.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.19.0) - 2026-03-02
+
+## What's Changed
+
+### ✨ Features
+- feat: refactor ProjectCard to use shared geometry constants for improved maintainability Reuse meshes to decrease memory usage Fixes #10 (235f7e5)
+
+### 🐛 Bug Fixes
+- fix: dispose resources on component destruction to prevent memory leaks. Memory leak: clean up three.js elements when unmounting Fixes #9 (da47d57)
+- fix: optimize scroll handling and improve performance in various scenes (53996bc)
+
+
+
 ## [0.18.2](https://github.com/NLeSC/data-storytelling/releases/tag/v0.18.2) - 2026-03-02
 
 ## What's Changed
