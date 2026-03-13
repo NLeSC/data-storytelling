@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.19.1](https://github.com/NLeSC/data-storytelling/releases/tag/v0.19.1) - 2026-03-13
+
+## What's Changed
+
+### 📦 Other Changes
+- Merge pull request #4 from NLeSC/formats (4e5bc8e)
+- Minor improvements in text (22e7739)
+- Rename folder to avoid confusion (dc1190d)
+- Written basic draft of the purpose, content, ... piece (9f6d329)
+
+
+
 ## [0.19.0](https://github.com/NLeSC/data-storytelling/releases/tag/v0.19.0) - 2026-03-02
 
 ## What's Changed
